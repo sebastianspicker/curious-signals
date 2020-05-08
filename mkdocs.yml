@@ -1,0 +1,4 @@
+site_name: phyphox-arduino-classroom-kit
+nav:
+  - Home: README.md
+  - Guide: docs/README.md

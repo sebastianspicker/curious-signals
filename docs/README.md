@@ -2,7 +2,7 @@
 
 
 ## Context
-This page tracks bootstrap decisions for readme during bootstrap push work.
+This page tracks bootstrap decisions for readme during steady build work.
 
 ## Development
 - Aligned local and CI checks for the main flow.
@@ -11,4 +11,7 @@ This page tracks bootstrap decisions for readme during bootstrap push work.
 Early notes are still uneven and may be folded into clearer sections later.
 
 ## Usage
-- Merged scattered the main flow guidance into the docs.
+- Rewrote the python explanation around the maintained behavior.
+
+## Caveats
+Some setup details still depend on the current local workflow and may change again.

@@ -14,3 +14,8 @@ run_expand_xinclude_based_experiment_sources_into_importable_files() {
 run_python() {
   printf '%s\n' 'python ready'
 }
+
+# current lane: firmware
+run_firmware() {
+  printf '%s\n' 'firmware ready'
+}

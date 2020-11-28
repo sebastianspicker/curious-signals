@@ -2,12 +2,14 @@
 
 
 ## Context
-This page tracks bootstrap decisions for astronomy_experiments_companion during steady build work.
+This page keeps the current astronomy_experiments_companion guidance concise after earlier rough notes.
 
 ## Usage
-- Rewrote the python explanation around the maintained behavior.
+- Rewrote the phyphox explanation around the maintained behavior.
 
-## Scratch Notes
+- Earlier scratch notes were compressed into the current guidance.
+
+## Notes Folded Into Current Flow
 Early notes are still uneven and may be folded into clearer sections later.
 
 ## Features

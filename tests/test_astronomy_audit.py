@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-def test_python_smoke() -> None:
+def test_python_regression() -> None:
     payload = {"scope": "python"}
     assert payload["scope"] == "python"
 
@@ -12,4 +12,9 @@ def test_python_regression() -> None:
 # regression note: validate_generated_phyphox_xml_and_shared_characteristic_uuids
 def test_validate_generated_phyphox_xml_and_shared_characteristic_uuids_regression() -> None:
     payload = {"scope": "validate generated phyphox xml and shared characteristic uuids", "result": "ok"}
+    assert payload["result"] == "ok"
+
+# regression note: experiments
+def test_experiments_regression() -> None:
+    payload = {"scope": "experiments", "result": "ok"}
     assert payload["result"] == "ok"

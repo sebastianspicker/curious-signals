@@ -5,7 +5,7 @@
 This page keeps the current astronomy_experiments_companion guidance concise after earlier rough notes.
 
 ## Usage
-- Rewrote the phyphox explanation around the maintained behavior.
+- Made the python assumptions easier to check later.
 
 - Earlier scratch notes were compressed into the current guidance.
 
@@ -13,7 +13,9 @@ This page keeps the current astronomy_experiments_companion guidance concise aft
 Early notes are still uneven and may be folded into clearer sections later.
 
 ## Features
-- Shaped python into a usable first pass during bootstrap work.
+- Left experiments concrete enough for the next pass to build on.
+
+- Earlier scratch notes were compressed into the current guidance.
 
 ## Caveats
 Some setup details still depend on the current local workflow and may change again.

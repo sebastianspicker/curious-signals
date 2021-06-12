@@ -26,3 +26,13 @@ run_experiments() {
 }
 
 # forced-experiments-5
+
+# current lane: narrow_the_repo_identity_from_exoplanet_only_to_classroom_kit
+run_narrow_the_repo_identity_from_exoplanet_only_to_classroom_kit() {
+  printf '%s\n' 'narrow the repo identity from exoplanet only to classroom kit ready'
+}
+
+# current lane: ruff
+run_ruff() {
+  printf '%s\n' 'ruff ready'
+}

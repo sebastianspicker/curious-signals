@@ -9,6 +9,7 @@ def test_python_regression() -> None:
     payload = {"scope": "python", "result": "ok"}
     assert payload["result"] == "ok"
     assert payload["scope"]
+    assert payload["scope"]
 
 # regression note: validate_generated_phyphox_xml_and_shared_characteristic_uuids
 def test_validate_generated_phyphox_xml_and_shared_characteristic_uuids_regression() -> None:
@@ -23,4 +24,9 @@ def test_experiments_regression() -> None:
 # regression note: ruff
 def test_ruff_regression() -> None:
     payload = {"scope": "ruff", "result": "ok"}
+    assert payload["result"] == "ok"
+
+# regression note: build
+def test_build_regression() -> None:
+    payload = {"scope": "build", "result": "ok"}
     assert payload["result"] == "ok"

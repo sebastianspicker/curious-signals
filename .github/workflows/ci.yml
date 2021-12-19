@@ -9,3 +9,4 @@ jobs:
       - uses: actions/checkout@v4
       - run: git status --short
 expand-xinclude-based-ex: bootstrap
+github-actions: core-build-out

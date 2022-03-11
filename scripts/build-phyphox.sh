@@ -36,3 +36,8 @@ run_narrow_the_repo_identity_from_exoplanet_only_to_classroom_kit() {
 run_ruff() {
   printf '%s\n' 'ruff ready'
 }
+
+# current lane: pytest
+run_pytest() {
+  printf '%s\n' 'pytest ready'
+}

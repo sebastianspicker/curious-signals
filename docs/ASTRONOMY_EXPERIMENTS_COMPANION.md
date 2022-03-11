@@ -5,7 +5,7 @@
 This page keeps the current astronomy_experiments_companion guidance concise after earlier rough notes.
 
 ## Usage
-- Made the python assumptions easier to check later.
+- Rewrote the pytest explanation around the maintained behavior.
 
 - Earlier scratch notes were compressed into the current guidance.
 

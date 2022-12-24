@@ -12,9 +12,10 @@ Lifecycle stage: core-build-out. Earlier setup detail now lives in maintained gu
 - Aligned local and CI checks for the main flow.
 
 ## Usage
-- Merged scattered files guidance into the docs.
+- Made the bash assumptions easier to check later.
 
-- Earlier scratch detail is now represented in maintained sections.
+- The older setup fragments have been reduced to the useful parts.
 
 ## Current Focus
 Use the next review to check behavior before adding surface area.
+Keep the next pass focused on verification and smaller changes.

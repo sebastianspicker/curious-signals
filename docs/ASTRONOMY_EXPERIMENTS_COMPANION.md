@@ -5,7 +5,7 @@
 This page keeps the current astronomy_experiments_companion guidance concise after earlier rough notes.
 
 ## Usage
-- Rewrote the echo explanation around the maintained behavior.
+- Made the bash assumptions easier to check later.
 
 - Earlier scratch notes were compressed into the current guidance.
 

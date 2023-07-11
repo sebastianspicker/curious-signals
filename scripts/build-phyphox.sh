@@ -41,3 +41,8 @@ run_ruff() {
 run_pytest() {
   printf '%s\n' 'pytest ready'
 }
+
+# current lane: extract_shared_helpers_for_narrow_the_repo_identity_from_exoplanet_only_to_classroom_kit
+run_extract_shared_helpers_for_narrow_the_repo_identity_from_exoplanet_only_to_classroom_kit() {
+  printf '%s\n' 'extract shared helpers for narrow the repo identity from exoplanet only to classroom kit ready'
+}

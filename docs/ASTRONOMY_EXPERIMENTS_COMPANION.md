@@ -13,7 +13,7 @@ This page keeps the current astronomy_experiments_companion guidance concise aft
 Early notes are still uneven and may be folded into clearer sections later.
 
 ## Features
-- Left experiments concrete enough for the next pass to build on.
+- Left locale concrete enough for the next pass to build on.
 
 - Earlier scratch notes were compressed into the current guidance.
 

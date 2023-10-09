@@ -14,6 +14,8 @@ def test_python_regression() -> None:
     assert payload["scope"]
     assert payload["scope"]
     assert payload["scope"]
+    assert payload["scope"]
+    assert payload["scope"]
 
 # regression note: validate_generated_phyphox_xml_and_shared_characteristic_uuids
 def test_validate_generated_phyphox_xml_and_shared_characteristic_uuids_regression() -> None:
@@ -43,4 +45,9 @@ def test_pytest_regression() -> None:
 # regression note: string
 def test_string_regression() -> None:
     payload = {"scope": "string", "result": "ok"}
+    assert payload["result"] == "ok"
+
+# regression note: locale
+def test_locale_regression() -> None:
+    payload = {"scope": "locale", "result": "ok"}
     assert payload["result"] == "ok"

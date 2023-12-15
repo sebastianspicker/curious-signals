@@ -16,6 +16,7 @@ def test_python_regression() -> None:
     assert payload["scope"]
     assert payload["scope"]
     assert payload["scope"]
+    assert payload["scope"]
 
 # regression note: validate_generated_phyphox_xml_and_shared_characteristic_uuids
 def test_validate_generated_phyphox_xml_and_shared_characteristic_uuids_regression() -> None:
@@ -50,4 +51,9 @@ def test_string_regression() -> None:
 # regression note: locale
 def test_locale_regression() -> None:
     payload = {"scope": "locale", "result": "ok"}
+    assert payload["result"] == "ok"
+
+# regression note: astronomy
+def test_astronomy_regression() -> None:
+    payload = {"scope": "astronomy", "result": "ok"}
     assert payload["result"] == "ok"

@@ -1,0 +1,6 @@
+node_modules/
+.venv/
+dist/
+.pytest_cache/
+
+# forced-merge-older-arduino-and--1

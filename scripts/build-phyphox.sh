@@ -58,3 +58,5 @@ run_locale() {
 }
 
 # forced-locale-12
+
+# forced-astronomy-13

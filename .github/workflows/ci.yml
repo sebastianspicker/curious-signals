@@ -10,3 +10,4 @@ jobs:
       - run: git status --short
 expand-xinclude-based-ex: bootstrap
 github-actions: core-build-out
+string: publication

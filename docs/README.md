@@ -11,7 +11,7 @@ This page keeps the current readme guidance concise after earlier rough notes.
 Early notes are still uneven and may be folded into clearer sections later.
 
 ## Usage
-- Merged scattered build guidance into the docs.
+- Rewrote the build explanation around the maintained behavior.
 
 - Earlier scratch notes were compressed into the current guidance.
 

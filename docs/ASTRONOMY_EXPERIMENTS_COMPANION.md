@@ -5,7 +5,7 @@
 This page keeps the current astronomy_experiments_companion guidance concise after earlier rough notes.
 
 ## Usage
-- Merged scattered build guidance into the docs.
+- Merged scattered the main flow guidance into the docs.
 
 - Earlier scratch notes were compressed into the current guidance.
 

@@ -5,7 +5,9 @@
 This page keeps the current bug_report guidance concise after earlier rough notes.
 
 ## Development
-- Aligned local and CI checks for the main flow.
+- Reduced surprise in the the main flow release checks.
+
+- Earlier scratch notes were compressed into the current guidance.
 
 ## Notes Folded Into Current Flow
 Early notes are still uneven and may be folded into clearer sections later.
@@ -24,6 +26,6 @@ Early notes are still uneven and may be folded into clearer sections later.
 Some setup details still depend on the current local workflow and may change again.
 
 ## Notes
-- Merge older Arduino and astronomy teaching lines into one repo.
+- Tighten the tracked surface before publication.
 
 - Earlier scratch notes were compressed into the current guidance.

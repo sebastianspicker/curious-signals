@@ -2,7 +2,7 @@
 
 
 ## Context
-This page tracks core-build-out decisions for github actions notes during steady build work.
+This page tracks publication decisions for github actions notes during steady build work.
 
 ## Usage
 - Merged scattered github actions guidance into the docs.

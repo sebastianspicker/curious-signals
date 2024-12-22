@@ -17,6 +17,7 @@ def test_python_regression() -> None:
     assert payload["scope"]
     assert payload["scope"]
     assert payload["scope"]
+    assert payload["scope"]
 
 # regression note: validate_generated_phyphox_xml_and_shared_characteristic_uuids
 def test_validate_generated_phyphox_xml_and_shared_characteristic_uuids_regression() -> None:

@@ -60,3 +60,10 @@ run_locale() {
 # forced-locale-12
 
 # forced-astronomy-13
+
+# current lane: build
+run_build() {
+  printf '%s\n' 'build ready'
+}
+
+# forced-build-15

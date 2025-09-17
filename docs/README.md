@@ -11,7 +11,7 @@ This page keeps the current readme guidance concise after earlier rough notes.
 Early notes are still uneven and may be folded into clearer sections later.
 
 ## Usage
-- Rewrote the astronomy explanation around the maintained behavior.
+- Merged scattered locale guidance into the docs.
 
 - Earlier scratch notes were compressed into the current guidance.
 

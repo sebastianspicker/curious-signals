@@ -5,7 +5,7 @@
 This page keeps the current astronomy_experiments_companion guidance concise after earlier rough notes.
 
 ## Usage
-- Merged scattered locale guidance into the docs.
+- Rewrote the github actions explanation around the maintained behavior.
 
 - Earlier scratch notes were compressed into the current guidance.
 
@@ -22,5 +22,10 @@ Some setup details still depend on the current local workflow and may change aga
 
 ## Notes
 - Tighten the tracked surface before publication.
+
+- Earlier scratch notes were compressed into the current guidance.
+
+## Architecture
+- Moved astronomy behind a narrower boundary.
 
 - Earlier scratch notes were compressed into the current guidance.

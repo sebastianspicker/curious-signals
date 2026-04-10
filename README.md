@@ -3,10 +3,10 @@
 A working tree for phyphox-arduino-classroom-kit with an evolving implementation history.
 
 ## Overview
-phyphox-arduino-classroom-kit keeps setup, verification, and known limitations in one place.
+phyphox-arduino-classroom-kit records the stable project shape and the work still worth checking.
 
 ## Status
-Lifecycle stage: publication. Earlier setup detail now lives in maintained guidance.
+Lifecycle stage: maintenance. Earlier setup detail now lives in maintained guidance.
 
 ## Development
 - Aligned local and CI checks for string.
@@ -14,7 +14,7 @@ Lifecycle stage: publication. Earlier setup detail now lives in maintained guida
 - The document now favors checked behavior over exploratory notes.
 
 ## Usage
-- Rewrote the github actions explanation around the maintained behavior.
+- Made the github actions assumptions easier to check later.
 
 - The older setup fragments have been reduced to the useful parts.
 

@@ -1,0 +1,140 @@
+<phyphox version="1.7" locale="en">
+    <title>Pressure and Temperature: Star-Formation Analogy</title>
+    <category>*Astrolab University of Cologne</category>
+    <description>Use SensorTag pressure and temperature measurements in a classroom analogue for discussing physical conditions that are often associated with star-formation scenarios. The experiment illustrates trends and comparisons; it does not reproduce astrophysical star formation directly and should not be read as a star-formation model.</description>
+    <translations>
+        <translation locale="de">
+            <title>Druck und Temperatur: Sternentstehungs-Analogie</title>
+            <category>*Astrolabor Universität zu Köln</category>
+            <description>Nutze Druck- und Temperaturmessungen des SensorTag in einer Klassenzimmer-Analogie, um physikalische Bedingungen zu diskutieren, die häufig mit Sternentstehungsszenarien verbunden werden. Das Experiment veranschaulicht Trends und Vergleiche; es reproduziert keine astrophysikalische Sternentstehung und darf nicht als Sternentstehungsmodell gelesen werden.</description>
+            <string original="Analogy Comparison">Analogie-Vergleich</string>
+            <string original="This classroom analogue does not model star formation directly. It compares how pressure and temperature change together in a controlled setup.">Diese Klassenzimmer-Analogie modelliert Sternentstehung nicht direkt. Sie vergleicht, wie sich Druck und Temperatur in einem kontrollierten Aufbau gemeinsam ändern.</string>
+            <string original="Use the graphs to discuss which quantity changes first, which one changes more strongly, and why this is only an analogy for astrophysical environments.">Nutze die Diagramme, um zu diskutieren, welche Größe sich zuerst ändert, welche stärker reagiert und warum dies nur eine Analogie für astrophysikalische Umgebungen ist.</string>
+            <string original="Pressure">Druck</string>
+            <string original="Temperature">Temperatur</string>
+            <string original="Maximum Pressure">Maximaler Druck</string>
+            <string original="Minimum Pressure">Minimaler Druck</string>
+            <string original="Maximum Temperature">Maximale Temperatur</string>
+            <string original="Minimum Temperature">Minimale Temperatur</string>
+            <string original="Time (min)">Zeit (min)</string>
+        </translation>
+        <translation locale="fr">
+            <title>Pression et température : analogie de formation stellaire</title>
+            <category>*Astrolab University of Cologne</category>
+            <description>Utilise les mesures de pression et de température du SensorTag dans une analogie de salle de classe pour discuter de conditions physiques souvent associées aux scénarios de formation stellaire. L'expérience illustre des tendances et des comparaisons ; elle ne reproduit pas directement la formation stellaire astrophysique et ne doit pas être lue comme un modèle de formation stellaire.</description>
+            <string original="Analogy Comparison">Comparaison par analogie</string>
+            <string original="This classroom analogue does not model star formation directly. It compares how pressure and temperature change together in a controlled setup.">Cette analogie de salle de classe ne modélise pas directement la formation stellaire. Elle compare comment la pression et la température évoluent ensemble dans un montage contrôlé.</string>
+            <string original="Use the graphs to discuss which quantity changes first, which one changes more strongly, and why this is only an analogy for astrophysical environments.">Utilise les graphiques pour discuter de la grandeur qui change en premier, de celle qui varie le plus fortement et des raisons pour lesquelles il ne s'agit que d'une analogie d'environnements astrophysiques.</string>
+            <string original="Pressure">Pression</string>
+            <string original="Temperature">Température</string>
+            <string original="Maximum Pressure">Pression maximale</string>
+            <string original="Minimum Pressure">Pression minimale</string>
+            <string original="Maximum Temperature">Température maximale</string>
+            <string original="Minimum Temperature">Température minimale</string>
+            <string original="Time (min)">Temps (min)</string>
+        </translation>
+    </translations>
+    <data-containers>
+        <container size="0" static="false">tempRaw</container>
+        <container size="0" static="false">pRaw</container>
+        <container size="0" static="false">tempCal</container>
+        <container size="0" static="false">pCal</container>
+        <container size="0" static="false">t</container>
+        <container size="1" static="false">count</container>
+        <container size="1" static="false">tmax</container>
+
+        <container size="1" static="false">p_max</container>
+        <container size="1" static="false">p_min</container>
+        <container size="1" static="false">T_max</container>
+        <container size="1" static="false">T_min</container>
+    </data-containers>
+    <input>
+        <bluetooth name="SensorTag" mode="notification" rate="1" subscribeOnStart="false">
+            <config char="F000AA44-0451-4000-B000-000000000000" conversion="hexadecimal">64</config>
+            <config char="F000AA42-0451-4000-B000-000000000000" conversion="hexadecimal">01</config>
+            <output char="F000AA41-0451-4000-B000-000000000000" conversion="uInt24LittleEndian" offset="3" length="3">pRaw</output>
+            <output char="F000AA41-0451-4000-B000-000000000000" conversion="int24LittleEndian" offset="0" length="3">tempRaw</output>
+        </bluetooth>
+    </input>
+    <output>
+    </output>
+    <analysis sleep="0"  onUserInput="false">
+        <multiply>
+            <input as="factor" clear="false">tempRaw</input>
+            <input as="factor" type="value">0.01</input>
+            <output as="product">tempCal</output>
+        </multiply>
+        <max>
+            <input as="y" clear="false">tempCal</input>
+            <output as="max">T_max</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">tempCal</input>
+            <output as="min">T_min</output>
+        </min>
+        <multiply>
+            <input as="factor" clear="false">pRaw</input>
+            <input as="factor" type="value">0.01</input>
+            <output as="product">pCal</output>
+        </multiply>
+        <max>
+            <input as="y" clear="false">pCal</input>
+            <output as="max">p_max</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">pCal</input>
+            <output as="min">p_min</output>
+        </min>
+        <count>
+            <input as="buffer" clear="false">tempRaw</input>
+            <output as="count">count</output>
+        </count>
+        <formula formula="([1]-1)*0.0166666666">
+            <input as="in" clear="false">count</input>
+            <output as="out">tmax</output>
+        </formula>
+        <ramp>
+            <input as="start" type="value">0</input>
+            <input as="stop">tmax</input>
+            <input as="length">count</input>
+            <output as="out">t</output>
+        </ramp>
+    </analysis>
+    <views>
+        <view label="Analogy Comparison">
+            <info label="This classroom analogue does not model star formation directly. It compares how pressure and temperature change together in a controlled setup." />
+            <separator height="1"/>
+            <info label="Use the graphs to discuss which quantity changes first, which one changes more strongly, and why this is only an analogy for astrophysical environments." />
+            <separator height="1"/>
+            <graph label="Pressure" partialUpdate="true" history="1" labelX="t" labelY="p" unitX="min" unitY="hPa" xPrecision="0" yPrecision="4">
+                <input axis="x">t</input>
+                <input axis="y">pCal</input>
+            </graph>
+            <graph label="Temperature" partialUpdate="true" history="1" labelX="t" labelY="T" unitX="min" unitY="°C" xPrecision="0" yPrecision="1">
+                <input axis="x">t</input>
+                <input axis="y">tempCal</input>
+            </graph>
+            <separator height="1"/>
+            <value label="Maximum Pressure" size="2" precision="2" scientific="false" unit="hPa" factor="1" >
+           <input>p_max</input>
+            </value>
+            <value label="Minimum Pressure" size="2" precision="2" scientific="false" unit="hPa" factor="1" >
+           <input>p_min</input>
+            </value>
+            <separator height="1"/>
+            <value label="Maximum Temperature" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+           <input>T_max</input>
+            </value>
+            <value label="Minimum Temperature" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+           <input>T_min</input>
+            </value>
+        </view>
+    </views>
+    <export>
+        <set name="p(t), T(t)">
+            <data name="Time (min)">t</data>
+            <data name="Pressure (hPa)">pCal</data>
+            <data name="Temperature (°C)">tempCal</data>
+        </set>
+    </export>
+</phyphox>

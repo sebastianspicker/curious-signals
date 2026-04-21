@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<outputs>
+  <output char="cddf1002-30f7-4671-8b43-5e40ba53514a" conversion="float32LittleEndian" offset="0">CH1</output>
+  <output char="cddf1002-30f7-4671-8b43-5e40ba53514a" conversion="float32LittleEndian" offset="4">CH2</output>
+  <output char="cddf1002-30f7-4671-8b43-5e40ba53514a" conversion="float32LittleEndian" offset="8">CH3</output>
+  <output char="cddf1002-30f7-4671-8b43-5e40ba53514a" conversion="float32LittleEndian" offset="12">CH4</output>
+  <output char="cddf1002-30f7-4671-8b43-5e40ba53514a" conversion="float32LittleEndian" offset="16">CH5</output>
+  <output char="cddf1002-30f7-4671-8b43-5e40ba53514a" extra="time">CH0</output>
+</outputs>
+

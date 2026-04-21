@@ -1,0 +1,174 @@
+<phyphox version="1.7" locale="en">
+    <title>Greenhouse effect</title>
+    <category>*Astrolab University of Cologne</category>
+    <description>Use one or two SensorTags to record how enclosed gas setups warm up under the same illumination. The same file supports a single setup or a comparison between two setups. This is a classroom analogue of the greenhouse effect: it supports relative comparison between setups and is not a full climate model.</description>
+    <translations>
+        <translation locale="de">
+            <title>Treibhauseffekt</title>
+            <category>*Astrolabor Universität zu Köln</category>
+            <description>Nutze ein oder zwei SensorTags, um aufzuzeichnen, wie sich eingeschlossene Gasaufbauten unter derselben Beleuchtung erwärmen. Dieselbe Datei unterstützt einen Einzelaufbau oder den Vergleich zweier Aufbauten. Dies ist eine Klassenzimmer-Analogie des Treibhauseffekts: Sie erlaubt einen relativen Vergleich zwischen Aufbauten und ist kein vollständiges Klimamodell.</description>
+            <string original="Comparison">Vergleich</string>
+            <string original="Gas #1 (G1), orange">Gas Nr. 1 (G1), orange</string>
+            <string original="Temperature">Temperatur</string>
+            <string original="Max. Temp. G1">Max. Temp. G1</string>
+            <string original="Min. Temp. G1">Min. Temp. G1</string>
+            <string original="Gas #2 (G2), blue">Gas Nr. 2 (G2), blau</string>
+            <string original="Max. Temp. G2">Max. Temp. G2</string>
+            <string original="Min. Temp. G2">Min. Temp. G2</string>
+            <string original="Single setup">Einzelaufbau</string>
+            <string original="Use this tab when only one SensorTag is connected. The second comparison channel can remain empty.">Nutze diesen Tab, wenn nur ein SensorTag verbunden ist. Der zweite Vergleichskanal kann leer bleiben.</string>
+            <string original="Max. Temp.">Max. Temp.</string>
+            <string original="Min. Temp.">Min. Temp.</string>
+            <string original="T1(t), T2(t)">T1(t), T2(t)</string>
+            <string original="Time (min)">Zeit (min)</string>
+            <string original="Temperature 1 (°C)">Temperatur 1 (°C)</string>
+            <string original="Temperature 2 (°C)">Temperatur 2 (°C)</string>
+        </translation>
+        <translation locale="fr">
+            <title>Effet de serre</title>
+            <category>*Astrolab University of Cologne</category>
+            <description>Utilise un ou deux SensorTags pour enregistrer comment des montages gazeux fermés se réchauffent sous le même éclairage. Le même fichier prend en charge un montage unique ou la comparaison entre deux montages. Il s'agit d'une analogie de salle de classe de l'effet de serre : elle permet une comparaison relative entre montages et ne constitue pas un modèle climatique complet.</description>
+            <string original="Comparison">Comparaison</string>
+            <string original="Gas #1 (G1), orange">Gaz n° 1 (G1), orange</string>
+            <string original="Temperature">Température</string>
+            <string original="Max. Temp. G1">Temp. max. G1</string>
+            <string original="Min. Temp. G1">Temp. min. G1</string>
+            <string original="Gas #2 (G2), blue">Gaz n° 2 (G2), bleu</string>
+            <string original="Max. Temp. G2">Temp. max. G2</string>
+            <string original="Min. Temp. G2">Temp. min. G2</string>
+            <string original="Single setup">Montage unique</string>
+            <string original="Use this tab when only one SensorTag is connected. The second comparison channel can remain empty.">Utilise cet onglet lorsqu'un seul SensorTag est connecté. Le second canal de comparaison peut rester vide.</string>
+            <string original="Max. Temp.">Temp. max.</string>
+            <string original="Min. Temp.">Temp. min.</string>
+            <string original="T1(t), T2(t)">T1(t), T2(t)</string>
+            <string original="Time (min)">Temps (min)</string>
+            <string original="Temperature 1 (°C)">Température 1 (°C)</string>
+            <string original="Temperature 2 (°C)">Température 2 (°C)</string>
+        </translation>
+    </translations>
+    <data-containers>
+        <container size="0" static="false">t</container>
+        <container size="1" static="false">count</container>
+        <container size="1" static="false">tmax</container>
+        <!-- 1 -->
+        <container size="0" static="false">tempRaw1</container>
+        <container size="0" static="false">tempCal1</container>
+        <container size="1" static="false">T_max1</container>
+        <container size="1" static="false">T_min1</container>
+        <!-- 2 -->
+        <container size="0" static="false">tempRaw2</container>
+        <container size="0" static="false">tempCal2</container>
+        <container size="1" static="false">T_max2</container>
+        <container size="1" static="false">T_min2</container>
+    </data-containers>
+    <input>
+        <bluetooth name="SensorTag" mode="notification" rate="1" subscribeOnStart="false">
+            <config char="F000AA44-0451-4000-B000-000000000000" conversion="hexadecimal">64</config>
+            <config char="F000AA42-0451-4000-B000-000000000000" conversion="hexadecimal">01</config>
+            <output char="F000AA41-0451-4000-B000-000000000000" conversion="int24LittleEndian" offset="0" length="3">tempRaw1</output>
+        </bluetooth>
+        <bluetooth name="SensorTag" mode="notification" rate="1" subscribeOnStart="false">
+            <config char="F000AA44-0451-4000-B000-000000000000" conversion="hexadecimal">64</config>
+            <config char="F000AA42-0451-4000-B000-000000000000" conversion="hexadecimal">01</config>
+            <output char="F000AA41-0451-4000-B000-000000000000" conversion="int24LittleEndian" offset="0" length="3">tempRaw2</output>
+        </bluetooth>
+    </input>
+    <output>
+    </output>
+    <analysis sleep="0"  onUserInput="false">
+        <!-- 1 -->
+        <multiply>
+            <input as="factor" clear="false">tempRaw1</input>
+            <input as="factor" type="value">0.01</input>
+            <output as="product">tempCal1</output>
+        </multiply>
+        <max>
+            <input as="y" clear="false">tempCal1</input>
+            <output as="max">T_max1</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">tempCal1</input>
+            <output as="min">T_min1</output>
+        </min>
+        <!-- 2 -->
+        <multiply>
+            <input as="factor" clear="false">tempRaw2</input>
+            <input as="factor" type="value">0.01</input>
+            <output as="product">tempCal2</output>
+        </multiply>
+        <max>
+            <input as="y" clear="false">tempCal2</input>
+            <output as="max">T_max2</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">tempCal2</input>
+            <output as="min">T_min2</output>
+        </min>
+
+        <count>
+            <input as="buffer" clear="false">tempRaw1</input>
+            <output as="count">count</output>
+        </count>
+        <formula formula="([1]-1)*0.0166666666">
+            <input as="in" clear="false">count</input>
+            <output as="out">tmax</output>
+        </formula>
+        <ramp>
+            <input as="start" type="value">0</input>
+            <input as="stop">tmax</input>
+            <input as="length">count</input>
+            <output as="out">t</output>
+        </ramp>
+    </analysis>
+    <views>
+        <view label="Comparison">
+            <info label ="Gas #1 (G1), orange" />
+            <graph label="Temperature" partialUpdate="true" history="1" labelX="t" labelY="T" unitX="min" unitY="°C" xPrecision="0" yPrecision="1">
+                <input axis="x">t</input>
+                <input axis="y" color="orange">tempCal1</input>
+            </graph>
+            <separator height="1"/>
+            <value label="Max. Temp. G1" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+           <input>T_max1</input>
+            </value>
+            <value label="Min. Temp. G1" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_min1</input>
+            </value>
+            <separator height="1"/>
+            <info label ="Gas #2 (G2), blue" />
+            <graph label="Temperature" partialUpdate="true" history="1" labelX="t" labelY="T" unitX="min" unitY="°C" xPrecision="0" yPrecision="1">
+                <input axis="x">t</input>
+                <input axis="y" color="blue">tempCal2</input>
+            </graph>
+            <separator height="1"/>
+            <value label="Max. Temp. G2" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_max2</input>
+            </value>
+            <value label="Min. Temp. G2" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_min2</input>
+            </value>
+        </view>
+        <view label="Single setup">
+            <graph label="Temperature" partialUpdate="true" history="1" labelX="t" labelY="T" unitX="min" unitY="°C" xPrecision="0" yPrecision="1">
+                <input axis="x">t</input>
+                <input axis="y" color="orange">tempCal1</input>
+            </graph>
+            <separator height="1"/>
+            <info label ="Use this tab when only one SensorTag is connected. The second comparison channel can remain empty." />
+            <separator height="1"/>
+            <value label="Max. Temp." size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_max1</input>
+            </value>
+            <value label="Min. Temp." size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_min1</input>
+            </value>
+        </view>
+    </views>
+    <export>
+        <set name="T1(t), T2(t)">
+            <data name="Time (min)">t</data>
+            <data name="Temperature 1 (°C)">tempCal1</data>
+            <data name="Temperature 2 (°C)">tempCal2</data>
+        </set>
+    </export>
+</phyphox>

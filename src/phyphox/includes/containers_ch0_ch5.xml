@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<containers>
+  <container size="0" static="false" init="">CH1</container>
+  <container size="0" static="false" init="">CH2</container>
+  <container size="0" static="false" init="">CH3</container>
+  <container size="0" static="false" init="">CH4</container>
+  <container size="0" static="false" init="">CH5</container>
+  <container size="0" static="false" init="">CH0</container>
+</containers>
+

@@ -1,0 +1,236 @@
+<phyphox version="1.7" locale="en">
+    <title>Habitable Zone: IR Temperature Signal and Distance</title>
+    <category>*Astrolab University of Cologne</category>
+    <description>
+        Measure an infrared temperature signal and the ambient temperature as a function of uncalibrated distance in a qualitative classroom analogue for stellar heating. The experiment helps discuss how received radiation relates to temperature trends, but it does not define habitability by itself and is not a quantitative habitable-zone calculator.
+    </description>
+    <translations>
+        <translation locale="de">
+            <title>Habitable Zone: IR-Temperatursignal und Abstand</title>
+            <category>*Astrolabor Universität zu Köln</category>
+            <description>
+                Messe ein Infrarot-Temperatursignal und die Umgebungstemperatur als Funktion eines unkalibrierten Abstands in einer qualitativen Klassenzimmer-Analogie für stellare Erwärmung. Das Experiment hilft dabei zu diskutieren, wie empfangene Strahlung mit Temperaturtrends zusammenhängt, definiert aber keine Habitabilität und ist kein quantitativer Rechner für habitable Zonen.
+            </description>
+            <string original="IR Temperature Signal">IR-Temperatursignal</string>
+            <string original="IR temperature signal">IR-Temperatursignal</string>
+            <string original="Use this graph as an IR temperature signal versus uncalibrated distance. Avoid rotating the mouse, because the total distance can no longer be reconstructed once the axes change.">Nutze dieses Diagramm als IR-Temperatursignal in Abhängigkeit von einem unkalibrierten Abstand. Drehe die Maus nicht, weil sich die Gesamtstrecke nach einem Achsenwechsel nicht mehr rekonstruieren lässt.</string>
+            <string original="Temperature trend">Temperaturtrend</string>
+            <string original="Qualitative IR temperature trend">Qualitativer IR-Temperaturtrend</string>
+            <string original="Use this view only for a qualitative trend comparison. The distance axis is uncalibrated and the graph is not a quantitative radiation law or habitable-zone calculator.">Nutze diese Ansicht nur für einen qualitativen Trendvergleich. Die Distanzachse ist unkalibriert und das Diagramm ist weder ein quantitatives Strahlungsgesetz noch ein Rechner für habitable Zonen.</string>
+            <string original="IR and Ambient Temperature">IR- und Umgebungstemperatur</string>
+            <string original="Ambient temperature">Umgebungstemperatur</string>
+            <string original="Compare the IR temperature signal with the ambient temperature at the same uncalibrated distance. Avoid rotating the mouse, because the total distance can no longer be reconstructed once the axes change.">Vergleiche das IR-Temperatursignal mit der Umgebungstemperatur bei demselben unkalibrierten Abstand. Drehe die Maus nicht, weil sich die Gesamtstrecke nach einem Achsenwechsel nicht mehr rekonstruieren lässt.</string>
+            <string original="Temperature-Distance">Temperatur-Abstand</string>
+        </translation>
+        <translation locale="fr">
+            <title>Zone habitable : signal de température IR et distance</title>
+            <category>*Astrolab University of Cologne</category>
+            <description>
+                Mesure un signal de température infrarouge et la température ambiante en fonction d'une distance non calibrée dans une analogie qualitative de salle de classe pour le chauffage stellaire. Cette expérience aide à discuter du lien entre le rayonnement reçu et les tendances de température, mais elle ne définit pas à elle seule l'habitabilité et n'est pas un calculateur quantitatif de zone habitable.
+            </description>
+            <string original="IR Temperature Signal">Signal de température IR</string>
+            <string original="IR temperature signal">Signal de température IR</string>
+            <string original="Use this graph as an IR temperature signal versus uncalibrated distance. Avoid rotating the mouse, because the total distance can no longer be reconstructed once the axes change.">Utilise ce graphique comme signal de température IR en fonction d'une distance non calibrée. Évite de faire pivoter la souris, car la distance totale ne peut plus être reconstruite lorsque les axes changent.</string>
+            <string original="Temperature trend">Tendance de température</string>
+            <string original="Qualitative IR temperature trend">Tendance qualitative de température IR</string>
+            <string original="Use this view only for a qualitative trend comparison. The distance axis is uncalibrated and the graph is not a quantitative radiation law or habitable-zone calculator.">Utilise cette vue uniquement pour une comparaison qualitative des tendances. L'axe de distance n'est pas calibré et le graphique n'est ni une loi de rayonnement quantitative ni un calculateur de zone habitable.</string>
+            <string original="IR and Ambient Temperature">Température IR et ambiante</string>
+            <string original="Ambient temperature">Température ambiante</string>
+            <string original="Compare the IR temperature signal with the ambient temperature at the same uncalibrated distance. Avoid rotating the mouse, because the total distance can no longer be reconstructed once the axes change.">Compare le signal de température IR avec la température ambiante à la même distance non calibrée. Évite de faire pivoter la souris, car la distance totale ne peut plus être reconstruite lorsque les axes changent.</string>
+            <string original="Temperature-Distance">Température-distance</string>
+        </translation>
+    </translations>
+    <data-containers>
+        <container size="1">last</container>
+        <container size="0">tempAll</container>
+        <container size="0">-tempAll</container>
+        <container size="0">new</container>
+        <container size="1">count</container>
+        <container size="1000">dx</container>
+        <container size="1000">dy</container>
+        <container size="0" init="0">x</container>
+        <container size="0" init="0">y</container>
+
+        <container size="1">x2</container>
+        <container size="1">y2</container>
+        <container size="1">d2</container>
+        <container size="1">d</container>
+
+        <container size="0">T_IR_raw</container>
+        <container size="1">T_IR_cal</container>
+
+        <container size="0">T_amb_raw</container>
+        <container size="1">T_amb_cal</container>
+
+        <container size="0">dHist</container>
+        <container size="0">T_IRHist</container>
+        <container size="0">T_ambHist</container>
+
+    </data-containers>
+    <input>
+        <bluetooth uuid="00001812-0000-1000-8000-00805f9b34fb" mode="notification">
+            <config char="00002A4e-0000-1000-8000-00805F9B34FB"  conversion="hexadecimal">00</config>
+            <output char="00002A33-0000-1000-8000-00805F9B34FB" offset="1" length="1" conversion="int8">dx</output>
+            <output char="00002A33-0000-1000-8000-00805F9B34FB" offset="2" length="1" conversion="int8">dy</output>
+        </bluetooth>
+        <bluetooth name="SensorTag" mode="notification">
+            <config char="F000AA03-0451-4000-B000-000000000000" conversion="hexadecimal">1E</config>
+            <config char="F000AA02-0451-4000-B000-000000000000" conversion="hexadecimal">01</config>
+            <output char="F000AA01-0451-4000-B000-000000000000" conversion="uInt16LittleEndian" offset="0" length="2">T_IR_raw</output>
+            <output char="F000AA01-0451-4000-B000-000000000000" conversion="uInt16LittleEndian" offset="2" length="2">T_amb_raw</output>
+        </bluetooth>
+    </input>
+    <views>
+        <view label="IR Temperature Signal">
+            <graph label="IR temperature signal" labelX="r" unitX="a.u." labelY="T" unitY="°C">
+                <input axis="y">T_IRHist</input>
+                <input axis="x">dHist</input>
+            </graph>
+            <info label="Use this graph as an IR temperature signal versus uncalibrated distance. Avoid rotating the mouse, because the total distance can no longer be reconstructed once the axes change." />
+        </view>
+        <view label="Temperature trend">
+            <graph label="Qualitative IR temperature trend" labelX="r" unitX="a.u." labelY="T" unitY="°C">
+                <input axis="y">T_IRHist</input>
+                <input axis="x">dHist</input>
+            </graph>
+            <info label="Use this view only for a qualitative trend comparison. The distance axis is uncalibrated and the graph is not a quantitative radiation law or habitable-zone calculator." />
+        </view>
+        <view label="IR and Ambient Temperature">
+            <graph label="IR temperature signal" labelX="r" unitX="a.u." labelY="T" unitY="°C">
+                <input axis="y">T_IRHist</input>
+                <input axis="x">dHist</input>
+            </graph>
+            <graph label="Ambient temperature" labelX="r" unitX="a.u." labelY="T" unitY="°C">
+                <input axis="y">T_ambHist</input>
+                <input axis="x">dHist</input>
+            </graph>
+            <info label="Compare the IR temperature signal with the ambient temperature at the same uncalibrated distance. Avoid rotating the mouse, because the total distance can no longer be reconstructed once the axes change." />
+        </view>
+        <!--view label="Mouse">
+            <graph label="Integrated Movement" labelX="x" unitX="a.u." labelY="y" unitY="a.u." aspectRatio="1">
+                <input axis="y">y</input>
+                <input axis="x">x</input>
+            </graph>
+        </view-->
+    </views>
+
+    <analysis optimization="true">
+
+        <formula formula="floor([1_]/4)*0.03125">
+            <input clear="false">T_IR_raw</input>
+            <output clear="true">T_IR_cal</output>
+        </formula>
+
+        <formula formula="floor([1_]/4)*0.03125">
+            <input clear="false">T_amb_raw</input>
+            <output clear="true">T_amb_cal</output>
+        </formula>
+
+        <append>
+            <input clear="false">x</input>
+            <output>last</output>
+        </append>
+        <integrate>
+            <input>dx</input>
+            <output>tempAll</output>
+        </integrate>
+        <count>
+            <input clear="false">tempAll</input>
+            <output>count</output>
+        </count>
+        <add>
+            <input>tempAll</input>
+            <input>last</input>
+            <output>new</output>
+        </add>
+        <if greater="true">
+            <input>count</input>
+            <input type="value">0</input>
+            <input>new</input>
+            <output clear="false">x</output>
+        </if>
+
+        <append>
+            <input clear="false">y</input>
+            <output>last</output>
+        </append>
+        <integrate>
+            <input>dy</input>
+            <output>tempAll</output>
+        </integrate>
+        <multiply>
+            <input clear="false">tempAll</input>
+            <input type="value">-1</input>
+            <output>-tempAll</output>
+        </multiply>
+        <count>
+            <input clear="false">tempAll</input>
+            <output>count</output>
+        </count>
+        <add>
+            <input>-tempAll</input>
+            <input>last</input>
+            <output>new</output>
+        </add>
+        <if greater="true">
+            <input>count</input>
+            <input type="value">0</input>
+            <input>new</input>
+            <output clear="false">y</output>
+        </if>
+
+        <multiply>
+            <input clear="false">x</input>
+            <input clear="false">x</input>
+            <output>x2</output>
+        </multiply>
+        <multiply>
+            <input clear="false">y</input>
+            <input clear="false">y</input>
+            <output>y2</output>
+        </multiply>
+        <add>
+            <input clear="false">x2</input>
+            <input clear="false">y2</input>
+            <output>d2</output>
+        </add>
+        <power>
+            <input clear="false" as="base">d2</input>
+            <input type="value" as="exponent">0.5</input>
+            <output>d</output>
+        </power>
+
+        <count>
+            <input clear="false">T_IR_cal</input>
+            <output>count</output>
+        </count>
+        <if greater="true">
+            <input clear="false">count</input>
+            <input type="value">0</input>
+            <input>T_IR_cal</input>
+            <output clear="false">T_IRHist</output>
+        </if>
+        <if greater="true">
+            <input clear="false">count</input>
+            <input type="value">0</input>
+            <input>T_amb_cal</input>
+            <output clear="false">T_ambHist</output>
+        </if>
+        <if greater="true">
+            <input>count</input>
+            <input type="value">0</input>
+            <input>d</input>
+            <output clear="false">dHist</output>
+        </if>
+
+    </analysis>
+
+    <export>
+        <set name="Temperature-Distance">
+            <data name="d (a.u.)">dHist</data>
+            <data name="T_IR (°C)">T_IRHist</data>
+            <data name="T_amb (°C)">T_ambHist</data>
+        </set>
+    </export>
+
+</phyphox>

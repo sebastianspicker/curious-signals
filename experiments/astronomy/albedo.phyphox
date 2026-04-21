@@ -1,0 +1,183 @@
+<phyphox version="1.7" locale="en">
+  <title>Relative Reflected Light</title>
+  <category>*Astrolab University of Cologne</category>
+      <description>
+       Measure the reflected light signal from different surfaces and compare it under fixed geometry to discuss reflectivity and albedo qualitatively. The same file supports the phone light sensor or the TI SensorTag light sensor. This experiment is a classroom analogue and a reflectance proxy: it compares relative reflected-light levels and does not determine a calibrated planetary albedo on its own.
+    </description>
+  <translations>
+    <translation locale="de">
+      <title>Relatives reflektiertes Licht</title>
+      <category>*Astrolabor Universität zu Köln</category>
+      <description>
+       Messe das reflektierte Lichtsignal verschiedener Oberflächen und vergleiche es bei fester Geometrie, um Reflexion und Albedo qualitativ zu diskutieren. Dieselbe Datei unterstützt den Lichtsensor des Smartphones oder den Lichtsensor des TI SensorTag. Dieses Experiment ist eine Klassenzimmer-Analogie und ein Reflexionsproxy: Es vergleicht relative Werte des reflektierten Lichts und bestimmt keine kalibrierte planetare Albedo.
+    </description>
+      <string original="Phone reflectance proxy">Reflexionsproxy Smartphone</string>
+      <string original="Use this tab with the phone light sensor under fixed geometry.">Nutze diesen Tab mit dem Lichtsensor des Smartphones bei fester Geometrie.</string>
+      <string original="Relative Light Level">Relatives Lichtniveau</string>
+      <string original="Maximum signal">Maximales Signal</string>
+      <string original="Minimum signal">Minimales Signal</string>
+      <string original="Reflectance proxy">Reflexionsproxy</string>
+      <string original="SensorTag reflectance proxy">Reflexionsproxy SensorTag</string>
+      <string original="Use this tab with the TI SensorTag light sensor under fixed geometry.">Nutze diesen Tab mit dem Lichtsensor des TI SensorTag bei fester Geometrie.</string>
+      <string original="Phone Raw">Smartphone Rohdaten</string>
+      <string original="SensorTag Raw">SensorTag Rohdaten</string>
+      <string original="Relative light level (a.u.)">Relatives Lichtniveau (a.u.)</string>
+    </translation>
+    <translation locale="fr">
+      <title>Lumière réfléchie relative</title>
+      <category>*Astrolab University of Cologne</category>
+      <description>
+       Mesure le signal de lumière réfléchie de différentes surfaces et compare-le dans une géométrie fixe afin de discuter qualitativement de la réflectivité et de l'albédo. Le même fichier prend en charge le capteur de lumière du téléphone ou celui du TI SensorTag. Cette expérience est une analogie de salle de classe et un proxy de réflectance : elle compare des niveaux relatifs de lumière réfléchie et ne détermine pas à elle seule un albédo planétaire calibré.
+    </description>
+      <string original="Phone reflectance proxy">Proxy de réflectance téléphone</string>
+      <string original="Use this tab with the phone light sensor under fixed geometry.">Utilise cet onglet avec le capteur de lumière du téléphone dans une géométrie fixe.</string>
+      <string original="Relative Light Level">Niveau lumineux relatif</string>
+      <string original="Maximum signal">Signal maximal</string>
+      <string original="Minimum signal">Signal minimal</string>
+      <string original="Reflectance proxy">Proxy de réflectance</string>
+      <string original="SensorTag reflectance proxy">Proxy de réflectance SensorTag</string>
+      <string original="Use this tab with the TI SensorTag light sensor under fixed geometry.">Utilise cet onglet avec le capteur de lumière du TI SensorTag dans une géométrie fixe.</string>
+      <string original="Phone Raw">Données brutes téléphone</string>
+      <string original="SensorTag Raw">Données brutes SensorTag</string>
+      <string original="Relative light level (a.u.)">Niveau lumineux relatif (u.a.)</string>
+    </translation>
+  </translations>
+  <data-containers>
+    <container size="0">phone_amplitude</container>
+    <container size="0">phone_t</container>
+    <container size="0" static="false">phone_max_amplitude</container>
+    <container size="0" static="false">phone_min_amplitude</container>
+    <container size="0" static="false">phone_depth</container>
+    <container size="0" static="false">st_amplitude</container>
+    <container size="0" static="false">st_t</container>
+    <container size="0" static="false">st_max_amplitude</container>
+    <container size="0" static="false">st_min_amplitude</container>
+    <container size="0" static="false">st_depth</container>
+    <container size="0" static="false">st_RawInt</container>
+    <container size="0" static="false">st_e</container>
+    <container size="0" static="false">st_m</container>
+    <container size="1" static="false">st_countI</container>
+    <container size="1" static="false">st_tmax</container>
+    <container size="0" static="false">st_factor</container>
+  </data-containers>
+
+  <input>
+    <sensor type="light">
+      <output component="t">phone_t</output>
+      <output component="x">phone_amplitude</output>
+    </sensor>
+    <bluetooth name="SensorTag" mode="notification" rate="1" subscribeOnStart="false">
+        <config char="F000AA73-0451-4000-B000-000000000000" conversion="hexadecimal">50</config>
+        <config char="F000AA72-0451-4000-B000-000000000000" conversion="hexadecimal">01</config>
+        <output char="F000AA71-0451-4000-B000-000000000000" conversion="uInt16LittleEndian" offset="0" length="2">st_RawInt</output>
+    </bluetooth>
+  </input>
+
+    <analysis>
+        <max>
+            <input as="y" clear="false">phone_amplitude</input>
+            <output as="max">phone_max_amplitude</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">phone_amplitude</input>
+            <output as="min">phone_min_amplitude</output>
+        </min>
+        <formula formula="([1]-[2])/[1]*100">
+            <input as="in" clear="false">phone_max_amplitude</input>
+            <input as="in" clear="false">phone_min_amplitude</input>
+            <output as="out">phone_depth</output>
+        </formula>
+        <formula formula="floor([1_]/4096)">
+            <input as="in" clear="false">st_RawInt</input>
+            <output as="out">st_e</output>
+        </formula>
+        <formula formula="[2_]-[1_]*4096">
+            <input as="in" clear="false">st_e</input>
+            <input as="in" clear="false">st_RawInt</input>
+            <output as="out">st_m</output>
+        </formula>
+        <power>
+            <input as="base" type="value">2</input>
+            <input as="exponent" clear="false">st_e</input>
+            <output as="power">st_factor</output>
+        </power>
+        <formula formula="[2_]*(0.01*[1_])">
+            <input as="in" clear="false">st_factor</input>
+            <input as="in" clear="false">st_m</input>
+            <output as="out">st_amplitude</output>
+        </formula>
+        <count>
+            <input as="buffer" clear="false">st_RawInt</input>
+            <output as="count">st_countI</output>
+        </count>
+        <formula formula="([1]-1)*0.8">
+            <input as="in" clear="false">st_countI</input>
+            <output as="out">st_tmax</output>
+        </formula>
+        <ramp>
+            <input as="start" type="value">0</input>
+            <input as="stop">st_tmax</input>
+            <input as="length">st_countI</input>
+            <output as="out">st_t</output>
+        </ramp>
+        <max>
+            <input as="y" clear="false">st_amplitude</input>
+            <output as="max">st_max_amplitude</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">st_amplitude</input>
+            <output as="min">st_min_amplitude</output>
+        </min>
+        <formula formula="([1]-[2])/[1]*100">
+            <input as="in" clear="false">st_max_amplitude</input>
+            <input as="in" clear="false">st_min_amplitude</input>
+            <output as="out">st_depth</output>
+        </formula>
+  </analysis>
+
+  <views>
+    <view label="Phone reflectance proxy">
+      <info label="Use this tab with the phone light sensor under fixed geometry." />
+      <graph label="Relative Light Level" labelX="t" unitX="s" labelY="Signal" unitY="a.u." partialUpdate="true">
+        <input axis="x">phone_t</input>
+        <input axis="y">phone_amplitude</input>
+      </graph>
+         <value label="Maximum signal" size="2" precision="1" scientific="false" unit="a.u." factor="1" >
+            <input>phone_max_amplitude</input>
+        </value>
+         <value label="Minimum signal" size="2" precision="1" scientific="false" unit="a.u." factor="1" >
+           <input>phone_min_amplitude</input>
+        </value>
+        <value label="Reflectance proxy" size="2" precision="2" scientific="false" unit="%" factor="1" >
+            <input>phone_depth</input>
+        </value>
+    </view>
+    <view label="SensorTag reflectance proxy">
+      <info label="Use this tab with the TI SensorTag light sensor under fixed geometry." />
+      <graph label="Relative Light Level" labelX="t" unitX="s" labelY="Signal" unitY="a.u." partialUpdate="true">
+        <input axis="x">st_t</input>
+        <input axis="y">st_amplitude</input>
+      </graph>
+         <value label="Maximum signal" size="2" precision="1" scientific="false" unit="a.u." factor="1" >
+            <input>st_max_amplitude</input>
+        </value>
+         <value label="Minimum signal" size="2" precision="1" scientific="false" unit="a.u." factor="1" >
+           <input>st_min_amplitude</input>
+        </value>
+        <value label="Reflectance proxy" size="2" precision="2" scientific="false" unit="%" factor="1" >
+            <input>st_depth</input>
+        </value>
+    </view>
+  </views>
+
+  <export>
+    <set name="Phone Raw">
+      <data name="t (s)">phone_t</data>
+      <data name="Relative light level (a.u.)">phone_amplitude</data>
+    </set>
+    <set name="SensorTag Raw">
+      <data name="t (s)">st_t</data>
+      <data name="Relative light level (a.u.)">st_amplitude</data>
+    </set>
+   </export>
+</phyphox>

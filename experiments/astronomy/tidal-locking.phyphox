@@ -1,0 +1,536 @@
+<phyphox version="1.7" locale="en">
+    <title>Tidal locking</title>
+    <category>*Astrolab University of Cologne</category>
+    <description>Use two SensorTags to compare temperature and light conditions on model sides with different illumination. This is a classroom analogue for tidal locking: it illustrates persistent day-side and night-side differences and does not model a complete planetary climate.</description>
+    <translations>
+        <translation locale="de">
+            <title>Gezeitenbindung</title>
+            <category>*Astrolabor Universität zu Köln</category>
+            <description>Nutze zwei SensorTags, um Temperatur- und Lichtbedingungen auf Modellseiten mit unterschiedlicher Beleuchtung zu vergleichen. Dies ist eine Klassenzimmer-Analogie für Gezeitenbindung: Sie veranschaulicht dauerhafte Unterschiede zwischen Tag- und Nachtseite und modelliert kein vollständiges planetarisches Klima.</description>
+            <string original="Temperature">Temperatur</string>
+            <string original="Sensor #1 (S1), orange">Sensor Nr. 1 (S1), orange</string>
+            <string original="Max. Temp. S1">Max. Temp. S1</string>
+            <string original="Min. Temp. S1">Min. Temp. S1</string>
+            <string original="Sensor #2 (S2), blue">Sensor Nr. 2 (S2), blau</string>
+            <string original="Max. Temp. S2">Max. Temp. S2</string>
+            <string original="Min. Temp. S2">Min. Temp. S2</string>
+            <string original="Combined comparison">Gemeinsamer Vergleich</string>
+            <string original="IR">IR</string>
+            <string original="Ambient Temperature">Umgebungstemperatur</string>
+            <string original="Max. Amb. S1">Max. Umg. S1</string>
+            <string original="Min. Amb. S1">Min. Umg. S1</string>
+            <string original="IR Temperature">IR-Temperatur</string>
+            <string original="Max. IR S1">Max. IR S1</string>
+            <string original="Min. IR S1">Min. IR S1</string>
+            <string original="Max. Amb. S2">Max. Umg. S2</string>
+            <string original="Min. Amb. S2">Min. Umg. S2</string>
+            <string original="Max. IR S2">Max. IR S2</string>
+            <string original="Min. IR S2">Min. IR S2</string>
+            <string original="Ambient temperature">Umgebungstemperatur</string>
+            <string original="Object Temperature">Objekttemperatur</string>
+            <string original="Light">Licht</string>
+            <string original="Illuminance">Beleuchtungsstärke</string>
+            <string original="Max. Illum. S1">Max. Beleucht. S1</string>
+            <string original="Min. Illum. S1">Min. Beleucht. S1</string>
+            <string original="Max. Illum. S2">Max. Beleucht. S2</string>
+            <string original="Min. Illum. S2">Min. Beleucht. S2</string>
+            <string original="Temperature (BMP280)">Temperatur (BMP280)</string>
+            <string original="Time (s)">Zeit (s)</string>
+            <string original="Temperature 1 (°C)">Temperatur 1 (°C)</string>
+            <string original="Temperature 2 (°C)">Temperatur 2 (°C)</string>
+            <string original="Temperature (TMP007)">Temperatur (TMP007)</string>
+            <string original="Ambient temperature 1 (°C)">Umgebungstemperatur 1 (°C)</string>
+            <string original="Object temperature 1 (°C)">Objekttemperatur 1 (°C)</string>
+            <string original="Ambient temperature 2 (°C)">Umgebungstemperatur 2 (°C)</string>
+            <string original="Object temperature 2 (°C)">Objekttemperatur 2 (°C)</string>
+            <string original="Light (OPT3001)">Licht (OPT3001)</string>
+            <string original="Illuminance (lx)">Beleuchtungsstärke (lx)</string>
+        </translation>
+        <translation locale="fr">
+            <title>Verrouillage gravitationnel</title>
+            <category>*Astrolab University of Cologne</category>
+            <description>Utilise deux SensorTags pour comparer les conditions de température et de lumière sur des faces de modèle recevant des éclairages différents. Il s'agit d'une analogie de salle de classe du verrouillage gravitationnel : elle illustre des différences persistantes entre face jour et face nuit et ne modélise pas un climat planétaire complet.</description>
+            <string original="Temperature">Température</string>
+            <string original="Sensor #1 (S1), orange">Capteur n° 1 (S1), orange</string>
+            <string original="Max. Temp. S1">Temp. max. S1</string>
+            <string original="Min. Temp. S1">Temp. min. S1</string>
+            <string original="Sensor #2 (S2), blue">Capteur n° 2 (S2), bleu</string>
+            <string original="Max. Temp. S2">Temp. max. S2</string>
+            <string original="Min. Temp. S2">Temp. min. S2</string>
+            <string original="Combined comparison">Comparaison combinée</string>
+            <string original="IR">IR</string>
+            <string original="Ambient Temperature">Température ambiante</string>
+            <string original="Max. Amb. S1">Amb. max. S1</string>
+            <string original="Min. Amb. S1">Amb. min. S1</string>
+            <string original="IR Temperature">Température IR</string>
+            <string original="Max. IR S1">IR max. S1</string>
+            <string original="Min. IR S1">IR min. S1</string>
+            <string original="Max. Amb. S2">Amb. max. S2</string>
+            <string original="Min. Amb. S2">Amb. min. S2</string>
+            <string original="Max. IR S2">IR max. S2</string>
+            <string original="Min. IR S2">IR min. S2</string>
+            <string original="Ambient temperature">Température ambiante</string>
+            <string original="Object Temperature">Température de l'objet</string>
+            <string original="Light">Lumière</string>
+            <string original="Illuminance">Éclairement</string>
+            <string original="Max. Illum. S1">Écl. max. S1</string>
+            <string original="Min. Illum. S1">Écl. min. S1</string>
+            <string original="Max. Illum. S2">Écl. max. S2</string>
+            <string original="Min. Illum. S2">Écl. min. S2</string>
+            <string original="Temperature (BMP280)">Température (BMP280)</string>
+            <string original="Time (s)">Temps (s)</string>
+            <string original="Temperature 1 (°C)">Température 1 (°C)</string>
+            <string original="Temperature 2 (°C)">Température 2 (°C)</string>
+            <string original="Temperature (TMP007)">Température (TMP007)</string>
+            <string original="Ambient temperature 1 (°C)">Température ambiante 1 (°C)</string>
+            <string original="Object temperature 1 (°C)">Température de l'objet 1 (°C)</string>
+            <string original="Ambient temperature 2 (°C)">Température ambiante 2 (°C)</string>
+            <string original="Object temperature 2 (°C)">Température de l'objet 2 (°C)</string>
+            <string original="Light (OPT3001)">Lumière (OPT3001)</string>
+            <string original="Illuminance (lx)">Éclairement (lx)</string>
+        </translation>
+    </translations>
+    <data-containers>
+        <container size="0" static="false">t</container>
+        <container size="1" static="false">count</container>
+        <container size="1" static="false">tmax</container>
+        <!-- 1 -->
+        <container size="0" static="false">tempRaw1</container>
+        <container size="0" static="false">tempCal1</container>
+        <container size="1" static="false">T_max1</container>
+        <container size="1" static="false">T_min1</container>
+
+        <container size="0">objRaw1</container>
+        <container size="0">ambRaw1</container>
+        <container size="0">objCal1</container>
+        <container size="0">ambCal1</container>
+        <container size="0">t1</container>
+        <container size="1">count1</container>
+        <container size="1">tmax1</container>
+        <container size="0" static="false">factor1</container>
+        <container size="1" static="false">T_max1_obj</container>
+        <container size="1" static="false">T_min1_obj</container>
+        <container size="1" static="false">T_max1_amb</container>
+        <container size="1" static="false">T_min1_amb</container>
+
+        <container size="0" static="false">RawInt1</container>
+        <container size="0" static="false">e1</container>
+        <container size="0" static="false">m1</container>
+        <container size="1" static="false">countI2</container>
+        <container size="0">t2</container>
+        <container size="1" static="false">tmax2</container>
+        <container size="0" static="false">factor2</container>
+        <container size="0">amplitude1</container>
+        <container size="1" static="false">amplitude_max1</container>
+        <container size="1" static="false">amplitude_min1</container>
+
+        <!-- 2 -->
+        <container size="0" static="false">tempRaw2</container>
+        <container size="0" static="false">tempCal2</container>
+        <container size="1" static="false">T_max2</container>
+        <container size="1" static="false">T_min2</container>
+
+        <container size="0">objRaw2</container>
+        <container size="0">ambRaw2</container>
+        <container size="0">objCal2</container>
+        <container size="0">ambCal2</container>
+         <container size="1" static="false">T_max2_obj</container>
+        <container size="1" static="false">T_min2_obj</container>
+        <container size="1" static="false">T_max2_amb</container>
+        <container size="1" static="false">T_min2_amb</container>
+
+        <container size="0" static="false">RawInt2</container>
+        <container size="0" static="false">e2</container>
+        <container size="0" static="false">m2</container>
+        <container size="0" static="false">factor2</container>
+        <container size="0">amplitude2</container>
+        <container size="1" static="false">amplitude_max2</container>
+        <container size="1" static="false">amplitude_min2</container>
+    </data-containers>
+    <input>
+        <!-- 1 -->
+        <bluetooth name="SensorTag" mode="notification" rate="1" subscribeOnStart="false">
+            <!-- temp, ambient -->
+            <config char="F000AA44-0451-4000-B000-000000000000" conversion="hexadecimal">64</config>
+            <config char="F000AA42-0451-4000-B000-000000000000" conversion="hexadecimal">01</config>
+            <output char="F000AA41-0451-4000-B000-000000000000" conversion="int24LittleEndian" offset="0" length="3">tempRaw1</output>
+            <!-- temp, ir -->
+            <config char="F000AA03-0451-4000-B000-000000000000" conversion="hexadecimal">1E</config>
+            <config char="F000AA02-0451-4000-B000-000000000000" conversion="hexadecimal">01</config>
+            <output char="F000AA01-0451-4000-B000-000000000000" conversion="uInt16LittleEndian" offset="0" length="2">objRaw1</output>
+            <output char="F000AA01-0451-4000-B000-000000000000" conversion="uInt16LittleEndian" offset="2" length="2">ambRaw1</output>
+            <!-- light -->
+            <config char="F000AA73-0451-4000-B000-000000000000" conversion="hexadecimal">50</config>
+            <config char="F000AA72-0451-4000-B000-000000000000" conversion="hexadecimal">01</config>
+            <output char="F000AA71-0451-4000-B000-000000000000" conversion="uInt16LittleEndian" offset="0" length="2">RawInt1</output>
+        </bluetooth>
+        <!-- 2 -->
+        <bluetooth name="SensorTag" mode="notification" rate="1" subscribeOnStart="false">
+            <!-- temp, ambient -->
+            <config char="F000AA44-0451-4000-B000-000000000000" conversion="hexadecimal">64</config>
+            <config char="F000AA42-0451-4000-B000-000000000000" conversion="hexadecimal">01</config>
+            <output char="F000AA41-0451-4000-B000-000000000000" conversion="int24LittleEndian" offset="0" length="3">tempRaw2</output>
+            <!-- temp, ir -->
+            <config char="F000AA03-0451-4000-B000-000000000000" conversion="hexadecimal">1E</config>
+            <config char="F000AA02-0451-4000-B000-000000000000" conversion="hexadecimal">01</config>
+            <output char="F000AA01-0451-4000-B000-000000000000" conversion="uInt16LittleEndian" offset="0" length="2">objRaw2</output>
+            <output char="F000AA01-0451-4000-B000-000000000000" conversion="uInt16LittleEndian" offset="2" length="2">ambRaw2</output>
+            <!-- light -->
+            <config char="F000AA73-0451-4000-B000-000000000000" conversion="hexadecimal">50</config>
+            <config char="F000AA72-0451-4000-B000-000000000000" conversion="hexadecimal">01</config>
+            <output char="F000AA71-0451-4000-B000-000000000000" conversion="uInt16LittleEndian" offset="0" length="2">RawInt2</output>
+        </bluetooth>
+    </input>
+    <output>
+    </output>
+    <analysis sleep="0"  onUserInput="false">
+        <!-- 1 -->
+        <multiply>
+            <input as="factor" clear="false">tempRaw1</input>
+            <input as="factor" type="value">0.01</input>
+            <output as="product">tempCal1</output>
+        </multiply>
+        <max>
+            <input as="y" clear="false">tempCal1</input>
+            <output as="max">T_max1</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">tempCal1</input>
+            <output as="min">T_min1</output>
+        </min>
+        <count>
+            <input as="buffer" clear="false">tempRaw1</input>
+            <output as="count">count</output>
+        </count>
+        <formula formula="[1]-1">
+            <input as="in" clear="false">count</input>
+            <output as="out">tmax</output>
+        </formula>
+        <ramp>
+            <input as="start" type="value">0</input>
+            <input as="stop">tmax</input>
+            <input as="length">count</input>
+            <output as="out">t</output>
+        </ramp>
+
+        <formula formula="floor([1_]/4)*0.03125">
+            <input clear="false">ambRaw1</input>
+            <output clear="true">ambCal1</output>
+        </formula>
+        <formula formula="floor([1_]/4)*0.03125">
+            <input clear="false">objRaw1</input>
+            <output clear="true">objCal1</output>
+        </formula>
+        <max>
+            <input as="y" clear="false">objCal1</input>
+            <output as="max">T_max1_obj</output>
+        </max>
+        <max>
+            <input as="y" clear="false">ambCal1</input>
+            <output as="max">T_max1_amb</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">objCal1</input>
+            <output as="min">T_min1_obj</output>
+        </min>
+        <min multiple="false">
+            <input as="y" clear="false">ambCal1</input>
+            <output as="min">T_min1_amb</output>
+        </min>
+        <count>
+            <input clear="false">ambRaw1</input>
+            <output>count1</output>
+        </count>
+        <formula formula="([1]-1)*0.3">
+            <input clear="false">count1</input>
+            <output>tmax1</output>
+        </formula>
+        <ramp>
+            <input as="start" type="value">0</input>
+            <input as="stop">tmax1</input>
+            <input as="length">count1</input>
+            <output>t1</output>
+        </ramp>
+
+        <formula formula="floor([1_]/4096)">
+            <input as="in" clear="false">RawInt1</input>
+            <output as="out">e1</output>
+        </formula>
+        <formula formula="[2_]-[1_]*4096">
+            <input as="in" clear="false">e1</input>
+            <input as="in" clear="false">RawInt1</input>
+            <output as="out">m1</output>
+        </formula>
+        <power>
+            <input as="base" type="value">2</input>
+            <input as="exponent" clear="false">e1</input>
+            <output as="power">factor1</output>
+        </power>
+        <formula formula="[2_]*(0.01*[1_])">
+            <input as="in" clear="false">factor1</input>
+            <input as="in" clear="false">m1</input>
+            <output as="out">amplitude1</output>
+        </formula>
+        <max>
+            <input as="y" clear="false">amplitude1</input>
+            <output as="max">amplitude_max1</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">amplitude1</input>
+            <output as="min">amplitude_min1</output>
+        </min>
+        <count>
+            <input as="buffer" clear="false">RawInt1</input>
+            <output as="count">countI2</output>
+        </count>
+        <formula formula="([1]-1)*0.8">
+            <input as="in" clear="false">countI2</input>
+            <output as="out">tmax2</output>
+        </formula>
+        <ramp>
+            <input as="start" type="value">0</input>
+            <input as="stop">tmax2</input>
+            <input as="length">countI2</input>
+            <output as="out">t2</output>
+        </ramp>
+
+        <!-- 2 -->
+        <multiply>
+            <input as="factor" clear="false">tempRaw2</input>
+            <input as="factor" type="value">0.01</input>
+            <output as="product">tempCal2</output>
+        </multiply>
+        <max>
+            <input as="y" clear="false">tempCal2</input>
+            <output as="max">T_max2</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">tempCal2</input>
+            <output as="min">T_min2</output>
+        </min>
+        <formula formula="floor([1_]/4)*0.03125">
+            <input clear="false">ambRaw2</input>
+            <output clear="true">ambCal2</output>
+        </formula>
+        <formula formula="floor([1_]/4)*0.03125">
+            <input clear="false">objRaw2</input>
+            <output clear="true">objCal2</output>
+        </formula>
+        <max>
+            <input as="y" clear="false">objCal2</input>
+            <output as="max">T_max2_obj</output>
+        </max>
+        <max>
+            <input as="y" clear="false">ambCal2</input>
+            <output as="max">T_max2_amb</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">objCal2</input>
+            <output as="min">T_min2_obj</output>
+        </min>
+        <min multiple="false">
+            <input as="y" clear="false">ambCal2</input>
+            <output as="min">T_min2_amb</output>
+        </min>
+        <formula formula="floor([1_]/4096)">
+            <input as="in" clear="false">RawInt2</input>
+            <output as="out">e2</output>
+        </formula>
+        <formula formula="[2_]-[1_]*4096">
+            <input as="in" clear="false">e2</input>
+            <input as="in" clear="false">RawInt2</input>
+            <output as="out">m2</output>
+        </formula>
+        <power>
+            <input as="base" type="value">2</input>
+            <input as="exponent" clear="false">e2</input>
+            <output as="power">factor2</output>
+        </power>
+        <formula formula="[2_]*(0.01*[1_])">
+            <input as="in" clear="false">factor2</input>
+            <input as="in" clear="false">m2</input>
+            <output as="out">amplitude2</output>
+        </formula>
+        <max>
+            <input as="y" clear="false">amplitude2</input>
+            <output as="max">amplitude_max2</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">amplitude2</input>
+            <output as="min">amplitude_min2</output>
+        </min>
+    </analysis>
+    <views>
+        <view label="Temperature">
+            <info label ="Sensor #1 (S1), orange" />
+            <graph label="Temperature" partialUpdate="true" history="1" labelX="t" labelY="T" unitX="s" unitY="°C" xPrecision="0" yPrecision="1">
+                <input axis="x">t</input>
+                <input axis="y" color="orange">tempCal1</input>
+            </graph>
+            <separator height="1"/>
+            <value label="Max. Temp. S1" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_max1</input>
+            </value>
+            <value label="Min. Temp. S1" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_min1</input>
+            </value>
+            <separator height="1"/>
+            <info label ="Sensor #2 (S2), blue" />
+            <graph label="Temperature" partialUpdate="true" history="1" labelX="t" labelY="T" unitX="s" unitY="°C" xPrecision="0" yPrecision="1">
+                <input axis="x">t</input>
+                <input axis="y" color="blue">tempCal2</input>
+            </graph>
+            <separator height="1"/>
+            <value label="Max. Temp. S2" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_max2</input>
+            </value>
+            <value label="Min. Temp. S2" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_min2</input>
+            </value>
+            <separator height="1"/>
+            <info label ="Combined comparison" />
+             <graph label="Temperature" partialUpdate="true" history="1" labelX="t" labelY="T" unitX="s" unitY="°C" xPrecision="0" yPrecision="1">
+                <input axis="x">t</input>
+                <input axis="y" color="orange">tempCal1</input>
+                <input axis="x">t</input>
+                <input axis="y" color="blue">tempCal2</input>
+            </graph>
+        </view>
+
+        <view label="IR">
+        <info label ="Sensor #1 (S1), orange" />
+            <graph label="Ambient Temperature" partialUpdate="true" history="1" labelX="t" labelY="T" unitX="s" unitY="°C" xPrecision="0" yPrecision="1">
+                <input axis="x">t1</input>
+                <input axis="y" color="orange">ambCal1</input>
+            </graph>
+            <separator height="1"/>
+            <value label="Max. Amb. S1" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_max1_amb</input>
+            </value>
+            <value label="Min. Amb. S1" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_min1_amb</input>
+            </value>
+            <separator height="1"/>
+            <graph label="IR Temperature" partialUpdate="true" history="1" labelX="t" labelY="T" unitX="s" unitY="°C" xPrecision="0" yPrecision="1">
+                <input axis="x">t1</input>
+                <input axis="y" color="orange">objCal1</input>
+            </graph>
+            <separator height="1"/>
+            <value label="Max. IR S1" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_max1_obj</input>
+            </value>
+            <value label="Min. IR S1" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_min1_obj</input>
+            </value>
+            <separator height="1"/>
+            <info label ="Sensor #2 (S2), blue" />
+            <graph label="Ambient Temperature" partialUpdate="true" history="1" labelX="t" labelY="T" unitX="s" unitY="°C" xPrecision="0" yPrecision="1">
+                <input axis="x">t1</input>
+                <input axis="y" color="blue">ambCal2</input>
+            </graph>
+            <separator height="1"/>
+            <value label="Max. Amb. S2" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_max2_amb</input>
+            </value>
+            <value label="Min. Amb. S2" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_min2_amb</input>
+            </value>
+            <separator height="1"/>
+            <graph label="IR Temperature" partialUpdate="true" history="1" labelX="t" labelY="T" unitX="s" unitY="°C" xPrecision="0" yPrecision="1">
+                <input axis="x">t1</input>
+                <input axis="y" color="blue">objCal2</input>
+            </graph>
+             <separator height="1"/>
+            <value label="Max. IR S2" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_max2_obj</input>
+            </value>
+            <value label="Min. IR S2" size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_min2_obj</input>
+            </value>
+            <separator height="1"/>
+            <info label ="Combined comparison" />
+            <graph label="Ambient temperature" labelX="t" unitX="s" labelY="T" unitY="°C" partialUpdate="true">
+                <input axis="x">t1</input>
+                <input axis="y" color="orange">ambCal1</input>
+                <input axis="x">t1</input>
+                <input axis="y" color="blue">ambCal2</input>
+            </graph>
+            <graph label="Object Temperature" labelX="t" unitX="s" labelY="T" unitY="°C" partialUpdate="true">
+                <input axis="x">t1</input>
+                <input axis="y" color="orange">objCal1</input>
+                <input axis="x">t1</input>
+                <input axis="y" color="blue">objCal2</input>
+            </graph>
+        </view>
+
+        <view label="Light">
+            <info label ="Sensor #1 (S1), orange" />
+            <graph label="Illuminance" labelX="t" unitX="s" labelY="Ev" unitY="lx" partialUpdate="true">
+                <input axis="x">t2</input>
+                <input axis="y" color="orange">amplitude1</input>
+            </graph>
+            <separator height="1"/>
+            <value label="Max. Illum. S1" size="2" precision="2" scientific="false" unit="lx" factor="1" >
+                <input>amplitude_max1</input>
+            </value>
+            <value label="Min. Illum. S1" size="2" precision="2" scientific="false" unit="lx" factor="1" >
+                <input>amplitude_min1</input>
+            </value>
+            <separator height="1"/>
+            <info label ="Sensor #2 (S2), blue" />
+            <graph label="Illuminance" labelX="t" unitX="s" labelY="Ev" unitY="lx" partialUpdate="true">
+                <input axis="x">t2</input>
+                <input axis="y" color="blue">amplitude2</input>
+            </graph>
+            <separator height="1"/>
+            <value label="Max. Illum. S2" size="2" precision="2" scientific="false" unit="lx" factor="1" >
+                <input>amplitude_max2</input>
+            </value>
+            <value label="Min. Illum. S2" size="2" precision="2" scientific="false" unit="lx" factor="1" >
+                <input>amplitude_min2</input>
+            </value>
+            <separator height="1"/>
+            <info label ="Combined comparison" />
+            <graph label="Illuminance" labelX="t" unitX="s" labelY="Ev" unitY="lx" partialUpdate="true">
+                <input axis="x">t2</input>
+                <input axis="y" color="orange">amplitude1</input>
+                <input axis="x">t2</input>
+                <input axis="y" color="blue">amplitude2</input>
+            </graph>
+        </view>
+
+        <!-- single>
+        <view label="Temperature">
+            <graph label="Temperature" partialUpdate="true" history="1" labelX="t" labelY="T" unitX="min" unitY="°C" xPrecision="0" yPrecision="1">
+                <input axis="x">t</input>
+                <input axis="y" color="orange">tempCal1</input>
+            </graph>
+            <separator height="1"/>
+            <value label="Max. Temp." size="2" precision="2" scientific="false" unit="°C" factor="1" >
+           <input>T_max1</input>
+            </value>
+            <value label="Min. Temp." size="2" precision="2" scientific="false" unit="°C" factor="1" >
+                <input>T_min1</input>
+            </value>
+        </view-->
+    </views>
+    <export>
+        <set name="Temperature (BMP280)">
+            <data name="Time (s)">t</data>
+            <data name="Temperature 1 (°C)">tempCal1</data>
+            <data name="Temperature 2 (°C)">tempCal2</data>
+        </set>
+        <set name="Temperature (TMP007)">
+            <data name="Time (s)">t1</data>
+            <data name="Ambient temperature 1 (°C)">ambCal1</data>
+            <data name="Object temperature 1 (°C)">objCal1</data>
+            <data name="Ambient temperature 2 (°C)">ambCal2</data>
+            <data name="Object temperature 2 (°C)">objCal2</data>
+        </set>
+        <set name="Light (OPT3001)">
+            <data name="Time (s)">t2</data>
+            <data name="Illuminance (lx)">amplitude1</data>
+            <data name="Illuminance (lx)">amplitude2</data>
+        </set>
+    </export>
+</phyphox>

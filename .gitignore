@@ -1,8 +1,60 @@
-node_modules/
+.DS_Store
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+
+# Codex / Kilo / audit tooling (optional local use)
+.codex/
+.kilo/
+
+# Internal AI operator guide (not user-facing documentation)
+agent.md
+
+# Editors
+.vscode/
+.cursor/
+.idea/
+*.swp
+*.swo
+*~
+*.bak
+*.orig
+*.rej
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
 .venv/
-dist/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# forced-merge-older-arduino-and--1
+# CI/test artifacts
+coverage/
+junit.xml
+test-results/
+reports/
+*.lcov
+.nyc_output/
+.cache/
+node_modules/
+dist/
+build/
 
-# forced-tighten-the-tracked-surf-2
+# Arduino build artifacts (if a custom build path is used)
+**/build/
+
+# Generated outputs
+/patched/
+/reference/
+phyphox-experiments.zip
+AGENT_AUDIT_REPORT.md
+.coverage
+
+# docs (local findings/logs/decisions)
+/DECISIONS.md
+/FINDINGS.md
+/LOG.md
+/REFACTOR_PLAN.md

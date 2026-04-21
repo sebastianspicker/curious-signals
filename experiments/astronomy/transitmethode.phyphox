@@ -1,0 +1,1170 @@
+<phyphox version="1.7" locale="en">
+  <title>Transit Method</title>
+  <category>*Astrolab University of Cologne</category>
+    <icon format="base64">iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAyKADAAQAAAABAAAAyAAAAACbWz2VAAA2VklEQVR4Ae19WXMcR7be6X0HGmjsAMF9kajRSJQ0iySP4t4ZR1yHI+wH/wG/Ofzm3+W4Dx6PI+71zJ1r3U0jcSRqJIqUxJ0giH1vdDd69/dlVzaqCt0ASHSjqxqVZKGzsk5mnvxOntwX39Mvv/1fIvIhno6afK0ouURFfINB8fl9HQ37TAdWrUt9syzxXEDiodiZhuIUEv8Zcq+kpS6jXYms3pVQvUCBgAftqWSDQf+pRONF4iHgUgQ8BXGp4Dy2TwcBT0FOB2cvFpci4CmISwXnsX06CHgKcjo4e7G4FAFPQVwqOI/t00HAU5DTwdmLxaUIeAriUsF5bJ8OAp6CnA7OXiwuRSD4Yu5Fx1j3+/3i8/mEv+VATaq1gEQSCQmFQ8q9YxGd4YA4g16t1aRQKEs5V5RSqSTValVqcOPjmU4i4JPg73//B4R48oULVIxAINB86hEoy1hU0rMZGRkbkdHRUUkmk56inEB+VIbtjS1ZebAk+bktqeT3pJAvSKlckkqlohSlXj+5LE/AYt95DX7wwXtIVGcWE1JIFGK5XJaV7XWZW1yUh8uPJRaPy+zsrFy/cV0mJiYkFAr1HZDdTBAz/e7urjx9+lQe/vBQ1h8tS7wQlMnMmAwNDUkc+IbDYYUra2/PdAYBakXwzZs3O1GBNDnSJViusifZaFEK4ZI8gWDv3r0ri0uL8vOf/VwuXb4kwWCw6ceztEeAeG5tbcndb+/Kg4cPZGQ4I7/+za9lNj4p6XhSNWdZe/PxTOcRQD5FRu1CrRxGHyQa80tsMCUD6UEZnxiXzz77TL64/YWEI2FVo3il3dECzefzcu/ePXn46KFcv35d3nn7pxIvhiWRD0k0HD06AI/iRAh0vz5GwcYm1fT0tHz00UcSDATlq6++UqXiiTg/A57ZVGWz6smTJ3Lx4kW5deuW6sepgsWrME4lB3RfQYxksAM/PTUtN9+6qZTj/v37qlN5Kql0YSRsWq2vr8v3338vCYwEvvPOO6qvgcaUC1PjXpZPTUEIkT/glytXrsj4+Lg8fvRYVpZX3Itclzln7fH48WPJ7ebkjRtvqM6418/oMugtgj9VBWH8sVhMbr55U3Uu73/v1SItZCKsPTY3N+XFixeSHkrLhYsXvE54K6BOwe3UFYSl4My5GRkbG5OX8y9VM+IU0umqKDhc/uzpM6mUK3L92nVVqLgqAX3E7KkrCLFjp/3c7Dk188sOqB4a7iNcT5SUXC4nCwsLEk/E5fyF817tcSI0T+a5JwpCljmqlUqlZPHloppcPFky+sc3l4ssLy8LlYSTqmySeqZ3CPRMQagc7KznC3lZWfE66zoLUEGWFpfU67lz57zaQwPTo9+eKQjH8qemp1TzimP9XjOrkQMKhYJsbm2q5hXXr3mmtwj0TEGYbHbU2YRgk4JruM66YSHB2pQLECfGJyQSiZx1SHqe/p4qCCfAMiMZKRaLaliz52j0mAE2r+bn56VcKauRPm/eo8cCQfQ9VRBmgMnJSbVE/uXLl71Ho8ccsKBYW1tTo3ysXT3TewR6qiBM/ujIqPh9fll4uXDmN/xw1e7e3p5kMhmJRr2FiL1Xjx7XIAQgkUyofsj2zrYa2nQCKL3iYXV1Veq1ukxNTfWKBS9eGwI9r0G43H54eFhq1ZpqXtj4OzOvuoPO7bMc/vaMMxDouYJwuJd7Rbjad2lp6cyO+7NptbOzo/bvDwwMOCN3eFz0tpOu8ed4P4c0V1dWz+wSePY/ONQ9khlRnXSNjffbWwR6XoNwJIt7qmPxmOzmdtXe695C0pvYOXrFZubk1KRa6dwbLrxY7Qj0XEHIEJtXbFZwHmBrc8vOY9+/s/+xtrqmFMProDtL3I5QENYiHNpkf2Rtfc1ZCJ0CN5z/UP0PrHL2+h+nAPgrROEYBeHxNeFQWM2on7V1WVy5u1fcwyEXUe+0l1fIvKdB6ggFYUJ5qBxPO+EpHtwwdJYMO+jcHMVCwlte4izJO0JBmCk4ihWLxqRcKqvZZGfB1F1ueDhDrV5Tize7G5MX+qsi4AgFIdPsqLMW4UI97sc+K4bNyWw2q5LLGsQzzkLAMQrCWiSdTqt5kLO0gYojd/lcXgL+gNph6azs4XHjKAUZGBxQGYVDvWelo84zdzmLzqX/PF/XM85CwDEKQlgGBwZVJsnuZs/MjDonCDmCNZwZ9jroztINxY1jFER11KMRVZLy0DRuPT0Lhh10jtqNjIycheS6Lo2OURAix4lCNrNozkJHnc1IDvHyOFFPQZTYHffHUQrCWoTNLG6gOgtLTlhzcAY9EAyoORDH5Q6PIWes5jXLgRuoqrWqbGxudOVaBnNcvbZzBp3NSS4v8TrovZZG6/gdV4NwLoRNj+3tbVxb0oWLS1rj0BNX1h40nP84K6N2PQH6BJE6SkGYDs6o8+HQJ59+Nux/cAchd1R6CuJMSTtKQdgH4RbcgdSA6rCzCdKvhmnlQAQ3SaUH0/2aTNeny1EKQjT13hC2rnQTxPUot0gAD2dg+vjrLXFvAZBDnBynIGokC3ca0rCE5Xs/Gk4OcgUvZ9AjmP/xjDMRcJyCcIiXa7J409jGBkay+tRwWT9rDzav1EWqfZpOtyfLcQpCxeChaWxqsQ/Sr2f2snnFlcuDqC05QeoZZyLgOMmwScULdqKRqJSKpb48TE530Dnf482gO1MxNFeOUxAyxtqDp5xwppmrXfvNqCUmPJwCAxE8vLtf+1n9IDdHKgibHOyH8FbcfhzJ4ux5Lp9TTSvvDF5nq5EjFYQlKhUkFAxJdrux287ZML4adzzFhKuVuQaLzUnPOBcBRyoIaxAOf3J0hyUtd931k9EHU/DAPDYnPeNcBBypIIRLjWShhGVp22+nnHAPOvshXGLi9T+cqxzkzJEKwkzDpkcwEFQK0m9DvdmdrFrSnxnOODt3eNw5U0GU5hrNLM4VcGVv3xiMXHFkjsf8pAZSfZOsfk2II2sQgs1+CJe+q/N6seq1XwyX8PPqaw7xsg/iGWcj4HgFYUbS50Y5G8rjccch3r38nmo+8oZfrw9yPNx6ReVYBWHGSaaSzSUnvQKo0/GyubhX2pPkQCNtnQ7fC6+zCDhWQXQTKxgKqnvD+2WoV1+Uw3ker/bobGbuRmiOVRAmliNZbIaomec+2TzFlQFUdrViuRsS9cLsKAKOVhDVzGJHHSM+/TKStZvdVUO8w0PeHEhHc3KXAnO0grCZlUqm1L6J7S33D/Wy5uAQr8+P442wzN1rYnUpV3cwWMcrSDwRV8cAbW27f6iXS0x4EAWbjd4xPx3MxV0MytEKwhKWa7JY8uq2exex6HrQrD24BySV8iYIuw52hyJwvILo0pYlr9vXZGkl9zroHcq9pxCM4xWEK3oT8YRqr7v9QGsqCA9q4CkmXv/jFHJ3B6JwtIIwfVywqM7JwmEObMO72XAkrlL1FMRNMnS8gnBXYSLVOK/XzUO9bB5y6T7ndrw1WO5REccrCDcUsVPLyUI3n5PFPhQHG5IJ3OaLm6S8JpY7lMTxCqJGsow+CBctMpO50bB5WKvUVHPROwfLPRJ0hYLw/nQ2TVgKs5niRsM1WMVSsXEYBSZAPeMOBBwvKdYgVA6ek1WtVF17NZvqoKMfMjjkzaC7QzUaXDpeQcgmmyTcfcfNRm48J4tXHHCbLQ37U17/Q0Hhij+uUBB21Dm5xrVZnEtwm+HcR2GvoM758s7Bcpf0XKEgatEiSl4ebM3VsG67bIYnubPvxIuBvBEsT0E6jgCbJLrk3c1hPROaLG4yPISbSs0ZdCq7Z9yDgCukRQVRJS+WiXMki3MibjJ6Tz3PwfIUxE2Sc+i5WHYIqSDsqLOJwjOy3HY1GwcWWIN422ztknX+uytqEMKoZ9TZvHJTR52KoZa5Y4iaS/e9ESznK4WZQ9cpCDOcmxSEzcF8Lq8UQ/ejzALw7M5GwHUK4rZzstj/4ChWIplQE55eDeJshbBz5xoFYeeWJy1yVp3rmtwykqVm0DEPoudx7ALw3p2NgGsURI9k8eYpXs3mlhn1ne0dpcwcwfKuOnC2MrTizjUKQuaZwViLsF3PxX9uMDtZ3IWOf94QrxukdZBH1ykIjwHirjzuDXG64ZA0m4PhUFgpttf/cLrEDvLnPgXhokXcL85zsjii5WTDZiCXmPDoIq955WRJtefNdQqirmbDeb28QsDpM+ocjiaP3gre9hnQ6V9cpSAEk0tOuG21Vq05fm8I+0lUkKGhIa8GcbomtOHPVQrCNjyHebnoj1tvnXyIA/njHAibgYODg94arDYZ0OnOrlIQgkkF4eYpdoCd3FFnzcGFlazxvCUmTleD9vy5TkH0hKGuQZzaUeeCSs7XeKeYtM98bvjiSgXhcaQBXBHNIVSn3oDL2o0nQQ6lh9RKZDdkBo/Hgwi4UkG46I/NFiqHE2fUWattrG8o/oYyXgf9YLZzj4vrFITQsl3PkSE2s7Y2nTejzlMUOYMuPpHBAa+D7h51OMipKxWEm6e4+I9DvRsbG46bMGTnnM0rNgU5SejtIjyY8dzi4koFUWuyMBfCpow+b8pJgGueMsMZNermJN48Xl4NAVcqCOdDorGoRKIRNaPuqH4IVr9sbmyqaw5GRke8CcJXy4+Oo3atgrAfwmYW2/tOWtnLfhFHsDiAwAlCbw2W4/L8KzHkSgVhCqkgIyMjqqPOfohTDNeIZXezwvOEec2Bt4LXKZJ5PT5cqyChYEjSg2lVQus2/+tB0Flf6+vrauiZtRuV2FOQzuJ72qG5VkF4lTL7IZwP4ay1U5pZa2traon72NiY10E/7dzchfhcqyDEQs2HYKa6uFeUlZWVLsDzakGy38HaLBKOyPj4uKcgrwafI6ldryCZkYwa7l1fW+/5QQ6sxXh28GB60Ot/ODK7vzpTrlYQjhBxMxKbWZyY49qsXpq1lTW1gpfNK9ZunnE/Aq5WEHaAOVvNZSe5fK6nzSxecbCxiVl9/BsdHfUWKLpfN1QKXK0gTIHqh0BByqWyrK6u9uwOQ26O4sNDJVirectL+kNDXK8g3EDFGoQ1CQ9y6NWs+sLigjoSdWx8TF3V4A3vegriCASYEZOppBo1Yj9kaWnp1Pni6BVH0TiL7o1enTr8XY3Q9TUI0eH+ELb7S+WSvHz5Uu3k6ypqtsCXl5fVsvvRsVFveYkNG7e/9oWCBPwBNbTKphaHWtkXOS3DM4JfvHihlpdMT0+rpt5pxe3F030E+kJBuDGJR5Iyg3LS8Pnc81ObE+HSEj4jmRHh8C73qnimfxDoDwWBPNhZZzMrPZSWleWVU+mLsPZ49uyZGhi4dPmSOo7I65z3j3IwJX2jIMyYXCB48eJFdR/HgwcPun6wHPs7c8/nVLxe7dFfiqFT0zcKwgRxhS9HkfgsLi6q0l0ntNO/XCD58OFDpYyXL1/2jhftNMAOCa+vFIR9EU7SXb1yVWLRmNy/f1/m5+c7vmedw7rf3f1Onj9/LpcuXVJ9HzbxPNN/CPSXgkA+XJ81PjEub958UzWxPv/88472R6gc33zzjXzz7TcyMzMjN27cUAsT+y9reCkiAn055MLSnH0Rmtu3b8vvfvc7ef/99+WNN9547WFYTgJyr8cXX3yhmm5UjFu3bqn+h9cxV1D35Z++VBBKimu02Pzh8O/XX38tf/j9H+Qf/+Ef5eKlizJ7flYtT+G+jcMyd7VWVSNUnAh8/PixLC8tq6Hcjz78SK5cvaLC9tZc9aVeNBPVtwrCFLImmZycVNefsbSfm5tTHes//vGPat8Gh2kPO9uXmZ97y3l9GpXtk08+kfGxcXXWFec7DlOuJsKexdUI9LWCUDLM5FzIqJejvP322+oklKZyHHZJFTr99E9loLLxl++eYrg6z78S832vIBoNZmpmcj7aHFZ7kMZTBI3U2f09MwrSSsSeArRCxXMzI9B3w7zmxHl2D4GTIuApyEkR9Pz3NQKegvS1eL3EnRQBT0FOiqDnv68R8BSkr8XrJe6kCHgKclIEPf99jcCZGublmVVcU1Wr86lgFr2mNsRgigSGM4Y+uInUlM2PScEAHkwO+jA5SBLPGNjVpAr8qvgHxCQAcIgPEdT40SXgC6qngZ87Eex7BanWq1KplqEYJanWClIo4WigvTXZ3luWYnlDorU9ifhKUJQKhB+UQj0sRcHlPKEhSccmJBUblVhkAIoSwxOWUCCsFOas6AoLlXKtjKcIW1GKtV3Jltdkvbwo25UV4Iar5vzAz1+AdgSkXI1KvooJWf+AZIITkg4Dw9CwBH24is4XlnAgopTGLfj1pYJwhrxSLUGoUIjihqxmH2Nj0yMZjq3KRHJPro34JR0JCP43ahAWe6roY3mIGgRVSLH0FEpUlRWcZrq4EZXN8ohEYldldPCqRCO82jmmlMXXp3VLBTVEGYVHqZ6Vpb1nsli6J/HYgkylczKVqslb0YBEg/5G7UHsWO/WUUvASvxwrxEKom9lPV+T5WxQFrcHJFS/IrOJtyQVxsHevgTw52JRZ7fyfU+/+vZTJOqTTmt0HiVOLl4RXxqL+nBVwWkYKkYZilEob8pG7ikOcLgvmehLuTRcgmJQIeriBw1FwkdxxfYUBUwZ66eGcpPyxm8VTw2CL5ZFlnJVebITltXqjESTNyUzcEVi4TQU5fBVwQi5c6YK3jbLEssFJBGKdS5chMTaolKroJbIyUbphaxX70oo/limM1mZSfuQsdlsMvADVgo/E2ZN/OhG3NRDhQGOVb9sFLCHf8snL3dGJSxvyQyUJRFEwRNg7eJIRfm0L2oQJVg0o/JFKsaPqD2+kdmBFbl6DtcwR1DKQR0ClJ4SJks5w66UQ+UM41tDsKSj8Nk38VO5QRcJ1iWR8smFBK54Lj6VxzvP5PnCuATi78jQIDZNRYdVjQJvrjRsiuYrO7JRfiab8hdJDT6W98bLMpbAYk0s0NT9DKkRPybRwJB2KEAD24azxpc9Nz8UCn8AZl0m4z4Zi6AQG1mT59t/kB82voBcbslY9KeqKRZBrey0Gtn1ClKDYAulrGzmHqNZdEdmB+fRhKqr0i6IHA7RqAy+L0BDmE3lMAnXImgbHYIJILwACrpMBIo3XJNrpUX5cWcZivK9RAc/kCHWKOyvOLM0JBIHDIYrpFTdg2LMy1rtjiTTP8gHkwUZTUIxkF5VrgMKhd+RmJEOxG3oGBYLnBCU5VraLxdTOXm+86ncX/9WNvZ+KZOJn6K/koFCOidbOoeTA6I72oH9jB10trdyX6NPcU/eP59vlHhaMSjYwzK9rklekY6FYghxpEN1eS9dk/OFJ/IdFGUh/7YMZ96XgfiEK2oT1hrZyoasVO5JNfaVXJ9cldkh1pYYwSMmqk8Bi8KH73yMd+VmsutvbZRjv4BqhBFA0cXC5gpq5enopvyw+XfybPuRjMY+kUzsosSCcRD23rhSQdikKpULspV/JnulL+Ti0FO5MSISD0GwxFQJC79dUA5z2A1FERmP+mQgmJMH2S/k8dKqlIc+whGkFyUawiWejTqs95K2cVCpl9HPWJD1+p9lcOSeXJ3My3CcTVEYjZ9WhmNm+nY1x354DBuBm8JjrZxE8/WdTB04/iD3NtZkp/Qxmsjvo4810HP0XKcgVI5CaVfWd7+XQP22vD2xLBeGGoJVzSkt3G4qB4VMY8RFpUyg6fCTVF3SuUcQck5Wyx/KyPCbaHKlHKckJQygrJeeyU7wc5kcfyiXxspokhpzPabMq9Jnf2eaXwtb4gXPrcKDMzPidMwvCfRP7m7+QZ5s7cj5gY9lIJLpKX6qwAVvrjAcpcoXs7K2e1fC/n+VtycX5OJwo618qsqhMgkg4y+Fzl+YICznMbD0TmReEmhbb6x9g2HmLFwNggZZT/8WqwVZLj2QbPif5MLMA7kxWT2BciApTFqrTG9RItKBsBWdxg+fmRmHQj75YDgnk6F/k+dbf5BNNKF7iZ9rahCClC9DOXLfSTzwubw1vo7x+BBAhWqYQN4XgiGUpgBhoV0/FgEa31oJ0ExntqtwDH+0G98o5CmMnIXqy3Iv+6+yjvfMyDuoSZI9LQnBhrDmWC0/lt3wv8nFaZzpNcq+FL/A2NNufzelsYlhu0zfCqdW4Vn8gwe8s9mKlp68PViUwNZX8nKbivMbSUfBbA+Ma2oQ1efIPZCo/89yUykHloC0VA6daY1fJRjtRiHgsQjQTMfvJlozndnOMNrRwZ2gjoYDcj20IpGdz2Rt4z76THtw7Z1hn2Oz8kL2wl/KpekXcpnKweFXGnvmtb+3xAyOR9IhbOLUjq7pbqfDQAFYezNVkqng15g3+Wf0SzbJ6akbVygIl4psF+bQhPla3hhdlemUc5WjoYAo9ZAvJtGuv+FfREn4J9ncfopJR0wv98BwtGqrtCRZ/x30OZ7K+Uy1oRytMm8z0yIB+H+wQNFuxm/bgoLfD1EOHbb6bUEH7xGAeC1ZkCHfHZnfuS2Fyulf0up4BeHCwuzeCjrmd+Rcek5mMTN/sOYAwE1B0Q50m4LWgqSb8Y3fNX2TzvTNTgfyZmbR/lQcJj/a3RQewZ3Fkowr9TnZW/tctnfRnibdKRo2TXOVbdmW+5i7+VFmMgWJctaPfJh43U8fmNNpaZnGNv4smBlhtAr/uHTggc2tBJUkti3J6h1ZzH6vZvpPET7VGjjN+F4pLgq3UN7Fmp77MpN6KtcyehgSyFF4fCyAG+5HCsbkX4Vjen+t8DQvxq8pgwVgvxyuy0z5oWyt3cGw9C6ITs9wEnCn/lQiA9/LuZEsRoXUQG5r5VC4tcMCPBOrI7ElHQhPQmeKh4VhGsPAU6F5LB26LWuFhdMDDzE5ugap4WTDnfxzrNf5QS4NFVDlGuATQAUi/mi7zpRNIZu+tcv0TdqjwjsqXsR1SIaIYKz/ahDzDPnvZX3rCdYmVRFg9w2bVrvVVSkG78tYBqdCpjg9B9OSV7hrDInpAcwOT6NFDi3DN8mD4bdTIuVupq2jae2Tc1i9MO5/ghUTf5EcCs3TMo5VEDZFCqUtqVd/lMnkMiaxjJJPgdtKgHTDA39VNPWzu1VZWinJ+kZJSiUNuPF7pAA7TAe2hjA7PVl5KdXNb1AjssPJhHTXFKs5ycoTHLM6L9ODjb0vr64c4JGsHokZ6UB4EjqLf2t4YbzOhvMSqd6TZcw1nZZx7DAvN+RsF57KYPgZZsrta4KMDEzBEVT+QjDlEpZWrxTlh4d5efikIGvrFUnEg3LpXFSuXYzK+cmwJGJQNLM/5dcIw+x+pKANP0fSkbdGe/oSpLy+90yWNh5IMvpzrEsylL4L0uaq3N3aqtQjD2UotYlVBoirJa8mDJn+AzUH3UhzGJ3x7SR0hygHZcyabxCrscd9S7JQfIBRrYsyEB6Ea3eNIxVETQhiY1NAnsmEEi7YVAICGG0EWNyryY8Pc/K7v1+Vv//jhjyf54hRCEeORmR8NCw/+2lc/uaTpLz/kxgWFWolaR/e4RkCzKjMBP9HZRwTv1E0tUbR5FnLPsTAw3UZjGcQQHdMsZaXHPAbHlyVyQG05DV+ukBp8g+L/mbidd8N/Knvh9Hh24mUA3E0/TO+FuHhOzPrTKiCycNHmA+7AgW5BZfuGkcqCFfobufmZCD0QmYGjNVMFJJFgIbAAFylXJOnz/PyP3+7JH/721VZWUO7NRhRyuHDTsBsLiJffheScqWMlbY++cVPo42apE14h2eI/XgtdErAxjfyyscePpzOY0/F8t4LWd18gt2KQ11Z+cu+R7G+JYHICxlIbGPUCi1pxZOJPzu/Fl7JP2gVjWFX/u1pakNnD1vH3So8frPE3SJeIzw1iYg/wwIZl+cw7Huj64saHdkHqVSLWGq9KMPRjUbToBWIyq0hoOxuRT7/clv+4dNN9Du0ckSbh1ZHY1g0GEjKi+W4fHlXZH4JtYtdKM3wDKHr9+PSmUvmQ/hlLZKprEkk/wKbiLALqwumBPx2qi+R/hUZSSB3kR8zf/YMfCCN8NAqM1vojDDtdPawddx2uqY7LMp+RHj0j4f7esaCRfFDQdby3R/RcpyCcN5jZ28dpd4KlpLgUACCZxGMAaghCO7829qqyN37OZmbr+JeENYc+8qhT3aPQUmq9aQsrEVlec0n5bIWjDk8Q0iMUz2axuSu4rW/m+nw7RB+mZ5x7IGPFV7KenbJiAg/HTRV357UgkuSjO9IEjP6r6YcYMSeRmJhSRPeW9Uwhkz2M3wbOoZn8W9/N/DU4TX5aUzAJgFiGAMeheIc2OLH7hnHKQhPGsntLWCN0Ar2kOMkdotgzMABFLxWK3XJZtEu3cJJG7VgG+VoXH8QjSWwsy2JES4frmdDLaJL1aYATOEfGq+JTocBJ5Ux2voz/OBnGNcoRIrLsr39HCzQY+cMm1fV+i7Wfm1IMlIw9T0Qh85wLXnFd7rbsVBu+KP9qF/8aUVnx4Lv7eia7oy3BZ36bnY36OAUQKAj/hwO3FjDJGgOH7pnHKcgPI4n7INwA9uqU7YvGCCD/y0BxxgHj+dh7bFfYzSUQr+zVmGHndcfqIMCtID0r0W4RlyMTz92Oi1A/Z2/x1AOhofBGEmXUbqX1jo+J1LC6S0b5WUJhLdwKgvEq/mz82vhlekEoT2N9HscOvo7Dp2FF8bZJl7Nq4UfEBv8YN5QRgBiuLou28U1BNI94ygFUSt2MdMcCe7IaLPtjMTrzKuB0+8AiqsmUhjKHR0OyUCqdfOqoRxRCYdQw2AUZACb1aKcUbYIgPHgsQgaDq0yTpMPw09LfwyL3xnGQbohHDOUrGSxUgDH5XTQVOsl2ZMVFAQ72HBkjNbZ+ThOGg+kiWmAox0ze9gqrS3omu6wKHub8Jp0/G7QaHqDbx92OkbQ0vCjgKmUNlA8qulPEHfeOEtBIIAiZknjgTy2XeqhWKBDgFoJAoARmjRmiN+6HpfL5+PI+FYl0coRwVVqiVhNJjNFGUujr6LWI8GzFjrDP5BxdLwG3SF8WIR+DLpBIB8ub0u2sIHAO2d8vorEQjk8e41lEnbcjpNGxT/+8Lf5wKLCopvxzR62om1Bd8DdCMMeHunIXzt3FY6Ov4ajhTbQl+wsfgjdYhylIJRGpZrFCBbal2poEogo0MCzFooGySToJJoS7/0kLh++H5UMJhV5gadWDP7yPeAry/jgtrx9uShTOBerIXgjfBVmC7tdUK0yhImPJo+t6Cz81yXOgx2KUJA8mwhk4OSGNbAgnbHwHkb/OFKHMM3xWnjlNzz2NCo3/OFv84HFTmcPW9G2oDvgbvBkD490x1YOdtbrEkNd6a9lpYhRu24Zx82DVDHBVce5TCzg9wUI9BTQ2s38XscBCT6ZxSz53/wKGS9akm9/LGAehUqAQUGAHvFn5cJEXt69WpA3LmCFaJTfrGHsh2+42wXYKkNYMpzZnzls8ox3W3jqhJRyXnxq8WJnmggc0angsLdQAGdDsqNjTqOF19Y8NfA+mvcDigcvrdLYwNSc9kPoyJ8No4P87POG9gU66n6sFsjLDjbSjQS6M+nqKAVhNgnVMQcCITfAMQBVAqAdj0XQ+4DFMAH3BtZyDKf8cvNyFUO5e+rQtyCQHEyU5fxETWbH/RjZMU08tgvPLqiTKEdLfhExwgxAQYLY48Cr4DoxmkUFKWNjVDCAgQ7mIKbvuGk8QEe/DT4b4cCuaAx32psPLHbM1Deze5vwdByt/LfCzqCj/icVbgXJVvMyImdEQYJoQwfRgW0cUAYUFNCGMA4BjMrF42pmxkMyMRxE2xRB4PxLYKg2BwUD3EfS6LO0FrQRl11Q6v24fNjozCV40w4aI44q9odXIVyqrGoeIQ0nMSoMNQpYU8cSNdJp5smw29MIZ2vBg3edcflN894Ki1Z02k8znjbhab9NOoO/A/yY3I2wOZ+EMhHD2FUckYr80iXjqBqEPe5GJgZiaB4pAStAkPpDlMMsTDSeJBxEPwQbbepAUE006jAsv3hpvht2u6DUu5nuMD6OQaczBONFerjsvQ4BU7k7Z3DaOgLjcyRm5MPgZR8LusHxdbFQYZr9twnPEodBo/zCfpSsDTr2Q8J4MBXWNeMsBdHJVADgjwHEsQCjX4Ku/eBVZTz9rr+1yvSked0M0TI8Ex86Xv7qOHQGIMt4OmmsaUbIjEA/Ov4mT/imedE0Zj7NdBY7w4QHsx+zvRmPQdd8137wq93Ur3Y/LFzbN803u5OKEXzvgnGcghD3feBh10AodwNIDa5ZSMelM/vRdnt4B4R2GB9m4bahYzw6DhOffozn86g7Jq1ThsFXEB8PjEbQ+xlZx6/TzEhNvDQwh6OdrhUW5vSYw7O4G3HbwzPT2MO28ANeyGPzMb837AyKjasK29FdMs5SECS4hh5ItY4lJmh6WAWoPloBOwA+UNICa/WtlQDsdHahIdoDfCg3U1x8b0dnyRAg0rT4Dfqi6CtEDc/4OaFRww8+3NGBA6bLVSREjWQhUHsaD/AKGjOfFgytPLfEQqUJf5rxmMMz+zfR2HE+jmwYj0FHFsuwV1EKBLp4FjLLGMcYYlbEwfhlH/ZX2gGzg0+waLQw+a7tTVo40q4e2BVNGzp+U/7MdHQzvxv2Q+lIo/3gV9Haw2nwUMP5s5VQAmyBrgOGS2iCuKSmjjVpZRatDFbH3+SJbpo/g4bf7HSt0mgOw25v+meYOjxzPNpN82T6ZuHH5A7rPpb0t/+NNWQOV0H4UcAkcX1Ct4yjFISJDPh5nm0MQsaLBqhpp9s+SGbAlJ10TVrQme0qLJN/+zf1bgqb9CaBNOM9lM7sH3YdhyWcRrhMXxnH/Zdxfi+T1AnDAw5C/giUIyx7ZTQ7dPztMGO8zcxs2OnWKo2t6A74N4eHj+q72a1F2BZszH4MfzoMGx3vbVlHLVlCfhkIpUDcHeMwBUEjwZ9AEyshpQqaWBahAIB2graAZ6IjZmY/2m7POK0yhCVMQ3Ct6HSYzV8jTh2HJRx8M973qhi9wuHMiVgG+Yi54ORG3QWIK+QKpQiOaIVoVeYyeKfdzgt51nxq/tul0U6nw266I/xmeKY4m26M36BRfu38mP3Yvln4btDRKYeRzioUJBZkM7U7xlEKwjZ0NDyAG44SsonbiPaFh8RroAmyGTCzXQFvAtryzXBvCtT8bvIDqyX8wzIOw7cLXfN5IBxruDso/SpI6wC23aq+Az53wtR5z2IpgUWQyDTkQT8WLOiueTfsil+T3ezPjpn6ZvZvDg/u2q85DjtOFn4MP6RRmJrCaENXr/ulGkhjkivdUfzAgcU4S0EwGhEPJyUHBVnMAS0z0LTT6AzLdwt4h30zALcL2i60A2Ga/Rl20qhHv+tfI34dh503yzuaBxBwNpySOM7s7aThRZkR3yj2ySTRzGItjNAtcdv41Hi2wkJ/s6TX7t/83g4Lg0aFA7uFH7Mf0pmeVnTgk2xV2DkPj2Gd3Si80FN3jKMUhEkM+EOyVx/GTaoDah1Vs6SjAM2Ame0KVPxRNDY6LWSVAfDN8g4/yi/dD/PXgk6FZ3aHXcdh583y3vCzHUzJThS3KWGGv5OGF2PyZtlKJY1amCsSzDwynSY+j8JCp0fTwavVv/ndHI8pDjtOFn4MP6RR7qYw7HSKhvGBFN82qz4McIzgILzuHmrtOAXxYZgyEZ2Wmn9ctva4XqQBSjNjA6CWQqc7jV2Yip7upm92oR0IEw5Nf4ad7+rR7/rXCFfzaREsvlneG342cXhEITaGewAvgKCzY/gB4Bf2p1B7DMluEaOBimfyyAd/NJ+tcGrSwtLO3vRvDs9Gr2nUr+lbCyz249E84vdQOtxxiCAX0dfaxfXSKTRTu2mcpyDIMAO4m7wgY2hmGZnHLEwLeAQVaFEQ6jEJQ/vRwrK8m+no1/xu2O3ChbOiO+CODzoOSzjtw12toZZMTeNInim1UBGUHTZRDHKM4WihFPbXgDnyrnHSdpUeuNt5bkWn/eh0Wt7xot5tcdhxssRj9mP402G0omvGi8YU6Iponu6FJiUQPYf7DNWiGgTSHeM8BUE/JIhRiZyMy0pxEEOWWsAAwAIe3g8TJgE3AauEaBeaosEf/qrHsB9KZ6PXcdh5s7zvh1sFz2vRIcmmZrDDsTujLxEcdTQUOo9DDcZkVfXlEL/mk5jhf+PdsPNdueGPnU59M7uTVr/jV303u7UIuw0WjQLHFIadjrzY+OHw7nINqw/i53G193kQdNc4TkGYXO4vHx64LKXAeXmZfYWOphKWAbgN2LYZQvlBpEdlHHPY2q7jsAgWYVnerfy8wDLjrcS0jGSuo67sDvy8JTYcGJa96jROIEyJOgpY88xfxbfBl3I3pd9Mp+06nZZ3vKh3w6+msYd9CBb7/ltgpsPTcRpxlbA8Zxlpy8fOYUvx8Qc4OATux/4Rbi14FdPZHuKrxHwILRMTj6Rl2T+L68KeyWx1t5GVWglEZ2wzkE1w4Wj207Qj8raCM/sx05ndYddxWMIx08OueTNo2blci45IPnNNMvHhVxYWQjy2ieIcsETgMk4gfCwLwUcyk+DyHXhXvJjTQjfzu82u00m/nao5NC4qzBbx2+M06Fh7LFQDUkpcxYmbN448dK+M7Q6Ly0vy7b3v5NHTp7JX3MM5xUNy48pVuXn9Bu6QPHoPiSMVBJBJIBCWVOqqrKw/kQfb38iNAd3hNARIIgvQhnsTXOOd4FoygP3d7M/kh/6a4ZvdYddxHDvcRliP0DmfHzonQ2M3kT5k2C4a1iLx4DiOULqCwY41GY/sGntEzGlp8NW6EDGlE9aOKIcKh2GZHguG+GD+1sQf9KArovZYCY1LJYVjW6PDcGxvcvm8fPXN1/K//+/fyb0HP+IA8xIwD0oymZA7330jN6/dkL/+6N9BWa6hSd9eDdp/aR/3qXxRtQhA2I6+IcuFJZktr+MwBzRJdOY0g6ftrb5ZBADWLe+GQJQ/m3AsdPCnBIc/Og77d8u7OVz6xf2KmBhcSUxJdeIdHKg90tXagwLi5GM8OCip4DVZxhUS8cCPcil5jD029nRa3o10WdwQmR2/tliY/dOf+R12ja0OX/026NgVfYjaY3vgDVyk9BYWKLbvnBf29uSb+9/J3/6f38rnX32Jcw6qzTMKimWc+L+1JXd//EEpTCQSlasXLyGS1qY7jeDWcb2yaxBj+sMDV2XVd1Xub2PXXRNAG7AEstU3iwBI086f2b0NHZVQx2EJpw29pjWU9wFWKc+nr8nI2JuY++hu7QGOlGEtkgxPYX3W27JeGGsMmxMr9ZjTbLM3eSctvlnebW7qm8m/BRuTO6yW2sFOZ4nD5A90JF3F97X4FUkMvyeJQ4Z2uXV5Y3NT/uVPn8ntO3cwyFORCE664cMDPLS9isw0v7QgPzx+KBtb7e8/dLSCsEMVi6AUTL+Lce/L8ninZAXZyHz7ArQCe6hAKDC7cJWbKQwdvjmTWATLMFrQN4Xd+PYM68qoHMPnP8ShEoNdrz3AVdNEsdI1Gboia6Wr8mw3LkUWxeTZxmNTaZruCMKc7pZYGDQITvlvh4VyN+Fkp7PHaQuvgO+POOiQviWTqUuqdmwm0GZhU+rFy3l5OvccQ93lZs2hDxA0/5YxerGAPgoVqp1xtIKQ6QBKwRSaJrXU+/K0PCWrBUweKgANwJvgthMAArELhP6VP5MfujUzgdmODzoOSziHhbvvfx3K8TA+LcWZX2BicKard4Ig1gOGTVXONg9H3pNV9EfmdzFEqtIKUnt6dTo1Fs13ONjd7PhZsNH0jMP2HEpn8mfQUZ/vYd5obeAWLh/9ALUhr9Jpb9ic2s3nMP9TatYaZqUwHwfFUS3SsvPOU/9bGccrCJkOB6IyNHgV/ZH35F4uLTtFLKEg8AcESDcTyIrG/G7Y7cLVdAfCwwftduxwwYOR8XYhrO8jGdk696GMTrwpoeDhwoXPrpigLyhDkXM4TO7n8nD3nDzl0LklPaZ0Egvyr9PdVCKTmx0/e1gqDIZjhKXfW9EdiAd+DDps95B7YHVh4D2cSvPrQ5tW8NU0bGaxQ05laKccjeZWFAVw+74MA3RsJ72ZWlhUUwsL+0ZG3pW1WlH+kv2TvJvYRQeUnU6g2FIA8NhWICY/9NuSzkRj+d6OHu6Kj4a/HJTjDpazv5z5pUzNfIBFmKlDmwbw3VUTwqhgJnZFnZv1KIsRndq8nFfX2oHfZiYFC51QDrsCERcLhi3iJI2Jjmw8wGkMz5O3ZGryP0g6Onos/AKBAEY/UziGNnWgBjHXHlSccDAk6cE06KIq6lYCcEUNQsbZVEhG0zI6+nN01n4pX+8mMQlm1CQmYFsrCwgUDYVg2Pmu3Mzv2m78UtAWwdrfTXSw6rCzUI4vsYln/tzHMnnhY+z5ON1+Bzg5YNRWAuxgHE/clHDkr1CTzMgL3KviVOX4Dm2r75PvyMT0f5IMmtiU/3FMBKdozk5Ny8Vzs5JKppo1iF05OLTLY2pnp6dxwekIREcBHjTHi/Wgv564cEtpArcyZcZ/gSHTj+Xz7ICssE9iKQHBmiVTmzOxYVeZuR0dPjbDOw49wlHhNWg30ef4PDQkL8//tUxd+JUkwa86Tb4niFkjbShJAkryE/FHfy1/yc3KAzS3OAHnlJqDvHwNkf6Y+pnMnPsvkknOHDqka01ho7UxPDQsH37wM5zXfEOtlrYrB0/4Z58jg9rj/NQMFKn9jHzgf/y3//5fEckFe0QnfS/zQK9QTXw45vNVp/cPi5thhXC9WhirYdfrKVnc2ZBYdRsXPHLDKcxxlcNSk2hFMH6P00QAqV2R5qAcf4pPSe7y36BZ9TOj5uhwGcR4cR9jqOxH3+zVh4upJEFsKUhiqXjdNyYvMaFWxCnpgwF92JwJC11Q2PFohTH5ouGvftrRqe/4Y6PLAr9/roZlYeSv5cbMf5ZBLFo9bL5DxdfiD5tZgwODMpxOS76Ql83tbdSajasxWFPUUTudn5yWX7zzHmqQGShR237IM1f0QewYsESORwZkevw92cLSjX9b+idZ2L4v7/JaA4xMmEv0RiY2CYNCaSc4nSEsytOG3kRbwCTg1zhJ5GHmJzJy+TcyPnwB7dtYRwsGOwYneaeScOBjAks2IoGUzO2MytrWbXkrtiPjYSNL6PQdRznsNK0w1uEppTDJA7Ig3E8w6vRlcEoSU/9R3h55XyLYq08+X8ewEI2jj/HWG28qBZhfXMCw75zs5nZlbGRULl24IOMjY5iwjR+mHCpq39Ovvv0UGeqT12HkMD95dKZzcRz9mcY18P7XS+hh4etvVRw7mcMVAosrX4tv7V/kVmBNrsWiDWiPIzglMISmlUb/2t3VO/7w1xA2S6MnWHz4VWRMauc/kfHpWwB9WA1Na/46/ouhnfomTnDPYd9MKHbi4HmebwFXTiztfi9bu/8i5wOP5Ea8jnNvOQCC4M2FhQUbMxaGXdHDj53uEOXYQn/tdpXDuD+Xy5P/XobR3zhqKPdVEl0D/1XEUcGcCNfCsXYJof9xzIWLn7qyBjEDpOZJsHQjeu5Xso3JuNtLt+Xe1pfybmhXzuNOENXAaSc4umsl0r+aVn3Dn+a7YQcd5T+HCak/BxKSm/lYJmZ/iSodgsUy/U42J83p7JZdLenBCNuFoVuygyXkc1t35PHGZ3I1vCzXca1Egp1jYmDP9MoN7mYFakXXRjk2McN9F83EF7GbMn7uN/Je+jpOpY8duzN+XDzY1/BDIagUr2Nez9frxNRFP2xysUmTSZ+XweSEbGU/kP+39GcJb34tN31bcgW3SaUw4Xggs1OgFPAxlYNt5Id47gWHpTT7nkyjnzGTmpAg9nUcd5SlizC8dtBsygR8GPKMjEtq7DeyVXxXnmGB6Hebt+Wcb05uRusywo6txkv9GtFpO3/tSmRTDnbAn6NguVuNyEbiXZmc+RUU4xoUA/MRmKtxonF9E6sVqGw2VKu4iqyYxWrgR7KyfEfiuUdy3bcrlzF3MoxJpBBKlv2SEdI1C9ooFctozrCke4JO3QM/hpUHr8jY9Ptov17BEGEK1TVqKJawp2k63MRqxTqbjhVco1Cu7slS7oU82fyz+Av35EJgQy5i4GUMpXEM6fbp2uNAAdPAswb3LPB7icMjHqHzPYc+xlDmZ/LG8LuSiAyh/R/BQXfOVAwDl0/7UkG00CnoGkbTqCxl3AW4m1+X9e05XBv9TGR3EUJfwdqkbVQg6CupXguuR6gFILiU1GPj4se22KH0RYyGnJNkIoN7/2INpcDs6+t2IDVvr/17Cgpi5k3dmlsrY0VsUXZLW7JWmMcuxSdSyM9Lrbggpdo6bqrAuCzxI96oJcISx1UUE1KPTuBYI3SIsX5qJDYBt6T4UaiEUFu5pCnq/j6IWZh2O4XAqpv9FGbuGOdQhi5CaT5G3wTKwIJOKRCvIcCQNEpFLj3wYSSsDr9wQQ0RUOunGFbPlMKesFN85zArO7Yc9Ypi8nMY68quZN4HFrhEE/ixAKpgoIT4sRLmCmLVXFL4kVFiik4xaxz8c5txdP3WSTBV9obQ/NxTItb5gzMDwgkBZSZvNCn3EeMMghXNE0biMO+n3IB2WOo9djwEjkCARcE2nvUj6LzPHgJnDwGf7Px/6DWrQFTh/pUAAAAASUVORK5CYII=</icon>
+  <description>
+       Search for exoplanets using the transit method.
+
+       This experiment uses a classroom analogue to study how the signal from a light source decreases during a planetary transit. It reproduces the logic of a transit light curve, but it is not a real astronomical observing system.
+
+       The measurement can use the smartphone light sensor, the TI SensorTag, or a solar cell connected to the supported Owon multimeter. All three acquisition paths are interpreted as a relative signal over time. The total duration of the eclipse (total transit duration) and the time between two transits (orbital period around the star) are determined with the optical stopwatch already integrated in phyphox.
+    </description>
+  <data-containers>
+  <!-- stopwatch -->
+    <container>threshold_low</container>
+    <container>threshold_high</container>
+    <container size="0">amplitude</container>
+    <container size="0">t</container>
+    <container size="0">search_a</container>
+    <container size="0">search_t</container>
+    <container size="0">trigger_t</container>
+    <container>trigger_last</container>
+    <container init="0">on0</container>
+    <container init="0">on1</container>
+    <container init="0">on2</container>
+    <container init="0">on3</container>
+    <container init="0">on4</container>
+    <container init="0">on5</container>
+    <container init="0">off0</container>
+    <container init="0">off1</container>
+    <container init="0">off2</container>
+    <container init="0">off3</container>
+    <container init="0">off4</container>
+    <container init="0">off5</container>
+    <container>don0</container>
+    <container>don1</container>
+    <container>don2</container>
+    <container>don3</container>
+    <container>don4</container>
+    <container>don5</container>
+    <container>dt01</container>
+    <container>dt02</container>
+    <container>dt03</container>
+    <container>dt04</container>
+    <container>dt05</container>
+    <container>dt12</container>
+    <container>dt23</container>
+    <container>dt34</container>
+    <container>dt45</container>
+    <container init="0">reset</container>
+    <!-- sensortag -->
+    <container size="0" static="false">RawInt</container>
+    <container size="0" static="false">e</container>
+    <container size="0" static="false">m</container>
+    <container size="1" static="false">countI</container>
+    <container size="1" static="false">tmax</container>
+    <container size="0" static="false">factor</container>
+    <!-- multimeter -->
+    <container size="1">tin</container>
+    <container size="1">Vin</container>
+    <container size="1">str</container>
+    <container size="1">dec</container>
+    <container size="1">decfac</container>
+    <container size="1">unit</container>
+    <container size="1">unitfac</container>
+    <container size="1">18value</container>
+    <container size="1">18-value</container>
+    <container size="1">18signedvalue</container>
+    <container size="1">18bitmask</container>
+    <container size="1">18decfac</container>
+    <container size="1">18prefac</container>
+    <container size="1">count</container>
+    <!-- transit -->
+    <container size="0" static="false">max_amplitude</container>
+    <container size="0" static="false">min_amplitude</container>
+    <container size="0" static="false">transit_depth</container>
+    <container size="0" static="false">R_star</container>
+    <container size="0" static="false">R_planet</container>
+    <container size="0" static="false">Quot_R</container>
+    <container size="0" static="false">avg_transit_time</container>
+    <container size="0" static="false">max_t</container>
+    <container size="0" static="false">avg_year_duration</container>
+  </data-containers>
+  <translations>
+    <translation locale="de">
+      <title>Transitmethode</title>
+      <category>*Astrolabor Universität zu Köln</category>
+      <description>
+       Suche nach Exoplaneten mit der Transitmethode.
+
+       In diesem Experiment wird die Abschwächung des Signals einer Lichtquelle während eines Planetentransits in einem Analogieversuch untersucht. Die Messung bildet die Logik einer Transitlichtkurve im Klassenzimmer nach; sie ist kein echtes astronomisches Beobachtungssystem.
+
+       Die Messung kann mit dem Lichtsensor des Smartphones, dem TI SensorTag oder einer Solarzelle am unterstützten Owon-Multimeter erfolgen. Alle drei Messpfade werden als relatives Signal in Abhängigkeit von der Zeit ausgewertet. Die Gesamtdauer der Verdunkelung (totale Transitdauer) und der Zeitraum zwischen zwei Transits (Umlaufzeit um den Stern) werden mit der in phyphox bereits integrierten optischen Stoppuhr bestimmt.
+    </description>
+      <string original="Relative Signal">Relatives Signal</string>
+      <string original="Signal-time diagram">Signal-Zeit-Diagramm</string>
+      <string original="Measuring duration">Messdauer</string>
+      <string original="Maximum signal (without transit)">Maximales Signal (ohne Transit)</string>
+      <string original="Minimum signal (during transit)">Minimales Signal (bei Transit)</string>
+      <string original="Transit depth">Transittiefe</string>
+      <string original="⌀ Transit duration">⌀-Transitdauer</string>
+      <string original="⌀ Duration of one year">⌀-Dauer eines Jahres</string>
+      <string original="Transit Duration">Transitdauer</string>
+      <string original="Measures the total transit duration, i.e. the time between the beginning and end of the dimming of the star by the transit of the planet.">Misst die totale Transitdauer, d.h. den Zeitraum zwischen Beginn und Ende der Verdunkelung des Sterns durch den Transit des Planeten.</string>
+      <string original="Zeroth transit">Nullter Transit</string>
+      <string original="First transit">Erster Transit</string>
+      <string original="Second transit">Zweiter Transit</string>
+      <string original="Third transit">Dritter Transit</string>
+      <string original="Fourth transit">Vierter Transit</string>
+      <string original="Fifth transit">Fünfter Transit</string>
+      <string original="Note: The ⌀ transit duration is only displayed after six transits. The zeroth transit pass is neglected, because especially in the case of hidden measurement it is not known whether the planet is already in front of the star when the measurement begins. ">Hinweis: Die ⌀-Transitdauer wird erst nach sechs Transits ausgegeben. Der Nullte Transitdurchlauf wird vernachlässigt, da man insbesondere bei der verdeckten Messung nicht weiß, ob sich der Planet bei Messbeginn nicht zufällig bereits vor dem Stern befindet. </string>
+      <string original="Orbital Period">Umlaufzeit</string>
+      <string original="Measures the time between two transits and calculates the ⌀ duration of one year on the planet.">Misst die Zeit zwischen zwei Transits und errechnet daraus die ⌀-Dauer eines Jahres auf dem Planeten.</string>
+      <string original="Year 1">Jahr 1</string>
+      <string original="Year 2">Jahr 2</string>
+      <string original="Year 3">Jahr 3</string>
+      <string original="Year 4">Jahr 4</string>
+      <string original="Year 5">Jahr 5</string>
+      <string original="Note: The ⌀ duration of one year on the planet is only displayed after five years.">Hinweis: Die ⌀-Dauer eines Jahres auf dem Planeten wird erst nach fünf Jahren ausgegeben.</string>
+      <string original="Planet Size">Planetengröße</string>
+      <string original="The star radius is already known in many cases. For example, it can be approximated from the luminosity and temperature of the star using the Stefan-Boltzmann law.">Der Sternradius ist in vielen Fällen bereits bekannt. Zum Beispiel kann dieser über die Leuchtkraft und Temperatur des Sterns mit dem Stefan-Boltzmann-Gesetz näherungsweise bestimmt werden.</string>
+      <string original="Enter a suitable star radius here">Gib hier einen geeigneten Sternenradius ein</string>
+      <string original="Star radius">Sternradius</string>
+      <string original="Using the transit-depth results from the transit method, the radius of the planet can now be estimated.">Mit Hilfe der Ergebnisse aus der Transitmethode zur Transittiefe kann nun der Radius des Planeten abgeschätzt werden.</string>
+      <string original="This yields for the planet:">Damit folgt für den Planeten:</string>
+      <string original="Planet radius">Radius des Planeten</string>
+      <string original="Planet size relative to star">Größe Planet relativ zu Stern</string>
+      <string original="These are calculations for our model star and model planet. In reality the dimensions are much larger: Earth's radius is 6,371 kilometres, and the Sun's radius is another 109 times larger. In this radius ratio, the Earth is therefore about 0.92% of the Sun.">Hierbei handelt es sich um Berechnungen unseres Modellsterns und Modellplaneten. In Wirklichkeit sind die Dimensionen wesentlich größer: Der Erdradius beträgt 6 371 Kilometer, und der Sonnenradius ist etwa 109-mal größer. Für dieses Radienverhältnis ergibt sich, dass die Erde damit nur etwa 0,92% des Sonnenradius erreicht.</string>
+      <string original="Trigger Configuration">Auslösebedingung</string>
+      <string original="Place the selected sensor at the final measurement distance from the light source and determine the maximum signal. The same workflow is used for the smartphone light sensor, the TI SensorTag, and a solar cell on the Owon multimeter.">Platziere den gewählten Sensor im späteren Messabstand zur Lichtquelle und bestimme das maximale Signal. Für Smartphone-Lichtsensor, TI SensorTag und Solarzelle am Owon-Multimeter gilt derselbe Ablauf.</string>
+      <string original="Maximum Signal">Maximales Signal</string>
+      <string original="This is the recommended value below which the time measurement is triggered and above which it stops again. In this way the total transit duration is measured. The thresholds always refer to the currently measured raw signal and not to a calibrated physical unit.">Dies ist der empfohlene Wert unter dem die Zeitmessung ausgelöst und darüber wieder beendet wird. Dadurch wird jeweils die totale Transitzeit gemessen. Die Schranken beziehen sich immer auf das aktuell gemessene Rohsignal und nicht auf eine kalibrierte physikalische Einheit.</string>
+      <string original="Threshold for transit measurement">Schranke für die Transitmessung</string>
+      <string original="By default, the stopwatch measures darkening. If you want to measure the time between two flashes of light, set the upper value to zero and choose a threshold in the following field.">Standardmäßig ist die Stoppuhr auf Messung von Verdunklung eingestellt. Soll die Zeit zwischen zwei Lichtblitzen gemessen werden, setze den oberen Wert auf Null und wähle eine Schranke im folgenden Feld.</string>
+      <string original="Threshold for brightness measurement">Schranke für Helligkeitsmessung</string>
+      <string original="Attention: for the transit experiment it is important that this value remains at the default of 1000000.0 and that only the threshold for transit measurement is varied.">Achtung: Für das Transitexperiment ist es wichtig, dass dieser Wert auf dem Default von 1000000.0 eingestellt bleibt und nur die Schranke für die Transitmessung variiert wird.</string>
+    </translation>
+    <translation locale="fr">
+      <title>Méthode du transit</title>
+      <category>*Astrolab University of Cologne</category>
+      <description>
+       Rechercher des exoplanètes avec la méthode du transit.
+
+       Cette expérience utilise une analogie de salle de classe pour étudier la diminution du signal d'une source lumineuse pendant le transit d'une planète. Elle reproduit la logique d'une courbe de lumière de transit, mais ce n'est pas un véritable système d'observation astronomique.
+
+       La mesure peut utiliser le capteur de lumière du smartphone, le TI SensorTag ou une cellule solaire reliée au multimètre Owon pris en charge. Les trois voies d'acquisition sont interprétées comme un signal relatif en fonction du temps. La durée totale de l'assombrissement et le temps entre deux transits sont déterminés avec le chronomètre optique déjà intégré dans phyphox.
+    </description>
+      <string original="Relative Signal">Signal relatif</string>
+      <string original="Signal-time diagram">Diagramme signal-temps</string>
+      <string original="Measuring duration">Durée de mesure</string>
+      <string original="Maximum signal (without transit)">Signal maximal (sans transit)</string>
+      <string original="Minimum signal (during transit)">Signal minimal (pendant le transit)</string>
+      <string original="Transit depth">Profondeur du transit</string>
+      <string original="⌀ Transit duration">⌀ durée du transit</string>
+      <string original="⌀ Duration of one year">⌀ durée d'une année</string>
+      <string original="Transit Duration">Durée du transit</string>
+      <string original="Measures the total transit duration, i.e. the time between the beginning and end of the dimming of the star by the transit of the planet.">Mesure la durée totale du transit, c'est-à-dire le temps entre le début et la fin de l'atténuation de l'étoile par le passage de la planète.</string>
+      <string original="Zeroth transit">Transit zéro</string>
+      <string original="First transit">Premier transit</string>
+      <string original="Second transit">Deuxième transit</string>
+      <string original="Third transit">Troisième transit</string>
+      <string original="Fourth transit">Quatrième transit</string>
+      <string original="Fifth transit">Cinquième transit</string>
+      <string original="Note: The ⌀ transit duration is only displayed after six transits. The zeroth transit pass is neglected, because especially in the case of hidden measurement it is not known whether the planet is already in front of the star when the measurement begins. ">Remarque : la ⌀ durée du transit n'est affichée qu'après six transits. Le passage zéro est négligé, car surtout dans le cas d'une mesure masquée, on ne sait pas si la planète se trouve déjà devant l'étoile au début de la mesure. </string>
+      <string original="Orbital Period">Période orbitale</string>
+      <string original="Measures the time between two transits and calculates the ⌀ duration of one year on the planet.">Mesure le temps entre deux transits et calcule la ⌀ durée d'une année sur la planète.</string>
+      <string original="Year 1">Année 1</string>
+      <string original="Year 2">Année 2</string>
+      <string original="Year 3">Année 3</string>
+      <string original="Year 4">Année 4</string>
+      <string original="Year 5">Année 5</string>
+      <string original="Note: The ⌀ duration of one year on the planet is only displayed after five years.">Remarque : la ⌀ durée d'une année sur la planète n'est affichée qu'après cinq années.</string>
+      <string original="Planet Size">Taille de la planète</string>
+      <string original="The star radius is already known in many cases. For example, it can be approximated from the luminosity and temperature of the star using the Stefan-Boltzmann law.">Le rayon de l'étoile est déjà connu dans de nombreux cas. Par exemple, il peut être estimé à partir de la luminosité et de la température de l'étoile en utilisant la loi de Stefan-Boltzmann.</string>
+      <string original="Enter a suitable star radius here">Saisis ici un rayon stellaire approprié</string>
+      <string original="Star radius">Rayon de l'étoile</string>
+      <string original="Using the transit-depth results from the transit method, the radius of the planet can now be estimated.">À partir des résultats de profondeur du transit obtenus par la méthode du transit, on peut maintenant estimer le rayon de la planète.</string>
+      <string original="This yields for the planet:">On obtient ainsi pour la planète :</string>
+      <string original="Planet radius">Rayon de la planète</string>
+      <string original="Planet size relative to star">Taille de la planète par rapport à l'étoile</string>
+      <string original="These are calculations for our model star and model planet. In reality the dimensions are much larger: Earth's radius is 6,371 kilometres, and the Sun's radius is another 109 times larger. In this radius ratio, the Earth is therefore about 0.92% of the Sun.">Il s'agit de calculs pour notre étoile et notre planète modèles. En réalité, les dimensions sont bien plus grandes : le rayon de la Terre est de 6 371 kilomètres et celui du Soleil est encore 109 fois plus grand. Dans ce rapport de rayons, la Terre représente donc environ 0,92 % du rayon du Soleil.</string>
+      <string original="Trigger Configuration">Configuration du déclenchement</string>
+      <string original="Place the selected sensor at the final measurement distance from the light source and determine the maximum signal. The same workflow is used for the smartphone light sensor, the TI SensorTag, and a solar cell on the Owon multimeter.">Place le capteur choisi à la distance finale de mesure par rapport à la source lumineuse et détermine le signal maximal. Le même déroulement est utilisé pour le capteur de lumière du smartphone, le TI SensorTag et une cellule solaire sur le multimètre Owon.</string>
+      <string original="Maximum Signal">Signal maximal</string>
+      <string original="This is the recommended value below which the time measurement is triggered and above which it stops again. In this way the total transit duration is measured. The thresholds always refer to the currently measured raw signal and not to a calibrated physical unit.">C'est la valeur recommandée en dessous de laquelle la mesure du temps est déclenchée et au-dessus de laquelle elle s'arrête à nouveau. De cette manière, on mesure la durée totale du transit. Les seuils se rapportent toujours au signal brut mesuré et non à une unité physique calibrée.</string>
+      <string original="Threshold for transit measurement">Seuil pour la mesure du transit</string>
+      <string original="By default, the stopwatch measures darkening. If you want to measure the time between two flashes of light, set the upper value to zero and choose a threshold in the following field.">Par défaut, le chronomètre mesure l'assombrissement. Si tu veux mesurer le temps entre deux éclairs lumineux, règle la valeur supérieure sur zéro et choisis un seuil dans le champ suivant.</string>
+      <string original="Threshold for brightness measurement">Seuil pour la mesure de luminosité</string>
+      <string original="Attention: for the transit experiment it is important that this value remains at the default of 1000000.0 and that only the threshold for transit measurement is varied.">Attention : pour l'expérience de transit, il est important que cette valeur reste au réglage par défaut de 1000000.0 et que seul le seuil de mesure du transit soit modifié.</string>
+    </translation>
+  </translations>
+  <input>
+    <sensor type="light">
+      <output component="t">t</output>
+      <output component="x">amplitude</output>
+    </sensor>
+    <bluetooth name="SensorTag" mode="notification" rate="1" subscribeOnStart="false">
+      <config char="F000AA73-0451-4000-B000-000000000000" conversion="hexadecimal">50</config>
+      <config char="F000AA72-0451-4000-B000-000000000000" conversion="hexadecimal">01</config>
+      <output char="F000AA71-0451-4000-B000-000000000000" conversion="uInt16LittleEndian" offset="0" length="2">RawInt</output>
+    </bluetooth>
+    <bluetooth name="BDM" mode="notification">
+      <output char="0000FFF4-0000-1000-8000-00805F9B34FB" conversion="string" length="5">str</output>
+      <output char="0000FFF4-0000-1000-8000-00805F9B34FB" conversion="string" offset="6" length="1">dec</output>
+      <output char="0000FFF4-0000-1000-8000-00805F9B34FB" conversion="uInt8" offset="9" length="1">unit</output>
+      <output char="0000FFF4-0000-1000-8000-00805F9B34FB" conversion="uInt16LittleEndian" offset="4" length="2">18value</output>
+      <output char="0000FFF4-0000-1000-8000-00805F9B34FB" conversion="uInt8" offset="0" length="1">18bitmask</output>
+      <output char="0000FFF4-0000-1000-8000-00805F9B34FB" extra="time">tin</output>
+    </bluetooth>
+  </input>
+
+    <analysis>
+  <!-- sensortag -->
+        <formula formula="floor([1_]/4096)">
+            <input as="in" clear="false">RawInt</input>
+            <output as="out">e</output>
+        </formula>
+        <formula formula="[2_]-[1_]*4096">
+            <input as="in" clear="false">e</input>
+            <input as="in" clear="false">RawInt</input>
+            <output as="out">m</output>
+        </formula>
+        <power>
+            <input as="base" type="value">2</input>
+            <input as="exponent" clear="false">e</input>
+            <output as="power">factor</output>
+        </power>
+        <formula formula="[2_]*(0.01*[1_])">
+            <input as="in" clear="false">factor</input>
+            <input as="in" clear="false">m</input>
+            <output as="out">amplitude</output>
+        </formula>
+        <count>
+            <input as="buffer" clear="false">RawInt</input>
+            <output as="count">countI</output>
+        </count>
+        <formula formula="([1]-1)*0.8">
+            <input as="in" clear="false">countI</input>
+            <output as="out">tmax</output>
+        </formula>
+        <ramp>
+            <input as="start" type="value">0</input>
+            <input as="stop">tmax</input>
+            <input as="length">countI</input>
+            <output as="out">t</output>
+        </ramp>
+  <!-- multimeter -->
+        <subtract>
+            <input type="value">32768</input>
+            <input clear="false">18value</input>
+            <output clear="false">18-value</output>
+        </subtract>
+        <if greater="true">
+            <input clear="false">18value</input>
+            <input type="value">32767</input>
+            <input clear="false">18-value</input>
+            <input clear="false">18value</input>
+            <output clear="false">18signedvalue</output>
+        </if>
+        <formula formula="10^(-([1]%4))">
+            <input clear="false">18bitmask</input>
+            <output clear="false">18decfac</output>
+        </formula>
+        <formula formula="1000^(floor([1]/8)%8-4)">
+            <input clear="true">18bitmask</input>
+            <output clear="false">18prefac</output>
+        </formula>
+        <multiply>
+            <input clear="false">18signedvalue</input>
+            <input clear="true">18decfac</input>
+            <input clear="true">18prefac</input>
+            <output clear="true">Vin</output>
+        </multiply>
+        <if equal="true">
+            <input clear="false">dec</input>
+            <input type="value">0</input>
+            <input type="value">1</input>
+            <output clear="false">decfac</output>
+        </if>
+        <if equal="true">
+            <input clear="false">dec</input>
+            <input type="value">1</input>
+            <input type="value">0.001</input>
+            <output clear="false">decfac</output>
+        </if>
+        <if equal="true">
+            <input clear="false">dec</input>
+            <input type="value">2</input>
+            <input type="value">0.01</input>
+            <output clear="false">decfac</output>
+        </if>
+        <if equal="true">
+            <input clear="true">dec</input>
+            <input type="value">4</input>
+            <input type="value">0.1</input>
+            <output clear="false">decfac</output>
+        </if>
+        <if equal="true">
+            <input clear="false">unit</input>
+            <input type="value">0</input>
+            <input type="value">1</input>
+            <output clear="false">unitfac</output>
+        </if>
+        <if equal="true">
+            <input clear="false">unit</input>
+            <input type="value">16</input>
+            <input type="value">1000000</input>
+            <output clear="false">unitfac</output>
+        </if>
+        <if equal="true">
+            <input clear="false">unit</input>
+            <input type="value">32</input>
+            <input type="value">1000</input>
+            <output clear="false">unitfac</output>
+        </if>
+        <if equal="true">
+            <input clear="false">unit</input>
+            <input type="value">64</input>
+            <input type="value">0.001</input>
+            <output clear="false">unitfac</output>
+        </if>
+        <if equal="true">
+            <input clear="true">unit</input>
+            <input type="value">128</input>
+            <input type="value">0.000001</input>
+            <output clear="false">unitfac</output>
+        </if>
+        <multiply>
+            <input clear="true">str</input>
+            <input clear="true">decfac</input>
+            <input clear="true">unitfac</input>
+            <output clear="false">Vin</output>
+        </multiply>
+        <count>
+            <input clear="false">Vin</input>
+            <output>count</output>
+        </count>
+        <if equal="true">
+            <input clear="false">count</input>
+            <input type="value">1</input>
+            <input clear="true">Vin</input>
+            <output clear="false">amplitude</output>
+        </if>
+        <if equal="true">
+            <input clear="true">count</input>
+            <input type="value">1</input>
+            <input>tin</input>
+            <output clear="false">t</output>
+        </if>
+  <!-- transit -->
+        <max>
+            <input as="y" clear="false">amplitude</input>
+            <output as="max">max_amplitude</output>
+        </max>
+        <min multiple="false">
+            <input as="y" clear="false">amplitude</input>
+            <output as="min">min_amplitude</output>
+        </min>
+        <formula formula="([1]-[2])/[1]*100">
+            <input as="in" clear="false">max_amplitude</input>
+            <input as="in" clear="false">min_amplitude</input>
+            <output as="out">transit_depth</output>
+        </formula>
+        <formula formula="[1]*sqrt([2]/100)">
+            <input as="in" clear="false">R_star</input>
+            <input as="in" clear="false">transit_depth</input>
+            <output as="out">R_planet</output>
+        </formula>
+        <formula formula="[1]/[2]*100">
+            <input as="in" clear="false">R_planet</input>
+            <input as="in" clear="false">R_star</input>
+            <output as="out">Quot_R</output>
+        </formula>
+        <formula formula="([1]+[2]+[3]+[4]+[5])/5">
+            <input as="in" clear="false">don1</input>
+            <input as="in" clear="false">don2</input>
+            <input as="in" clear="false">don3</input>
+            <input as="in" clear="false">don4</input>
+            <input as="in" clear="false">don5</input>
+            <output as="out">avg_transit_time</output>
+        </formula>
+        <max>
+            <input as="y" clear="false">t</input>
+            <output as="max">max_t</output>
+        </max>
+        <formula formula="([1]+[2]+[3]+[4]+[5])/5">
+            <input as="in" clear="false">dt01</input>
+            <input as="in" clear="false">dt12</input>
+            <input as="in" clear="false">dt23</input>
+            <input as="in" clear="false">dt34</input>
+            <input as="in" clear="false">dt45</input>
+            <output as="out">avg_year_duration</output>
+        </formula>
+  <!-- stopwatch -->
+    <append>
+      <input type="value">0</input>
+      <output>on0</output>
+    </append>
+    <append>
+      <input type="value">0</input>
+      <output>on1</output>
+    </append>
+    <append>
+      <input type="value">0</input>
+      <output>on2</output>
+    </append>
+    <append>
+      <input type="value">0</input>
+      <output>on3</output>
+    </append>
+    <append>
+      <input type="value">0</input>
+      <output>on4</output>
+    </append>
+    <append>
+      <input type="value">0</input>
+      <output>on5</output>
+    </append>
+    <append>
+      <input type="value">0</input>
+      <output>off0</output>
+    </append>
+    <append>
+      <input type="value">0</input>
+      <output>off1</output>
+    </append>
+    <append>
+      <input type="value">0</input>
+      <output>off2</output>
+    </append>
+    <append>
+      <input type="value">0</input>
+      <output>off3</output>
+    </append>
+    <append>
+      <input type="value">0</input>
+      <output>off4</output>
+    </append>
+    <append>
+      <input type="value">0</input>
+      <output>off5</output>
+    </append>
+    <if greater="true">
+      <input clear="false">reset</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>amplitude</output>
+    </if>
+    <if greater="true">
+      <input clear="false">reset</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>t</output>
+    </if>
+    <append>
+      <input type="value">0</input>
+      <output>reset</output>
+    </append>
+    <append>
+      <input type="value">0</input>
+      <output>trigger_last</output>
+    </append>
+    <rangefilter>
+      <input clear="false">t</input>
+      <input as="min" type="value">0.001</input>
+      <input clear="false">amplitude</input>
+      <output>search_t</output>
+      <output>search_a</output>
+    </rangefilter>
+    <rangefilter>
+      <input clear="false">search_t</input>
+      <input clear="false">search_a</input>
+      <input as="max" clear="false">threshold_low</input>
+      <output>trigger_t</output>
+    </rangefilter>
+    <rangefilter>
+      <input>search_t</input>
+      <input>search_a</input>
+      <input as="min" clear="false">threshold_high</input>
+      <output clear="false">trigger_t</output>
+    </rangefilter>
+    <min>
+      <input as="y">trigger_t</input>
+      <output as="min" clear="false">on0</output>
+    </min>
+    <if greater="true">
+      <input clear="false">on0</input>
+      <input clear="false">trigger_last</input>
+      <input clear="false">on0</input>
+      <input clear="false">t</input>
+      <output>trigger_last</output>
+    </if>
+    <add>
+      <input clear="false">trigger_last</input>
+      <input type="value">0.001</input>
+      <output>trigger_t</output>
+    </add>
+    <rangefilter>
+      <input clear="false">t</input>
+      <input as="min">trigger_t</input>
+      <input clear="false">amplitude</input>
+      <output>search_t</output>
+      <output>search_a</output>
+    </rangefilter>
+    <rangefilter>
+      <input>search_t</input>
+      <input>search_a</input>
+      <input as="max" clear="false">threshold_high</input>
+      <input as="min" clear="false">threshold_low</input>
+      <output>trigger_t</output>
+    </rangefilter>
+    <first>
+      <input>trigger_t</input>
+      <output clear="false">off0</output>
+    </first>
+    <if greater="true">
+      <input clear="false">off0</input>
+      <input clear="false">trigger_last</input>
+      <input clear="false">off0</input>
+      <input clear="false">t</input>
+      <output>trigger_last</output>
+    </if>
+    <add>
+      <input clear="false">trigger_last</input>
+      <input type="value">0.001</input>
+      <output>trigger_t</output>
+    </add>
+    <rangefilter>
+      <input clear="false">t</input>
+      <input as="min">trigger_t</input>
+      <input clear="false">amplitude</input>
+      <output>search_t</output>
+      <output>search_a</output>
+    </rangefilter>
+    <rangefilter>
+      <input clear="false">search_t</input>
+      <input clear="false">search_a</input>
+      <input as="max" clear="false">threshold_low</input>
+      <output>trigger_t</output>
+    </rangefilter>
+    <rangefilter>
+      <input>search_t</input>
+      <input>search_a</input>
+      <input as="min" clear="false">threshold_high</input>
+      <output clear="false">trigger_t</output>
+    </rangefilter>
+    <min>
+      <input as="y">trigger_t</input>
+      <output as="min" clear="false">on1</output>
+    </min>
+    <if greater="true">
+      <input clear="false">on1</input>
+      <input clear="false">trigger_last</input>
+      <input clear="false">on1</input>
+      <input clear="false">t</input>
+      <output>trigger_last</output>
+    </if>
+    <add>
+      <input clear="false">trigger_last</input>
+      <input type="value">0.001</input>
+      <output>trigger_t</output>
+    </add>
+    <rangefilter>
+      <input clear="false">t</input>
+      <input as="min">trigger_t</input>
+      <input clear="false">amplitude</input>
+      <output>search_t</output>
+      <output>search_a</output>
+    </rangefilter>
+    <rangefilter>
+      <input>search_t</input>
+      <input>search_a</input>
+      <input as="max" clear="false">threshold_high</input>
+      <input as="min" clear="false">threshold_low</input>
+      <output>trigger_t</output>
+    </rangefilter>
+    <first>
+      <input>trigger_t</input>
+      <output clear="false">off1</output>
+    </first>
+    <!-- 2 -->
+    <if greater="true">
+      <input clear="false">off1</input>
+      <input clear="false">trigger_last</input>
+      <input clear="false">off1</input>
+      <input clear="false">t</input>
+      <output>trigger_last</output>
+    </if>
+    <add>
+      <input clear="false">trigger_last</input>
+      <input type="value">0.001</input>
+      <output>trigger_t</output>
+    </add>
+    <rangefilter>
+      <input clear="false">t</input>
+      <input as="min">trigger_t</input>
+      <input clear="false">amplitude</input>
+      <output>search_t</output>
+      <output>search_a</output>
+    </rangefilter>
+    <rangefilter>
+      <input clear="false">search_t</input>
+      <input clear="false">search_a</input>
+      <input as="max" clear="false">threshold_low</input>
+      <output>trigger_t</output>
+    </rangefilter>
+    <rangefilter>
+      <input>search_t</input>
+      <input>search_a</input>
+      <input as="min" clear="false">threshold_high</input>
+      <output clear="false">trigger_t</output>
+    </rangefilter>
+    <min>
+      <input as="y">trigger_t</input>
+      <output as="min" clear="false">on2</output>
+    </min>
+    <if greater="true">
+      <input clear="false">on2</input>
+      <input clear="false">trigger_last</input>
+      <input clear="false">on2</input>
+      <input clear="false">t</input>
+      <output>trigger_last</output>
+    </if>
+    <add>
+      <input clear="false">trigger_last</input>
+      <input type="value">0.001</input>
+      <output>trigger_t</output>
+    </add>
+    <rangefilter>
+      <input clear="false">t</input>
+      <input as="min">trigger_t</input>
+      <input clear="false">amplitude</input>
+      <output>search_t</output>
+      <output>search_a</output>
+    </rangefilter>
+    <rangefilter>
+      <input>search_t</input>
+      <input>search_a</input>
+      <input as="max" clear="false">threshold_high</input>
+      <input as="min" clear="false">threshold_low</input>
+      <output>trigger_t</output>
+    </rangefilter>
+    <first>
+      <input>trigger_t</input>
+      <output clear="false">off2</output>
+    </first>
+    <!-- 3 -->
+    <if greater="true">
+      <input clear="false">off2</input>
+      <input clear="false">trigger_last</input>
+      <input clear="false">off2</input>
+      <input clear="false">t</input>
+      <output>trigger_last</output>
+    </if>
+    <add>
+      <input clear="false">trigger_last</input>
+      <input type="value">0.001</input>
+      <output>trigger_t</output>
+    </add>
+    <rangefilter>
+      <input clear="false">t</input>
+      <input as="min">trigger_t</input>
+      <input clear="false">amplitude</input>
+      <output>search_t</output>
+      <output>search_a</output>
+    </rangefilter>
+    <rangefilter>
+      <input clear="false">search_t</input>
+      <input clear="false">search_a</input>
+      <input as="max" clear="false">threshold_low</input>
+      <output>trigger_t</output>
+    </rangefilter>
+    <rangefilter>
+      <input>search_t</input>
+      <input>search_a</input>
+      <input as="min" clear="false">threshold_high</input>
+      <output clear="false">trigger_t</output>
+    </rangefilter>
+    <min>
+      <input as="y">trigger_t</input>
+      <output as="min" clear="false">on3</output>
+    </min>
+    <if greater="true">
+      <input clear="false">on3</input>
+      <input clear="false">trigger_last</input>
+      <input clear="false">on3</input>
+      <input clear="false">t</input>
+      <output>trigger_last</output>
+    </if>
+    <add>
+      <input clear="false">trigger_last</input>
+      <input type="value">0.001</input>
+      <output>trigger_t</output>
+    </add>
+    <rangefilter>
+      <input clear="false">t</input>
+      <input as="min">trigger_t</input>
+      <input clear="false">amplitude</input>
+      <output>search_t</output>
+      <output>search_a</output>
+    </rangefilter>
+    <rangefilter>
+      <input>search_t</input>
+      <input>search_a</input>
+      <input as="max" clear="false">threshold_high</input>
+      <input as="min" clear="false">threshold_low</input>
+      <output>trigger_t</output>
+    </rangefilter>
+    <first>
+      <input>trigger_t</input>
+      <output clear="false">off3</output>
+    </first>
+    <!-- 4 -->
+    <if greater="true">
+      <input clear="false">off3</input>
+      <input clear="false">trigger_last</input>
+      <input clear="false">off3</input>
+      <input clear="false">t</input>
+      <output>trigger_last</output>
+    </if>
+    <add>
+      <input clear="false">trigger_last</input>
+      <input type="value">0.001</input>
+      <output>trigger_t</output>
+    </add>
+    <rangefilter>
+      <input clear="false">t</input>
+      <input as="min">trigger_t</input>
+      <input clear="false">amplitude</input>
+      <output>search_t</output>
+      <output>search_a</output>
+    </rangefilter>
+    <rangefilter>
+      <input clear="false">search_t</input>
+      <input clear="false">search_a</input>
+      <input as="max" clear="false">threshold_low</input>
+      <output>trigger_t</output>
+    </rangefilter>
+    <rangefilter>
+      <input>search_t</input>
+      <input>search_a</input>
+      <input as="min" clear="false">threshold_high</input>
+      <output clear="false">trigger_t</output>
+    </rangefilter>
+    <min>
+      <input as="y">trigger_t</input>
+      <output as="min" clear="false">on4</output>
+    </min>
+    <if greater="true">
+      <input clear="false">on4</input>
+      <input clear="false">trigger_last</input>
+      <input clear="false">on4</input>
+      <input clear="false">t</input>
+      <output>trigger_last</output>
+    </if>
+    <add>
+      <input clear="false">trigger_last</input>
+      <input type="value">0.001</input>
+      <output>trigger_t</output>
+    </add>
+    <rangefilter>
+      <input clear="false">t</input>
+      <input as="min">trigger_t</input>
+      <input clear="false">amplitude</input>
+      <output>search_t</output>
+      <output>search_a</output>
+    </rangefilter>
+    <rangefilter>
+      <input>search_t</input>
+      <input>search_a</input>
+      <input as="max" clear="false">threshold_high</input>
+      <input as="min" clear="false">threshold_low</input>
+      <output>trigger_t</output>
+    </rangefilter>
+    <first>
+      <input>trigger_t</input>
+      <output clear="false">off4</output>
+    </first>
+    <!-- 5 -->
+    <if greater="true">
+      <input clear="false">off4</input>
+      <input clear="false">trigger_last</input>
+      <input clear="false">off4</input>
+      <input clear="false">t</input>
+      <output>trigger_last</output>
+    </if>
+    <add>
+      <input clear="false">trigger_last</input>
+      <input type="value">0.001</input>
+      <output>trigger_t</output>
+    </add>
+    <rangefilter>
+      <input clear="false">t</input>
+      <input as="min">trigger_t</input>
+      <input clear="false">amplitude</input>
+      <output>search_t</output>
+      <output>search_a</output>
+    </rangefilter>
+    <rangefilter>
+      <input clear="false">search_t</input>
+      <input clear="false">search_a</input>
+      <input as="max" clear="false">threshold_low</input>
+      <output>trigger_t</output>
+    </rangefilter>
+    <rangefilter>
+      <input>search_t</input>
+      <input>search_a</input>
+      <input as="min" clear="false">threshold_high</input>
+      <output clear="false">trigger_t</output>
+    </rangefilter>
+    <min>
+      <input as="y">trigger_t</input>
+      <output as="min" clear="false">on5</output>
+    </min>
+    <if greater="true">
+      <input clear="false">on5</input>
+      <input clear="false">trigger_last</input>
+      <input clear="false">on5</input>
+      <input clear="false">t</input>
+      <output>trigger_last</output>
+    </if>
+    <add>
+      <input clear="false">trigger_last</input>
+      <input type="value">0.001</input>
+      <output>trigger_t</output>
+    </add>
+    <rangefilter>
+      <input clear="false">t</input>
+      <input as="min">trigger_t</input>
+      <input clear="false">amplitude</input>
+      <output>search_t</output>
+      <output>search_a</output>
+    </rangefilter>
+    <rangefilter>
+      <input>search_t</input>
+      <input>search_a</input>
+      <input as="max" clear="false">threshold_high</input>
+      <input as="min" clear="false">threshold_low</input>
+      <output>trigger_t</output>
+    </rangefilter>
+    <first>
+      <input>trigger_t</input>
+      <output clear="false">off5</output>
+    </first>
+    <!-- Collect results -->
+    <subtract>
+      <input clear="false">on1</input>
+      <input clear="false">on0</input>
+      <output>dt01</output>
+    </subtract>
+    <subtract>
+      <input clear="false">on2</input>
+      <input clear="false">on0</input>
+      <output>dt02</output>
+    </subtract>
+    <subtract>
+      <input clear="false">on3</input>
+      <input clear="false">on0</input>
+      <output>dt03</output>
+    </subtract>
+    <subtract>
+      <input clear="false">on4</input>
+      <input clear="false">on0</input>
+      <output>dt04</output>
+    </subtract>
+    <subtract>
+      <input clear="false">on5</input>
+      <input clear="false">on0</input>
+      <output>dt05</output>
+    </subtract>
+    <subtract>
+      <input clear="false">on2</input>
+      <input clear="false">on1</input>
+      <output>dt12</output>
+    </subtract>
+    <subtract>
+      <input clear="false">on3</input>
+      <input clear="false">on2</input>
+      <output>dt23</output>
+    </subtract>
+    <subtract>
+      <input clear="false">on4</input>
+      <input clear="false">on3</input>
+      <output>dt34</output>
+    </subtract>
+    <subtract>
+      <input clear="false">on5</input>
+      <input clear="false">on4</input>
+      <output>dt45</output>
+    </subtract>
+    <subtract>
+      <input clear="false">off0</input>
+      <input clear="false">on0</input>
+      <output>don0</output>
+    </subtract>
+    <subtract>
+      <input clear="false">off1</input>
+      <input clear="false">on1</input>
+      <output>don1</output>
+    </subtract>
+    <subtract>
+      <input clear="false">off2</input>
+      <input clear="false">on2</input>
+      <output>don2</output>
+    </subtract>
+    <subtract>
+      <input clear="false">off3</input>
+      <input clear="false">on3</input>
+      <output>don3</output>
+    </subtract>
+    <subtract>
+      <input clear="false">off4</input>
+      <input clear="false">on4</input>
+      <output>don4</output>
+    </subtract>
+    <subtract>
+      <input clear="false">off5</input>
+      <input clear="false">on5</input>
+      <output>don5</output>
+    </subtract>
+    <if less="true" equal="true">
+      <input clear="false">dt01</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>dt01</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">dt02</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>dt02</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">dt03</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>dt03</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">dt04</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>dt04</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">dt05</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>dt05</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">dt12</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>dt12</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">dt23</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>dt23</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">dt34</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>dt34</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">dt45</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>dt45</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">don0</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>don0</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">don1</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>don1</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">don2</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>don2</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">don3</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>don3</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">don4</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>don4</output>
+    </if>
+    <if less="true" equal="true">
+      <input clear="false">don5</input>
+      <input type="value">0</input>
+      <input type="empty"/>
+      <output>don5</output>
+    </if>
+  </analysis>
+
+  <views>
+
+  <!-- transit -->
+    <view label="Relative Signal">
+      <graph label="Signal-time diagram" labelX="t" unitX="s" labelY="Signal" unitY="a.u." partialUpdate="true">
+        <input axis="x">t</input>
+        <input axis="y">amplitude</input>
+      </graph>
+      <value label="Measuring duration" size="2" precision="1" scientific="false" unit="s" factor="1" >
+           <input>max_t</input>
+        </value>
+        <value label="Maximum signal (without transit)" size="2" precision="1" scientific="false" unit="a.u." factor="1" >
+            <input>max_amplitude</input>
+        </value>
+         <value label="Minimum signal (during transit)" size="2" precision="1" scientific="false" unit="a.u." factor="1" >
+           <input>min_amplitude</input>
+        </value>
+        <value label="Transit depth" size="2" precision="2" scientific="false" unit="%" factor="1" >
+            <input>transit_depth</input>
+        </value>
+        <value label="⌀ Transit duration" size="2" precision="2" unit="s">
+            <input>avg_transit_time</input>
+      </value>
+      <value label="⌀ Duration of one year" size="2" precision="2" unit="s">
+            <input>avg_year_duration</input>
+      </value>
+    </view>
+
+    <view label="Transit Duration">
+        <info label ="Measures the total transit duration, i.e. the time between the beginning and end of the dimming of the star by the transit of the planet." />
+        <separator height="1"/>
+      <value label="Zeroth transit" size="1" precision="2" unit="s">
+        <input>don0</input>
+      </value>
+      <value label="First transit" size="1" precision="2" unit="s">
+        <input>don1</input>
+      </value>
+      <value label="Second transit" size="1" precision="2" unit="s">
+        <input>don2</input>
+      </value>
+      <value label="Third transit" size="1" precision="2" unit="s">
+        <input>don3</input>
+      </value>
+      <value label="Fourth transit" size="1" precision="2" unit="s">
+        <input>don4</input>
+      </value>
+      <value label="Fifth transit" size="1" precision="2" unit="s">
+        <input>don5</input>
+      </value>
+      <separator height="1"/>
+      <value label="⌀ Transit duration" size="2" precision="2" unit="s">
+        <input>avg_transit_time</input>
+      </value>
+      <separator height="1"/>
+      <info label="Note: The ⌀ transit duration is only displayed after six transits. The zeroth transit pass is neglected, because especially in the case of hidden measurement it is not known whether the planet is already in front of the star when the measurement begins. "/>
+    </view>
+
+    <view label="Orbital Period">
+    <info label ="Measures the time between two transits and calculates the ⌀ duration of one year on the planet." />
+    <separator height="1"/>
+      <value label="Year 1" size="1" precision="2" unit="s">
+        <input>dt01</input>
+      </value>
+      <value label="Year 2" size="1" precision="2" unit="s">
+        <input>dt12</input>
+      </value>
+      <value label="Year 3" size="1" precision="2" unit="s">
+        <input>dt23</input>
+      </value>
+      <value label="Year 4" size="1" precision="2" unit="s">
+        <input>dt34</input>
+      </value>
+      <value label="Year 5" size="1" precision="2" unit="s">
+        <input>dt45</input>
+      </value>
+      <separator height="1"/>
+      <value label="⌀ Duration of one year" size="2" precision="2" unit="s">
+            <input>avg_year_duration</input>
+      </value>
+      <separator height="1"/>
+      <info label ="Note: The ⌀ duration of one year on the planet is only displayed after five years." />
+    </view>
+
+    <view label="Planet Size">
+        <info label ="The star radius is already known in many cases. For example, it can be approximated from the luminosity and temperature of the star using the Stefan-Boltzmann law." />
+        <separator height="1"/>
+        <info label ="Enter a suitable star radius here" />
+        <edit label="Star radius" signed="false" decimal="true" unit="cm" factor="1" default="1" min="0.1">
+            <output>R_star</output>
+        </edit>
+        <separator height="1"/>
+        <info label ="Using the transit-depth results from the transit method, the radius of the planet can now be estimated." />
+        <separator height="1"/>
+        <value label="Transit depth" size="2" precision="1" scientific="false" unit="%" factor="1" >
+            <input>transit_depth</input>
+        </value>
+        <separator height="1"/>
+        <info label ="This yields for the planet:" />
+        <separator height="1"/>
+        <value label="Planet radius" size="1" precision="1" scientific="false" unit="cm" factor="1" >
+            <input>R_planet</input>
+        </value>
+        <separator height="1"/>
+        <value label="Planet size relative to star" size="1" precision="1" scientific="false" unit="%" factor="1" >
+            <input>Quot_R</input>
+        </value>
+        <separator height="1"/>
+        <info label ="These are calculations for our model star and model planet. In reality the dimensions are much larger: Earth's radius is 6,371 kilometres, and the Sun's radius is another 109 times larger. In this radius ratio, the Earth is therefore about 0.92% of the Sun." />
+     </view>
+
+    <view label="Trigger Configuration">
+         <info label ="Place the selected sensor at the final measurement distance from the light source and determine the maximum signal. The same workflow is used for the smartphone light sensor, the TI SensorTag, and a solar cell on the Owon multimeter." />
+         <separator height="1"/>
+            <value label="Maximum Signal" size="2" precision="1" scientific="false" unit="a.u." factor="1" >
+                <input>max_amplitude</input>
+            </value>
+    <separator height="1"/>
+         <info label ="This is the recommended value below which the time measurement is triggered and above which it stops again. In this way the total transit duration is measured. The thresholds always refer to the currently measured raw signal and not to a calibrated physical unit." />
+         <separator height="1"/>
+     <edit label="Threshold for transit measurement" unit="a.u." default="0" signed="false" min="0">
+        <output>threshold_low</output>
+      </edit>
+      <separator height="1"/>
+      <button label="Reset">
+        <input type="value">1</input>
+        <output>reset</output>
+      </button>
+      <separator height="1"/>
+      <info label="By default, the stopwatch measures darkening. If you want to measure the time between two flashes of light, set the upper value to zero and choose a threshold in the following field."/>
+      <separator height="1"/>
+       <edit label="Threshold for brightness measurement" unit="a.u." default="1000000" signed="false" min="0">
+       <output>threshold_high</output>
+      </edit>
+       <separator height="1"/>
+      <info label="Attention: for the transit experiment it is important that this value remains at the default of 1000000.0 and that only the threshold for transit measurement is varied." />
+    </view>
+  </views>
+
+  <export>
+    <set name="Raw">
+      <data name="t (s)">t</data>
+      <data name="Relative Signal (a.u.)">amplitude</data>
+    </set>
+    <set name="Timing">
+      <data name="On 0 (s)">on0</data>
+      <data name="Off 0 (s)">off0</data>
+      <data name="On 1 (s)">on1</data>
+      <data name="Off 1 (s)">off1</data>
+      <data name="On 2 (s)">on2</data>
+      <data name="Off 2 (s)">off2</data>
+      <data name="On 3 (s)">on3</data>
+      <data name="Off 3 (s)">off3</data>
+      <data name="On 4 (s)">on4</data>
+      <data name="Off 4 (s)">off4</data>
+      <data name="On 5 (s)">on5</data>
+      <data name="Off 5 (s)">off5</data>
+    </set>
+  </export>
+</phyphox>

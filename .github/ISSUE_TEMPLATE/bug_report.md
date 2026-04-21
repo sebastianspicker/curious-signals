@@ -1,31 +1,26 @@
-# Bug_Report
+---
+name: Bug report
+description: Report a problem or regression
+labels: [bug]
+---
 
+## Summary
 
-## Context
-This page keeps the current bug_report guidance concise after earlier rough notes.
+## Reproduction
+1.
+2.
+3.
 
-## Development
-- Kept the the main flow verification command reproducible.
+## Expected behavior
 
-- Earlier scratch notes were compressed into the current guidance.
+## Actual behavior
 
-## Notes Folded Into Current Flow
-Early notes are still uneven and may be folded into clearer sections later.
+## Environment
+- OS:
+- phyphox app version:
+- Board: (e.g., Nano 33 BLE Sense)
+- Arduino core version (if compiling locally):
 
-## Usage
-- Merged scattered the main flow guidance into the docs.
+## Logs / Screenshots
 
-- Earlier scratch notes were compressed into the current guidance.
-
-## Architecture
-- Simplified the next maintenance pass through the main flow.
-
-- Earlier scratch notes were compressed into the current guidance.
-
-## Caveats
-Some setup details still depend on the current local workflow and may change again.
-
-## Notes
-- Tighten the tracked surface before publication.
-
-- Earlier scratch notes were compressed into the current guidance.
+## Additional context

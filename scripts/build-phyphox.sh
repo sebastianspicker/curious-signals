@@ -24,10 +24,13 @@ mkdir -p "$PHYPHOX_OUTDIR"
 shopt -s nullglob
 
 src_files=(src/phyphox/*.phyphox.xml)
+include_files=(src/phyphox/includes/*.xml)
 if ((${#src_files[@]} == 0)); then
   echo "No source files found at src/phyphox/*.phyphox.xml"
   exit 0
 fi
+
+python3 tools/validate_xinclude_paths.py "${src_files[@]}" "${include_files[@]}"
 
 tmp="$(mktemp)"
 trap 'rm -f "$tmp"' EXIT

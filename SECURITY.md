@@ -24,3 +24,17 @@ bash scripts/sast-minimal.sh
 ```
 
 CI runs the same baseline on every push and pull request.
+
+## Local file-processing boundary
+
+Core sensor experiment sources may use XInclude only for repository-owned XML
+fragments below `src/phyphox/includes/`. The build and validation scripts run:
+
+```sh
+python3 tools/validate_xinclude_paths.py src/phyphox/*.phyphox.xml src/phyphox/includes/*.xml
+```
+
+before `xmllint --xinclude`. Reject absolute paths, parent directory traversal,
+URL-style hrefs, query strings, and fragments so a modified experiment source
+cannot make CI or a maintainer workstation expand arbitrary local or remote
+content into generated `.phyphox` files.

@@ -32,6 +32,9 @@ for f in "${include_files[@]}" "${source_files[@]}" "${generated_files[@]}"; do
   xmllint --noout "$f"
 done
 
+echo "== XInclude path guard =="
+python3 tools/validate_xinclude_paths.py "${source_files[@]}" "${include_files[@]}"
+
 echo "== xmllint --xinclude =="
 for f in "${source_files[@]}"; do
   xmllint --xinclude --noout "$f"

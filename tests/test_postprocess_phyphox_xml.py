@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import io
 import sys
 import textwrap
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
-from postprocess_phyphox_xml import postprocess
+from postprocess_phyphox_xml import main, postprocess
 
 _SCRIPT = Path(__file__).resolve().parents[1] / "tools" / "postprocess_phyphox_xml.py"
 
@@ -125,46 +127,40 @@ class TestPostprocessEdgeCases:
 class TestMainFileArg:
     """Test the CLI entry point with a file argument."""
 
-    def test_reads_file_and_postprocesses(self, tmp_path):
-        import subprocess
-
+    def test_reads_file_and_postprocesses(self, monkeypatch, tmp_path):
         xml = '<phyphox xmlns:xi="http://www.w3.org/2001/XInclude"><title>T</title></phyphox>'
         p = tmp_path / "input.xml"
         p.write_text(xml, encoding="utf-8")
 
-        script = _SCRIPT
-        result = subprocess.run(
-            [sys.executable, script, str(p)],
-            capture_output=True,
-            text=True,
-        )
-        assert result.returncode == 0
-        assert "xmlns:xi" not in result.stdout
-        assert "<phyphox>" in result.stdout
+        stdout = io.StringIO()
+        monkeypatch.setattr(sys, "argv", [str(_SCRIPT), str(p)])
 
-    def test_missing_file_returns_error(self, tmp_path):
-        import subprocess
+        with redirect_stdout(stdout):
+            returncode = main()
 
-        script = _SCRIPT
-        result = subprocess.run(
-            [sys.executable, script, str(tmp_path / "missing.xml")],
-            capture_output=True,
-            text=True,
-        )
-        assert result.returncode == 1
-        assert "Error" in result.stderr
+        assert returncode == 0
+        assert "xmlns:xi" not in stdout.getvalue()
+        assert "<phyphox>" in stdout.getvalue()
 
-    def test_stdin_mode(self, tmp_path):
-        import subprocess
+    def test_missing_file_returns_error(self, monkeypatch, tmp_path):
+        stderr = io.StringIO()
+        monkeypatch.setattr(sys, "argv", [str(_SCRIPT), str(tmp_path / "missing.xml")])
 
+        with redirect_stderr(stderr):
+            returncode = main()
+
+        assert returncode == 1
+        assert "Error" in stderr.getvalue()
+
+    def test_stdin_mode(self, monkeypatch):
         xml = '<e xml:base="x.xml">V</e>'
-        script = _SCRIPT
-        result = subprocess.run(
-            [sys.executable, script],
-            input=xml,
-            capture_output=True,
-            text=True,
-        )
-        assert result.returncode == 0
-        assert "xml:base" not in result.stdout
-        assert "<e>V</e>" == result.stdout
+        stdout = io.StringIO()
+        monkeypatch.setattr(sys, "argv", [str(_SCRIPT)])
+        monkeypatch.setattr(sys, "stdin", io.StringIO(xml))
+
+        with redirect_stdout(stdout):
+            returncode = main()
+
+        assert returncode == 0
+        assert "xml:base" not in stdout.getvalue()
+        assert "<e>V</e>" == stdout.getvalue()

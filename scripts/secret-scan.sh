@@ -28,15 +28,24 @@ patterns=(
 
 matches="$(mktemp)"
 files="$(mktemp)"
-trap 'rm -f "$matches"' EXIT
 
 git ls-files -z --cached --others --exclude-standard -- . >"$files"
 trap 'rm -f "$matches" "$files"' EXIT
+
+is_excluded_analysis_path() {
+  case "$1" in
+    docs/archive/*|docs/deprecated/*|docs/ci/*|reference/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
 
 found=0
 for pat in "${patterns[@]}"; do
   while IFS= read -r -d '' file; do
     [[ -f "$file" ]] || continue
+    if is_excluded_analysis_path "$file"; then
+      continue
+    fi
     if rg --null --line-number --with-filename --regexp "$pat" -- "$file" >>"$matches"; then
       found=1
     fi

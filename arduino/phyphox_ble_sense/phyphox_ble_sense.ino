@@ -42,11 +42,10 @@ unsigned long lastSendMs = 0;
 
 Mode mode = Mode::kAcceleration;
 
-// Writes 4 bytes at buf[offset..offset+3]. Caller must ensure offset + 4 <= buffer size.
-void writeFloat32LE(uint8_t* buf, int offset, float value) {
+void writeFloat32LE(uint8_t* buf, size_t len, int offset, float value) {
   static_assert(sizeof(float) == 4, "Expected IEEE-754 float32");
-  if (buf == nullptr || offset < 0 || offset + 4 > kPayloadSizeBytes) {
-    return;  // Guard against misuse; current call sites use offset in {0,4,8,12,16}.
+  if (buf == nullptr || offset < 0 || (size_t)offset + 4 > len) {
+    return;
   }
   uint32_t raw = 0;
   memcpy(&raw, &value, sizeof(raw));
@@ -71,12 +70,11 @@ void setModeFromConfig(float configValue) {
   if (!std::isfinite(configValue)) {
     return;
   }
-  int raw = (int)roundf(configValue);
-  // Accept the full reserved range 1..9; values 7 and 8 are reserved for future
-  // experiments and fall through to default: below, leaving mode unchanged.
-  if (raw < 1 || raw > 9) {
+  float rounded = roundf(configValue);
+  if (fabsf(configValue - rounded) > 0.001f) {
     return;
   }
+  int raw = (int)rounded;
   switch (raw) {
     case (int)Mode::kAcceleration:
     case (int)Mode::kGyroscope:
@@ -88,10 +86,6 @@ void setModeFromConfig(float configValue) {
       mode = (Mode)raw;
       break;
     default:
-      // Reserved mode received; silently keep the current mode rather than
-      // resetting to a default.  This allows future modes to be added to the
-      // sketch without breaking existing app-side experiments that may send
-      // an unrecognised value during a firmware upgrade.
       break;
   }
 }
@@ -180,11 +174,11 @@ void sendSample() {
   readChannels(ch2, ch3, ch4, ch5);
 
   uint8_t payload[kPayloadSizeBytes] = {0};
-  writeFloat32LE(payload, 0, t);
-  writeFloat32LE(payload, 4, ch2);
-  writeFloat32LE(payload, 8, ch3);
-  writeFloat32LE(payload, 12, ch4);
-  writeFloat32LE(payload, 16, ch5);
+  writeFloat32LE(payload, sizeof(payload), 0, t);
+  writeFloat32LE(payload, sizeof(payload), 4, ch2);
+  writeFloat32LE(payload, sizeof(payload), 8, ch3);
+  writeFloat32LE(payload, sizeof(payload), 12, ch4);
+  writeFloat32LE(payload, sizeof(payload), 16, ch5);
 
   dataCharacteristic.writeValue(payload, sizeof(payload));
 }
@@ -213,6 +207,7 @@ void setup() {
   BLE.addService(phyphoxService);
 
   uint8_t cfg[4] = {0, 0, 0, 0};
+  writeFloat32LE(cfg, sizeof(cfg), 0, (float)Mode::kAcceleration);
   configCharacteristic.writeValue(cfg, sizeof(cfg));
 
   BLE.advertise();

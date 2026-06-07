@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import json
 import textwrap
 from pathlib import Path
 
 import pytest
+import validate_phyphox as validate_module
 from validate_phyphox import (
     ValidationError,
     _child,
     _children,
+    _load_expected_modes,
     _local_name,
     _text,
     main,
@@ -84,6 +87,51 @@ def xml_factory(tmp_path):
         return str(p)
 
     return _make
+
+
+def _write_mode_repo(tmp_path: Path, mode_values: dict[str, str]) -> Path:
+    repo_root = tmp_path / "repo"
+    constants_dir = repo_root / "experiments"
+    sketch_dir = repo_root / "arduino" / "phyphox_ble_sense"
+    source_dir = repo_root / "src" / "phyphox"
+    constants_dir.mkdir(parents=True)
+    sketch_dir.mkdir(parents=True)
+    source_dir.mkdir(parents=True)
+
+    modes = {
+        "acceleration": 1,
+        "gyroscope": 2,
+        "magnetometer": 3,
+        "pressure": 4,
+        "temperature_humidity": 5,
+        "light_rgb": 6,
+        "analog_inputs": 9,
+    }
+    (constants_dir / "phyphox_constants.json").write_text(
+        json.dumps({"modes": modes}),
+        encoding="utf-8",
+    )
+    (sketch_dir / "phyphox_ble_sense.ino").write_text(
+        textwrap.dedent("""\
+            enum class Mode : int {
+              kAcceleration = 1,
+              kGyroscope = 2,
+              kMagnetometer = 3,
+              kPressure = 4,
+              kTemperatureHumidity = 5,
+              kLightRgb = 6,
+              kAnalogInputs = 9,
+            };
+        """),
+        encoding="utf-8",
+    )
+
+    for name, value in mode_values.items():
+        (source_dir / f"{name}.phyphox.xml").write_text(
+            f"<phyphox><output><bluetooth><config>{value}</config></bluetooth></output></phyphox>",
+            encoding="utf-8",
+        )
+    return repo_root
 
 
 # ---------------------------------------------------------------------------
@@ -410,6 +458,49 @@ class TestConfigValidation:
         assert any("<config> must have a numeric value" in e.message for e in errors)
 
 
+class TestModeValidation:
+    def test_source_modes_accept_exact_active_integer_values(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        repo_root = _write_mode_repo(
+            tmp_path,
+            {
+                "acceleration": "1.0",
+                "gyroscope": "2",
+                "magnetometer": "3.0",
+                "pressure": "4",
+                "temperature": "5.0",
+                "light": "6",
+                "analog": "9.0",
+            },
+        )
+        monkeypatch.setattr(validate_module, "REPO_ROOT", repo_root)
+
+        assert _load_expected_modes() == []
+
+    @pytest.mark.parametrize("bad_value", ["1.1", "1.9", "7", "8", "0", "10", "nan"])
+    def test_source_modes_reject_non_active_integer_values(
+        self, monkeypatch, tmp_path: Path, bad_value: str
+    ) -> None:
+        repo_root = _write_mode_repo(
+            tmp_path,
+            {
+                "acceleration": bad_value,
+                "gyroscope": "2",
+                "magnetometer": "3",
+                "pressure": "4",
+                "temperature": "5",
+                "light": "6",
+                "analog": "9",
+            },
+        )
+        monkeypatch.setattr(validate_module, "REPO_ROOT", repo_root)
+
+        errors = _load_expected_modes()
+
+        assert any("must be an active integer mode ID" in error.message for error in errors)
+
+
 # ---------------------------------------------------------------------------
 # Analysis / export container references
 # ---------------------------------------------------------------------------
@@ -482,6 +573,12 @@ class TestOffsetPlausibility:
         path = xml_factory(xml)
         errors = validate_phyphox(path)
         assert any("missing required bluetooth output offset" in e.message for e in errors)
+
+    def test_duplicate_offsets_reported(self, xml_factory):
+        xml = MINIMAL_VALID_XML.replace('offset="16">CH5', 'offset="0">CH5')
+        path = xml_factory(xml)
+        errors = validate_phyphox(path)
+        assert any("duplicate bluetooth output offsets" in e.message for e in errors)
 
 
 # ---------------------------------------------------------------------------

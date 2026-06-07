@@ -8,6 +8,15 @@
 .codex/
 .kilo/
 
+# Codacy local run artifacts. Keep .codacy/codacy.config.json visible when it is
+# intentionally used as repository configuration.
+.codacy/generated/
+.codacy/*summary*.json
+.codacy/*ledger*.md
+.codacy/results/
+.codacy/*.sarif
+.codacy/*.log
+
 # Internal AI operator guide (not user-facing documentation)
 agent.md
 
@@ -57,4 +66,10 @@ AGENT_AUDIT_REPORT.md
 /DECISIONS.md
 /FINDINGS.md
 /LOG.md
+/plan.md
+/plan-*.md
 /REFACTOR_PLAN.md
+/*-ledger.md
+/*-status.md
+docs/*-ledger.md
+docs/*-status.md

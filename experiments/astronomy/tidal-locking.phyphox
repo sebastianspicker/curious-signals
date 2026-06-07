@@ -119,7 +119,6 @@
         <container size="1" static="false">countI2</container>
         <container size="0">t2</container>
         <container size="1" static="false">tmax2</container>
-        <container size="0" static="false">factor2</container>
         <container size="0">amplitude1</container>
         <container size="1" static="false">amplitude_max1</container>
         <container size="1" static="false">amplitude_min1</container>

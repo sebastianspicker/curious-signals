@@ -48,10 +48,14 @@ Import these files from `experiments/astronomy/`:
 - `greenhouse.phyphox`
 - `ir-dist_habitable.phyphox`
 - `missiontomars.phyphox`
-- `owon_digital_multimeter-debug.phyphox`
 - `pt-star.phyphox`
 - `tidal-locking.phyphox`
 - `transitmethode.phyphox`
+
+Auxiliary hardware helper:
+
+- `owon_digital_multimeter-debug.phyphox` is a supported Owon multimeter debug
+  and integration utility, not an astronomy teaching experiment.
 
 The astronomy files are classroom analogies or bounded model experiments, not standalone scientific calculators. Their measurement paths, physical claims, and didactic limits are documented in the companion file linked below.
 
@@ -82,7 +86,7 @@ flowchart LR
   end
 ```
 
-**Core sensor runtime:** The Arduino advertises as `phyphox-sense`. The phyphox app connects, writes a mode (1–9) to the config characteristic, and subscribes to the data characteristic. The Arduino reads the selected sensor(s), packs time and four channel values as 5× float32 LE, and notifies every 50 ms.
+**Core sensor runtime:** The Arduino advertises as `phyphox-sense`. The phyphox app connects, writes an active mode (`1`-`6` or `9`) to the config characteristic, and subscribes to the data characteristic. The Arduino reads the selected sensor(s), packs time and four channel values as 5× float32 LE, and notifies every 50 ms.
 
 ```mermaid
 sequenceDiagram
@@ -90,7 +94,7 @@ sequenceDiagram
   participant App as phyphox app
   Arduino->>Arduino: Advertise "phyphox-sense"
   App->>Arduino: Connect
-  App->>Arduino: Write config (mode 1–9)
+  App->>Arduino: Write config (active mode 1-6 or 9)
   Arduino->>Arduino: Set mode, read sensors
   loop Every 50 ms
     Arduino->>App: Notify (time, CH2, CH3, CH4, CH5)
@@ -132,7 +136,7 @@ flowchart LR
 
 ## Quickstart
 
-### Core sensor experiments
+### Core sensor quickstart
 
 Use this flow for the files in `experiments/*.phyphox`:
 
@@ -142,7 +146,7 @@ Use this flow for the files in `experiments/*.phyphox`:
 
 Each file in `experiments/` is a self-contained experiment. You can import several and switch between them; the app tells the Arduino which sensor to stream.
 
-### Astronomy experiments
+### Astronomy quickstart
 
 Use this flow for the files in `experiments/astronomy/*.phyphox`:
 
@@ -181,7 +185,7 @@ No runtime configuration is required. BLE UUIDs and experiment mode IDs are defi
 
 ## Manual device test (optional)
 
-For core sensor experiments, follow the [core sensor quickstart](#core-sensor-experiments) and verify:
+For core sensor experiments, follow the [core sensor quickstart](#core-sensor-quickstart) and verify:
 
 - The plot updates with live sensor data after connecting.
 - Switching to a different experiment changes the streamed sensor (e.g., accelerometer vs. gyroscope).
@@ -207,7 +211,7 @@ This runs:
 **Bluetooth / phyphox app:**
 
 - **Arduino not found in phyphox:** Make sure the Arduino is powered and not connected to another device. Bluetooth LE does not show up in the system Bluetooth settings -- the phyphox app handles the connection directly.
-- **No data / flat plot:** Check that you imported the correct file from `experiments/` for the sensor you want. Each experiment selects a different sensor mode on the Arduino.
+- **No data / flat plot:** Check that you imported the correct file from `experiments/` for the sensor you want. Each experiment selects a different sensor mode on the Arduino. If the selected sensor is unavailable or has no fresh sample, the firmware sends `NaN` for the affected channels; treat blank, missing, or `NaN` values as an unavailable-sensor condition, not as a real zero reading.
 - **Board not advertising after flash:** Power-cycle the Arduino. If it still does not advertise as `phyphox-sense`, re-flash the sketch.
 
 **Build tools:**
@@ -232,7 +236,6 @@ This runs:
 - [docs/REPO_MAP.md](docs/REPO_MAP.md) — technical map (entrypoints, hot spots)
 - [docs/RUNBOOK.md](docs/RUNBOOK.md) — reproducible setup and verification loop
 - [docs/ASTRONOMY_EXPERIMENTS_COMPANION.md](docs/ASTRONOMY_EXPERIMENTS_COMPANION.md) — astronomy experiment companion covering method, physics basis, didactic goal, and scope limits
-- [docs/deprecated/audit/README.md](docs/deprecated/audit/README.md) — archived audit workspace, remediation runbook, and progress ledger
 - [docs/ci.md](docs/ci.md) — CI matrix overview
 - [arduino/phyphox_ble_sense/README.md](arduino/phyphox_ble_sense/README.md) — BLE UUIDs, data layout, mode mapping, and Arduino sketch behaviour
 - [CONTRIBUTING.md](CONTRIBUTING.md) — maintainer workflow

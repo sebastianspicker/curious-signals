@@ -2,17 +2,16 @@
 
 from __future__ import annotations
 
-import subprocess
-import sys
+import io
 import textwrap
+from contextlib import redirect_stderr
 from pathlib import Path
 
 import pytest
-from validate_xinclude_paths import validate_xinclude_paths
+from validate_xinclude_paths import main, validate_xinclude_paths
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DIR = REPO_ROOT / "src" / "phyphox"
-SCRIPT = REPO_ROOT / "tools" / "validate_xinclude_paths.py"
 XINCLUDE_NS = "http://www.w3.org/2001/XInclude"
 
 
@@ -112,13 +111,12 @@ def test_rejects_symlink_escape_from_includes(tmp_path: Path) -> None:
 
 def test_cli_fails_on_unsafe_include_before_expansion(tmp_path: Path) -> None:
     source = _source_with_include(tmp_path, "../outside.xml")
+    stderr = io.StringIO()
 
-    result = subprocess.run(
-        [sys.executable, str(SCRIPT), str(source)],
-        text=True,
-        capture_output=True,
-        check=False,
-    )
+    with redirect_stderr(stderr):
+        returncode = main([str(source)])
 
-    assert result.returncode == 1
-    assert "must stay under includes/" in result.stderr
+    if returncode != 1:
+        pytest.fail(f"expected unsafe include failure, got {returncode}")
+    if "must stay under includes/" not in stderr.getvalue():
+        pytest.fail("expected unsafe include diagnostic")

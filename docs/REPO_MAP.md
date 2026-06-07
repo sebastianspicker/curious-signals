@@ -13,8 +13,8 @@
 - `scripts/`: build, validation, compile, and local CI entrypoints
 - `tools/`: XML post-processing and phyphox plausibility validation
 - `docs/ASTRONOMY_EXPERIMENTS_COMPANION.md`: teacher/operator companion for astronomy methods, physics, and didactics
-- `agent.md`: operator guidance for phyphox-specific follow-up work, including fallback behavior when the optional local wiki reference is absent
-- `docs/`: runbook, CI notes, archived audit material, and repository map
+- `docs/`: runbook, CI notes, repository map, and current classroom companion
+  docs. `docs/archive/` is retained only for superseded audit/status material.
 
 ## Key flows
 

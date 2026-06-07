@@ -54,6 +54,7 @@ fi
 # Check that every Python dependency in requirements-test.txt carries a version constraint.
 req_file="requirements-test.txt"
 py_unconstrained=0
+constraint_re='[><=!~]'
 while IFS= read -r line; do
   # Skip blank lines and comments.
   [[ -z "$line" || "$line" == \#* ]] && continue
@@ -62,7 +63,7 @@ while IFS= read -r line; do
   pkg="${pkg%%[[:space:]]*}"
   [[ -z "$pkg" ]] && continue
   # A version constraint contains one of: >= <= == != ~= >  <
-  if ! echo "$pkg" | grep -qE '[><=!~]'; then
+  if [[ ! "$pkg" =~ $constraint_re ]]; then
     echo "Unconstrained Python dependency: $pkg (in $req_file)" >&2
     py_unconstrained=1
   fi

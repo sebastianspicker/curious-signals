@@ -26,8 +26,8 @@ shopt -s nullglob
 src_files=(src/phyphox/*.phyphox.xml)
 include_files=(src/phyphox/includes/*.xml)
 if ((${#src_files[@]} == 0)); then
-  echo "No source files found at src/phyphox/*.phyphox.xml"
-  exit 0
+  echo "No source files found at src/phyphox/*.phyphox.xml" >&2
+  exit 1
 fi
 
 python3 tools/validate_xinclude_paths.py "${src_files[@]}" "${include_files[@]}"

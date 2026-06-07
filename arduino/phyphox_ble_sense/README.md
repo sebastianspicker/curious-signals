@@ -20,7 +20,9 @@ The data characteristic payload is 5x `float32` little-endian:
 
 ## Mode mapping
 
-The app writes a float value to the config characteristic. Rounded to the nearest int:
+The app writes a float value to the config characteristic. The value must be
+finite and integer-valued; fractional, non-finite, out-of-range, and reserved
+values leave the current mode unchanged.
 
 - `1` acceleration: `x,y,z,|a|`
 - `2` gyroscope: `x,y,z,|ω|`
@@ -28,7 +30,7 @@ The app writes a float value to the config characteristic. Rounded to the neares
 - `4` pressure: `kPa` (converted to `hPa` in the phyphox experiment)
 - `5` temperature/humidity: `°C,%rH`
 - `6` light/rgb: clear-channel plus `R,G,B` counts from `Arduino_APDS9960`
-- `7`, `8` reserved for future experiments (e.g. combined IMU or other sensors); when received, the sketch silently stays on the last valid mode
+- `7`, `8` reserved for future experiments; when received, the sketch silently stays on the last valid mode
 - `9` analog inputs: `A0,A1,A2` raw ADC readings (converted to mV in the phyphox experiment)
 
 This single mode-switched sketch is the canonical firmware strategy after the repo consolidation.

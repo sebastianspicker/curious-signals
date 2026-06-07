@@ -1,7 +1,7 @@
 # Archived Audit Workspace
 
-This workspace is the persistent operator-facing area for the phyphox
-astronomy audit campaign.
+This workspace is a historical archive of the phyphox astronomy audit campaign.
+It is not current operator guidance.
 
 Current scope:
 
@@ -33,7 +33,7 @@ When it does not exist, start directly with the tracked repo docs and files.
 
 Related companion outside the audit workspace:
 
-- [ASTRONOMY_EXPERIMENTS_COMPANION.md](../../ASTRONOMY_EXPERIMENTS_COMPANION.md):
+- [ASTRONOMY_EXPERIMENTS_COMPANION.md](../../../ASTRONOMY_EXPERIMENTS_COMPANION.md):
   teacher/operator companion for astronomy experiment method, physics basis,
   didactic goal, and scope limits
 

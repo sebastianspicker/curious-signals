@@ -9,6 +9,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DIR = REPO_ROOT / "src" / "phyphox"
 EXPERIMENTS_DIR = REPO_ROOT / "experiments"
+BASH = "/bin/bash"
 
 
 def _source_files() -> list[Path]:
@@ -18,7 +19,7 @@ def _source_files() -> list[Path]:
 def test_generated_files_match_sources(tmp_path: Path) -> None:
     outdir = tmp_path / "phyphox-build"
     subprocess.run(
-        ["bash", str(REPO_ROOT / "scripts" / "build-phyphox.sh"), str(outdir)],
+        [BASH, str(REPO_ROOT / "scripts" / "build-phyphox.sh"), str(outdir)],
         check=True,
         cwd=REPO_ROOT,
         text=True,

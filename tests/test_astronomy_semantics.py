@@ -2,16 +2,29 @@
 
 from __future__ import annotations
 
-import xml.etree.ElementTree as ET
+from collections import Counter
 from pathlib import Path
+
+import pytest
+from defusedxml import ElementTree as ET
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 ASTRO_DIR = REPO_ROOT / "experiments" / "astronomy"
 DOCS_PATH = REPO_ROOT / "docs" / "ASTRONOMY_EXPERIMENTS_COMPANION.md"
 
 
+def _local_name(tag: str) -> str:
+    if "}" in tag:
+        return tag.split("}", 1)[1]
+    return tag
+
+
 def _load(name: str) -> ET.Element:
-    return ET.parse(ASTRO_DIR / name).getroot()
+    return _load_path(ASTRO_DIR / name)
+
+
+def _load_path(path: Path) -> ET.Element:
+    return ET.parse(path).getroot()
 
 
 def _view(root: ET.Element, label: str) -> ET.Element:
@@ -29,6 +42,55 @@ def _graphs(view: ET.Element, label: str) -> list[ET.Element]:
 
 def _graph_inputs(graph: ET.Element) -> list[str]:
     return [element.text.strip() for element in graph.findall("input") if element.text]
+
+
+def _container_names(root: ET.Element) -> list[str]:
+    containers = root.find("data-containers")
+    if containers is None:
+        pytest.fail("missing data-containers element")
+    return [
+        container.text.strip()
+        for container in containers.findall("container")
+        if container.text and container.text.strip()
+    ]
+
+
+def _data_references(root: ET.Element) -> set[str]:
+    refs: set[str] = set()
+    for element in root.iter():
+        tag = _local_name(element.tag)
+        if tag not in {"input", "output", "data"}:
+            continue
+        if tag == "input" and element.attrib.get("type") == "value":
+            continue
+        if element.text and element.text.strip():
+            refs.add(element.text.strip())
+    return refs
+
+
+def test_astronomy_files_have_unique_container_names() -> None:
+    duplicates: dict[str, list[str]] = {}
+    for path in sorted(ASTRO_DIR.glob("*.phyphox")):
+        names = _container_names(_load_path(path))
+        repeated = sorted(name for name, count in Counter(names).items() if count > 1)
+        if repeated:
+            duplicates[path.name] = repeated
+
+    if duplicates:
+        pytest.fail(f"duplicate astronomy containers: {duplicates}")
+
+
+def test_astronomy_files_do_not_reference_unknown_containers() -> None:
+    unknown: dict[str, list[str]] = {}
+    for path in sorted(ASTRO_DIR.glob("*.phyphox")):
+        root = _load_path(path)
+        containers = set(_container_names(root))
+        missing = sorted(ref for ref in _data_references(root) if ref not in containers)
+        if missing:
+            unknown[path.name] = missing
+
+    if unknown:
+        pytest.fail(f"unknown astronomy container references: {unknown}")
 
 
 def test_tidal_locking_ambient_graphs_use_ambient_containers() -> None:

@@ -3,18 +3,20 @@
 from __future__ import annotations
 
 import json
+import os
+import shutil
 import subprocess
 from pathlib import Path
 
+import pytest
 import validate_phyphox
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CONSTANTS_PATH = REPO_ROOT / "experiments" / "phyphox_constants.json"
 SKETCH_PATH = REPO_ROOT / "arduino" / "phyphox_ble_sense" / "phyphox_ble_sense.ino"
 CI_LOCAL_PATH = REPO_ROOT / "scripts" / "ci-local.sh"
-GENERATED_CLEAN_PATH = REPO_ROOT / "scripts" / "check-generated-clean.sh"
 SECRET_SCAN_PATH = REPO_ROOT / "scripts" / "secret-scan.sh"
-WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "ci.yml"
+BASH = "/bin/bash"
 
 
 def test_service_uuid_matches_between_constants_and_firmware() -> None:
@@ -24,13 +26,70 @@ def test_service_uuid_matches_between_constants_and_firmware() -> None:
     assert constants["bluetooth"]["service_uuid"] in firmware
 
 
-def test_guardrail_scripts_check_untracked_generated_files() -> None:
-    helper_call = "bash scripts/check-generated-clean.sh"
-    helper_body = 'bash scripts/build-phyphox.sh "$tmpdir" >/dev/null'
+def test_ci_local_checks_generated_files_before_in_place_build(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    scripts = repo / "scripts"
+    bin_dir = tmp_path / "bin"
+    log_path = tmp_path / "ci-local.log"
+    scripts.mkdir(parents=True)
+    bin_dir.mkdir()
+    shutil.copy2(CI_LOCAL_PATH, scripts / "ci-local.sh")
 
-    assert helper_call in CI_LOCAL_PATH.read_text(encoding="utf-8")
-    assert helper_call in WORKFLOW_PATH.read_text(encoding="utf-8")
-    assert helper_body in GENERATED_CLEAN_PATH.read_text(encoding="utf-8")
+    for command in ("ruff", "pytest"):
+        tool = bin_dir / command
+        tool.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+        tool.chmod(0o755)
+
+    for script in (
+        "validate-xml.sh",
+        "check-generated-clean.sh",
+        "build-phyphox.sh",
+        "compile-arduino.sh",
+        "secret-scan.sh",
+        "deps-scan.sh",
+        "sast-minimal.sh",
+    ):
+        (scripts / script).write_text(
+            f"#!/usr/bin/env bash\nprintf '%s\\n' {script!r} >> {str(log_path)!r}\n",
+            encoding="utf-8",
+        )
+
+    env = os.environ.copy()
+    env["PATH"] = f"{bin_dir}{os.pathsep}{env['PATH']}"
+    result = subprocess.run(
+        [BASH, str(scripts / "ci-local.sh")],
+        cwd=repo,
+        text=True,
+        capture_output=True,
+        check=False,
+        env=env,
+    )
+
+    if result.returncode != 0:
+        pytest.fail(result.stderr)
+    calls = log_path.read_text(encoding="utf-8").splitlines()
+    if calls.index("check-generated-clean.sh") >= calls.index("build-phyphox.sh"):
+        pytest.fail("ci-local must check generated files before rebuilding them")
+
+
+def test_build_phyphox_fails_when_source_files_are_missing(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    scripts = repo / "scripts"
+    scripts.mkdir(parents=True)
+    shutil.copy2(REPO_ROOT / "scripts" / "build-phyphox.sh", scripts / "build-phyphox.sh")
+
+    result = subprocess.run(
+        [BASH, str(scripts / "build-phyphox.sh")],
+        cwd=repo,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    if result.returncode != 1:
+        pytest.fail(f"expected missing source failure, got {result.returncode}")
+    if "No source files found" not in result.stderr:
+        pytest.fail("expected missing source diagnostic")
 
 
 def test_secret_scan_flags_untracked_files() -> None:
@@ -39,7 +98,7 @@ def test_secret_scan_flags_untracked_files() -> None:
     temp_path.write_text(f"{temp_token}\n", encoding="utf-8")
     try:
         result = subprocess.run(
-            ["bash", str(SECRET_SCAN_PATH)],
+            [BASH, str(SECRET_SCAN_PATH)],
             cwd=REPO_ROOT,
             text=True,
             capture_output=True,
@@ -110,3 +169,25 @@ def test_constants_json_documents_reserved_modes() -> None:
             f"mode {m} appears in both 'modes' and 'reserved_modes'; "
             "a mode cannot be active and reserved at the same time"
         )
+
+
+def test_firmware_initial_config_matches_default_mode() -> None:
+    firmware = SKETCH_PATH.read_text(encoding="utf-8")
+
+    if "Mode mode = Mode::kAcceleration;" not in firmware:
+        pytest.fail("firmware must initialize to acceleration mode")
+    if "writeFloat32LE(cfg, sizeof(cfg), 0, (float)Mode::kAcceleration);" not in firmware:
+        pytest.fail("firmware must send acceleration as the initial config")
+
+
+def test_firmware_rejects_fractional_and_reserved_modes_explicitly() -> None:
+    firmware = SKETCH_PATH.read_text(encoding="utf-8")
+
+    if "fabsf(configValue - rounded)" not in firmware:
+        pytest.fail("firmware must reject fractional modes")
+    if "raw > 9" in firmware:
+        pytest.fail("firmware must not accept the full 1..9 mode range")
+    if "Accept the full reserved range" in firmware:
+        pytest.fail("firmware must not document accepting reserved modes")
+    if "Reserved mode received" in firmware:
+        pytest.fail("firmware must not silently accept reserved modes")

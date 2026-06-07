@@ -6,9 +6,10 @@ import json
 import math
 import re
 import sys
-import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
+
+from defusedxml import ElementTree as ET
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 EXPECTED_OFFSETS = {0, 4, 8, 12, 16}
@@ -19,6 +20,16 @@ SKETCH_UUID_RE = re.compile(
     )
 )
 MODE_ID_RE = re.compile(r"^\s*k([A-Za-z0-9]+)\s*=\s*(\d+),?$")
+SKETCH_UUID_KEYS = {
+    "kPhyphoxServiceUuid": "service",
+    "kDataCharUuid": "data",
+    "kConfigCharUuid": "config",
+}
+REQUIRED_SKETCH_UUIDS = {
+    "service": "kPhyphoxServiceUuid",
+    "data": "kDataCharUuid",
+    "config": "kConfigCharUuid",
+}
 MODE_NAME_MAP = {
     "Acceleration": "acceleration",
     "Gyroscope": "gyroscope",
@@ -94,9 +105,7 @@ def _read_constants_uuids(
 def _read_sketch_uuids(
     sketch_path: Path,
 ) -> tuple[str | None, str | None, str | None, list[ValidationError]]:
-    service_uuid: str | None = None
-    data_uuid: str | None = None
-    config_uuid: str | None = None
+    uuids: dict[str, str | None] = dict.fromkeys(REQUIRED_SKETCH_UUIDS, None)
     errors: list[ValidationError] = []
     try:
         for line in sketch_path.read_text(encoding="utf-8").splitlines():
@@ -104,22 +113,14 @@ def _read_sketch_uuids(
             if not match:
                 continue
             key, value = match.groups()
-            if key == "kPhyphoxServiceUuid":
-                service_uuid = value
-            elif key == "kDataCharUuid":
-                data_uuid = value
-            elif key == "kConfigCharUuid":
-                config_uuid = value
+            uuids[SKETCH_UUID_KEYS[key]] = value
     except OSError as e:
         return None, None, None, [ValidationError(f"{sketch_path}: cannot read file: {e}")]
 
-    if not service_uuid:
-        errors.append(ValidationError(f"{sketch_path}: missing required kPhyphoxServiceUuid"))
-    if not data_uuid:
-        errors.append(ValidationError(f"{sketch_path}: missing required kDataCharUuid"))
-    if not config_uuid:
-        errors.append(ValidationError(f"{sketch_path}: missing required kConfigCharUuid"))
-    return service_uuid, data_uuid, config_uuid, errors
+    for uuid_key, sketch_name in REQUIRED_SKETCH_UUIDS.items():
+        if not uuids[uuid_key]:
+            errors.append(ValidationError(f"{sketch_path}: missing required {sketch_name}"))
+    return uuids["service"], uuids["data"], uuids["config"], errors
 
 
 def _uuid_mismatch_errors(
@@ -128,26 +129,13 @@ def _uuid_mismatch_errors(
     constants_uuids: tuple[str | None, str | None, str | None],
     sketch_uuids: tuple[str | None, str | None, str | None],
 ) -> list[ValidationError]:
-    constants_service_uuid, constants_data_uuid, constants_config_uuid = constants_uuids
-    sketch_service_uuid, sketch_data_uuid, sketch_config_uuid = sketch_uuids
     errors: list[ValidationError] = []
-    if (
-        constants_service_uuid
-        and sketch_service_uuid
-        and constants_service_uuid != sketch_service_uuid
+    uuid_names = ("service_uuid", "data_char_uuid", "config_char_uuid")
+    for name, constants_uuid, sketch_uuid in zip(
+        uuid_names, constants_uuids, sketch_uuids, strict=True
     ):
-        errors.append(
-            ValidationError(f"{constants_path}: service_uuid does not match {sketch_path}")
-        )
-
-    if constants_data_uuid and sketch_data_uuid and constants_data_uuid != sketch_data_uuid:
-        errors.append(
-            ValidationError(f"{constants_path}: data_char_uuid does not match {sketch_path}")
-        )
-    if constants_config_uuid and sketch_config_uuid and constants_config_uuid != sketch_config_uuid:
-        errors.append(
-            ValidationError(f"{constants_path}: config_char_uuid does not match {sketch_path}")
-        )
+        if constants_uuid and sketch_uuid and constants_uuid != sketch_uuid:
+            errors.append(ValidationError(f"{constants_path}: {name} does not match {sketch_path}"))
     return errors
 
 
@@ -204,16 +192,7 @@ def _load_sketch_modes(sketch_path: Path) -> tuple[dict[str, int], list[Validati
     errors: list[ValidationError] = []
     sketch_modes: dict[str, int] = {}
     try:
-        in_enum = False
-        for line in sketch_path.read_text(encoding="utf-8").splitlines():
-            stripped = line.strip()
-            if stripped.startswith("enum class Mode"):
-                in_enum = True
-                continue
-            if in_enum and stripped == "};":
-                break
-            if not in_enum:
-                continue
+        for stripped in _iter_mode_enum_lines(sketch_path.read_text(encoding="utf-8")):
             match = MODE_ID_RE.match(stripped)
             if not match:
                 continue
@@ -230,39 +209,59 @@ def _load_sketch_modes(sketch_path: Path) -> tuple[dict[str, int], list[Validati
     return sketch_modes, errors, True
 
 
+def _iter_mode_enum_lines(sketch_text: str) -> list[str]:
+    mode_lines: list[str] = []
+    in_enum = False
+    for line in sketch_text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("enum class Mode"):
+            in_enum = True
+            continue
+        if in_enum and stripped == "};":
+            break
+        if in_enum:
+            mode_lines.append(stripped)
+    return mode_lines
+
+
+def _source_mode_id(
+    path: Path, constants_modes: dict[str, int]
+) -> tuple[int | None, list[ValidationError]]:
+    try:
+        root = ET.parse(path).getroot()
+    except (OSError, ET.ParseError) as e:
+        return None, [ValidationError(f"{path}: cannot parse mode config: {e}")]
+
+    config = root.find("./output/bluetooth/config")
+    if config is None or config.text is None:
+        return None, [ValidationError(f"{path}: missing output bluetooth config value")]
+
+    raw_config = config.text.strip()
+    try:
+        numeric_config = float(raw_config)
+    except ValueError:
+        return None, [ValidationError(f"{path}: invalid output bluetooth config value")]
+
+    mode_id = int(numeric_config) if numeric_config.is_integer() else None
+    if not math.isfinite(numeric_config) or mode_id not in set(constants_modes.values()):
+        return None, [
+            ValidationError(
+                f"{path}: output bluetooth config value must be an active integer mode ID"
+            )
+        ]
+    return mode_id, []
+
+
 def _load_source_mode_ids(
     source_dir: Path, constants_modes: dict[str, int]
 ) -> tuple[set[int], list[ValidationError]]:
     errors: list[ValidationError] = []
     source_mode_ids: set[int] = set()
     for path in sorted(source_dir.glob("*.phyphox.xml")):
-        try:
-            root = ET.parse(path).getroot()
-        except (OSError, ET.ParseError) as e:
-            errors.append(ValidationError(f"{path}: cannot parse mode config: {e}"))
-            continue
-        config = root.find("./output/bluetooth/config")
-        if config is None or config.text is None:
-            errors.append(ValidationError(f"{path}: missing output bluetooth config value"))
-            continue
-        raw_config = config.text.strip()
-        try:
-            numeric_config = float(raw_config)
-        except ValueError:
-            errors.append(ValidationError(f"{path}: invalid output bluetooth config value"))
-            continue
-        if (
-            not math.isfinite(numeric_config)
-            or not numeric_config.is_integer()
-            or int(numeric_config) not in set(constants_modes.values())
-        ):
-            errors.append(
-                ValidationError(
-                    f"{path}: output bluetooth config value must be an active integer mode ID"
-                )
-            )
-            continue
-        source_mode_ids.add(int(numeric_config))
+        mode_id, mode_errors = _source_mode_id(path, constants_modes)
+        errors.extend(mode_errors)
+        if mode_id is not None:
+            source_mode_ids.add(mode_id)
     return source_mode_ids, errors
 
 
@@ -339,9 +338,7 @@ def _duplicate_container_errors(path: str, container_names: list[str]) -> list[V
             duplicates.add(name)
         seen.add(name)
     return [
-        ValidationError(
-            f"{path}: duplicate <container> names: {', '.join(sorted(duplicates))}"
-        )
+        ValidationError(f"{path}: duplicate <container> names: {', '.join(sorted(duplicates))}")
     ]
 
 
@@ -422,6 +419,15 @@ def _validate_bluetooth_input_outputs(
     for output in outputs:
         errors.extend(_record_bluetooth_output(path, output, state))
 
+    errors.extend(_bluetooth_input_contract_errors(path, state, expected_data_uuid))
+    errors.extend(_bluetooth_offset_errors(path, state.offsets))
+    return errors
+
+
+def _bluetooth_input_contract_errors(
+    path: str, state: BluetoothInputState, expected_data_uuid: str | None
+) -> list[ValidationError]:
+    errors: list[ValidationError] = []
     if not state.has_extra_time:
         errors.append(ValidationError(f'{path}: missing bluetooth <output extra="time"> mapping'))
     if len(state.data_chars) != 1:
@@ -432,19 +438,21 @@ def _validate_bluetooth_input_outputs(
         errors.append(
             ValidationError(f"{path}: bluetooth input char UUID must be {expected_data_uuid}")
         )
+    return errors
 
-    duplicate_offsets = sorted(
-        offset for offset in set(state.offsets) if state.offsets.count(offset) > 1
-    )
+
+def _bluetooth_offset_errors(path: str, offsets: list[int]) -> list[ValidationError]:
+    errors: list[ValidationError] = []
+    duplicate_offsets = sorted(offset for offset in set(offsets) if offsets.count(offset) > 1)
     if duplicate_offsets:
         errors.append(
             ValidationError(f"{path}: duplicate bluetooth output offsets: {duplicate_offsets}")
         )
-    if state.offsets and set(state.offsets) != EXPECTED_OFFSETS:
+    if offsets and set(offsets) != EXPECTED_OFFSETS:
         errors.append(
             ValidationError(
                 f"{path}: expected float32 offsets {sorted(EXPECTED_OFFSETS)} "
-                f"(got {sorted(set(state.offsets))})"
+                f"(got {sorted(set(offsets))})"
             )
         )
     return errors

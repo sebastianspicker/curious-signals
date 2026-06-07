@@ -116,5 +116,7 @@ def test_cli_fails_on_unsafe_include_before_expansion(tmp_path: Path) -> None:
     with redirect_stderr(stderr):
         returncode = main([str(source)])
 
-    assert returncode == 1
-    assert "must stay under includes/" in stderr.getvalue()
+    if returncode != 1:
+        pytest.fail(f"expected unsafe include failure, got {returncode}")
+    if "must stay under includes/" not in stderr.getvalue():
+        pytest.fail("expected unsafe include diagnostic")

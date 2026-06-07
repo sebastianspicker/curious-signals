@@ -8,6 +8,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import pytest
 import validate_phyphox
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -64,9 +65,11 @@ def test_ci_local_checks_generated_files_before_in_place_build(tmp_path: Path) -
         env=env,
     )
 
-    assert result.returncode == 0, result.stderr
+    if result.returncode != 0:
+        pytest.fail(result.stderr)
     calls = log_path.read_text(encoding="utf-8").splitlines()
-    assert calls.index("check-generated-clean.sh") < calls.index("build-phyphox.sh")
+    if calls.index("check-generated-clean.sh") >= calls.index("build-phyphox.sh"):
+        pytest.fail("ci-local must check generated files before rebuilding them")
 
 
 def test_build_phyphox_fails_when_source_files_are_missing(tmp_path: Path) -> None:
@@ -83,8 +86,10 @@ def test_build_phyphox_fails_when_source_files_are_missing(tmp_path: Path) -> No
         check=False,
     )
 
-    assert result.returncode == 1
-    assert "No source files found" in result.stderr
+    if result.returncode != 1:
+        pytest.fail(f"expected missing source failure, got {result.returncode}")
+    if "No source files found" not in result.stderr:
+        pytest.fail("expected missing source diagnostic")
 
 
 def test_secret_scan_flags_untracked_files() -> None:
@@ -169,14 +174,20 @@ def test_constants_json_documents_reserved_modes() -> None:
 def test_firmware_initial_config_matches_default_mode() -> None:
     firmware = SKETCH_PATH.read_text(encoding="utf-8")
 
-    assert "Mode mode = Mode::kAcceleration;" in firmware
-    assert "writeFloat32LE(cfg, sizeof(cfg), 0, (float)Mode::kAcceleration);" in firmware
+    if "Mode mode = Mode::kAcceleration;" not in firmware:
+        pytest.fail("firmware must initialize to acceleration mode")
+    if "writeFloat32LE(cfg, sizeof(cfg), 0, (float)Mode::kAcceleration);" not in firmware:
+        pytest.fail("firmware must send acceleration as the initial config")
 
 
 def test_firmware_rejects_fractional_and_reserved_modes_explicitly() -> None:
     firmware = SKETCH_PATH.read_text(encoding="utf-8")
 
-    assert "fabsf(configValue - rounded)" in firmware
-    assert "raw > 9" not in firmware
-    assert "Accept the full reserved range" not in firmware
-    assert "Reserved mode received" not in firmware
+    if "fabsf(configValue - rounded)" not in firmware:
+        pytest.fail("firmware must reject fractional modes")
+    if "raw > 9" in firmware:
+        pytest.fail("firmware must not accept the full 1..9 mode range")
+    if "Accept the full reserved range" in firmware:
+        pytest.fail("firmware must not document accepting reserved modes")
+    if "Reserved mode received" in firmware:
+        pytest.fail("firmware must not silently accept reserved modes")

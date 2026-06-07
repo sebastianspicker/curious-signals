@@ -13,6 +13,9 @@ select = ["E", "F", "W", "I"]
 [tool.ruff.lint.isort]
 known-first-party = ["tools"]
 
+[tool.bandit.assert_used]
+skips = ["tests/test_*.py", "*/tests/test_*.py"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["tools"]

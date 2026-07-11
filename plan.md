@@ -97,7 +97,7 @@
 | Validator extraction | Complete | facade 268 lines; helper 319 lines; interface tests pass |
 | Firmware simplification | Complete | pinned compile, direct Cppcheck and Flawfinder clean |
 | Cppcheck policy | Complete | local pattern removed; Cloud standard promoted |
-| Publication | Pending | blocked until a Git-capable workspace is available |
+| Publication | Complete | six commits published through GitHub's Git Data API; draft PR #15 opened |
 
 ## Coding-standard change and rollback
 
@@ -112,10 +112,12 @@ default coding standard `157371`. It covered 17 repositories: `open-lola`,
 Codacy edits effective standards through a draft. Draft `161224` was created
 from `157371`, the one exact pattern was disabled, and promotion succeeded for
 all 17 repositories with no failures. `161224` is now the effective default;
-its enabled-pattern count changed from 3053 to 3052. Rollback: create a draft
-from effective standard `161224`, re-enable only
-`cppcheck_missingIncludeSystem`, and promote it to the same 17 repositories;
-also restore that pattern to `.codacy/codacy.config.json`.
+its enabled-pattern count changed from 3053 to 3052. After promotion, the
+repository-level default still enabled the now-unenforced pattern, so that one
+repository setting was also disabled. Rollback: create a draft from effective
+standard `161224`, re-enable only `cppcheck_missingIncludeSystem`, promote it to
+the same 17 repositories, re-enable the repository setting, and restore that
+pattern to `.codacy/codacy.config.json`.
 
 ## Commands and evidence
 
@@ -129,6 +131,9 @@ also restore that pattern to `.codacy/codacy.config.json`.
   parity test, the recount supplied that path as an empty compatibility stub;
   the delivered branch deletes it, and Cloud analysis is authoritative for the
   exact committed tree.
+- GitHub Actions run 57: all jobs passed on PR head.
+- Codacy PR reanalysis: 0 new issues, 16 fixed issues, quality gate up to
+  standards.
 - Direct firmware checks: Flawfinder exit 0; Cppcheck exit 0 with only the
   approved `missingIncludeSystem` family suppressed.
 - `python -m pytest -q`: 151 passed; one warning for the pre-existing unknown

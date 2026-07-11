@@ -5,9 +5,11 @@ from __future__ import annotations
 
 import argparse
 import sys
-import xml.etree.ElementTree as ET
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
+
+from defusedxml import ElementTree as ET
+from defusedxml.common import DefusedXmlException
 
 XINCLUDE_NS = "http://www.w3.org/2001/XInclude"
 XINCLUDE_TAG = f"{{{XINCLUDE_NS}}}include"
@@ -89,6 +91,8 @@ def validate_xinclude_paths(path: str | Path) -> list[str]:
         root = ET.parse(source).getroot()
     except OSError as exc:
         return [f"{source}: cannot read XML file: {exc}"]
+    except DefusedXmlException as exc:
+        return [f"{source}: unsafe XML rejected before XInclude expansion: {exc}"]
     except ET.ParseError as exc:
         return [f"{source}: cannot parse XML before XInclude expansion: {exc}"]
 

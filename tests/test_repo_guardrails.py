@@ -3,9 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
-import shutil
-import subprocess
 from pathlib import Path
 
 import pytest
@@ -14,9 +11,6 @@ import validate_phyphox
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CONSTANTS_PATH = REPO_ROOT / "experiments" / "phyphox_constants.json"
 SKETCH_PATH = REPO_ROOT / "arduino" / "phyphox_ble_sense" / "phyphox_ble_sense.ino"
-CI_LOCAL_PATH = REPO_ROOT / "scripts" / "ci-local.sh"
-SECRET_SCAN_PATH = REPO_ROOT / "scripts" / "secret-scan.sh"
-BASH = "/bin/bash"
 
 
 def test_service_uuid_matches_between_constants_and_firmware() -> None:
@@ -24,91 +18,6 @@ def test_service_uuid_matches_between_constants_and_firmware() -> None:
     firmware = SKETCH_PATH.read_text(encoding="utf-8")
 
     assert constants["bluetooth"]["service_uuid"] in firmware
-
-
-def test_ci_local_checks_generated_files_before_in_place_build(tmp_path: Path) -> None:
-    repo = tmp_path / "repo"
-    scripts = repo / "scripts"
-    bin_dir = tmp_path / "bin"
-    log_path = tmp_path / "ci-local.log"
-    scripts.mkdir(parents=True)
-    bin_dir.mkdir()
-    shutil.copy2(CI_LOCAL_PATH, scripts / "ci-local.sh")
-
-    for command in ("ruff", "pytest"):
-        tool = bin_dir / command
-        tool.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
-        tool.chmod(0o755)
-
-    for script in (
-        "validate-xml.sh",
-        "check-generated-clean.sh",
-        "build-phyphox.sh",
-        "compile-arduino.sh",
-        "secret-scan.sh",
-        "deps-scan.sh",
-        "sast-minimal.sh",
-    ):
-        (scripts / script).write_text(
-            f"#!/usr/bin/env bash\nprintf '%s\\n' {script!r} >> {str(log_path)!r}\n",
-            encoding="utf-8",
-        )
-
-    env = os.environ.copy()
-    env["PATH"] = f"{bin_dir}{os.pathsep}{env['PATH']}"
-    result = subprocess.run(
-        [BASH, str(scripts / "ci-local.sh")],
-        cwd=repo,
-        text=True,
-        capture_output=True,
-        check=False,
-        env=env,
-    )
-
-    if result.returncode != 0:
-        pytest.fail(result.stderr)
-    calls = log_path.read_text(encoding="utf-8").splitlines()
-    if calls.index("check-generated-clean.sh") >= calls.index("build-phyphox.sh"):
-        pytest.fail("ci-local must check generated files before rebuilding them")
-
-
-def test_build_phyphox_fails_when_source_files_are_missing(tmp_path: Path) -> None:
-    repo = tmp_path / "repo"
-    scripts = repo / "scripts"
-    scripts.mkdir(parents=True)
-    shutil.copy2(REPO_ROOT / "scripts" / "build-phyphox.sh", scripts / "build-phyphox.sh")
-
-    result = subprocess.run(
-        [BASH, str(scripts / "build-phyphox.sh")],
-        cwd=repo,
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-
-    if result.returncode != 1:
-        pytest.fail(f"expected missing source failure, got {result.returncode}")
-    if "No source files found" not in result.stderr:
-        pytest.fail("expected missing source diagnostic")
-
-
-def test_secret_scan_flags_untracked_files() -> None:
-    temp_path = REPO_ROOT / ".secret-scan-test.tmp"
-    temp_token = "ghp_" + ("1234567890" * 4)[:36]
-    temp_path.write_text(f"{temp_token}\n", encoding="utf-8")
-    try:
-        result = subprocess.run(
-            [BASH, str(SECRET_SCAN_PATH)],
-            cwd=REPO_ROOT,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-    finally:
-        temp_path.unlink(missing_ok=True)
-
-    assert result.returncode == 1
-    assert str(temp_path.relative_to(REPO_ROOT)) in result.stdout
 
 
 def test_uuid_loader_requires_all_expected_keys(monkeypatch, tmp_path: Path) -> None:

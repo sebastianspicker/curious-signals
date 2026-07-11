@@ -1,4 +1,4 @@
-.PHONY: help lint test validate build compile security ci ci-local bundle
+.PHONY: help lint test validate generated-clean build compile security ci ci-local bundle
 .DEFAULT_GOAL := help
 
 help:
@@ -6,6 +6,7 @@ help:
 	@echo "  lint     - Ruff lint + format check"
 	@echo "  test     - Python test suite"
 	@echo "  validate - Validate XML and phyphox files"
+	@echo "  generated-clean - Verify generated experiments are current"
 	@echo "  build    - Rebuild experiments/*.phyphox from src/phyphox/*.phyphox.xml"
 	@echo "  compile  - Compile Arduino sketch (arduino-cli, no upload)"
 	@echo "  security - Secret scan, dependency pin check, minimal SAST"
@@ -23,6 +24,9 @@ test:
 validate:
 	./scripts/validate-xml.sh
 
+generated-clean:
+	bash scripts/check-generated-clean.sh
+
 build:
 	./scripts/build-phyphox.sh
 
@@ -30,11 +34,12 @@ compile:
 	./scripts/compile-arduino.sh
 
 security:
+	bash scripts/test-shell-guardrails.sh
 	./scripts/secret-scan.sh
 	./scripts/deps-scan.sh
 	./scripts/sast-minimal.sh
 
-ci: lint test validate build compile security
+ci: lint test validate generated-clean build compile security
 
 ci-local:
 	./scripts/ci-local.sh

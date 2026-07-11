@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 import validate_phyphox as validate_module
+from defusedxml import ElementTree as ET
 from validate_phyphox import (
     ValidationError,
     _child,
@@ -156,20 +157,14 @@ class TestLocalName:
 
 class TestChild:
     def test_finds_child(self):
-        import xml.etree.ElementTree as ET
-
         root = ET.fromstring("<root><child/></root>")
         assert _child(root, "child") is not None
 
     def test_returns_none_when_missing(self):
-        import xml.etree.ElementTree as ET
-
         root = ET.fromstring("<root><child/></root>")
         assert _child(root, "missing") is None
 
     def test_finds_first_of_multiple(self):
-        import xml.etree.ElementTree as ET
-
         root = ET.fromstring("<root><child>A</child><child>B</child></root>")
         found = _child(root, "child")
         assert found is not None
@@ -178,29 +173,21 @@ class TestChild:
 
 class TestChildren:
     def test_returns_all_matching(self):
-        import xml.etree.ElementTree as ET
-
         root = ET.fromstring("<root><a/><b/><a/></root>")
         result = _children(root, "a")
         assert len(result) == 2
 
     def test_returns_empty_when_none(self):
-        import xml.etree.ElementTree as ET
-
         root = ET.fromstring("<root><a/></root>")
         assert _children(root, "b") == []
 
 
 class TestText:
     def test_returns_text(self):
-        import xml.etree.ElementTree as ET
-
         elem = ET.fromstring("<e>hello</e>")
         assert _text(elem) == "hello"
 
     def test_strips_whitespace(self):
-        import xml.etree.ElementTree as ET
-
         elem = ET.fromstring("<e>  hello  </e>")
         assert _text(elem) == "hello"
 
@@ -208,14 +195,10 @@ class TestText:
         assert _text(None) is None
 
     def test_returns_none_for_empty(self):
-        import xml.etree.ElementTree as ET
-
         elem = ET.fromstring("<e></e>")
         assert _text(elem) is None
 
     def test_returns_none_for_whitespace_only(self):
-        import xml.etree.ElementTree as ET
-
         elem = ET.fromstring("<e>   </e>")
         assert _text(elem) is None
 
@@ -248,6 +231,48 @@ class TestFileErrors:
         path = xml_factory("<experiment></experiment>")
         errors = validate_phyphox(path)
         assert any("root element must be <phyphox>" in e.message for e in errors)
+
+    def test_internal_entity_is_rejected(self, xml_factory):
+        path = xml_factory(
+            '<!DOCTYPE phyphox [<!ENTITY injected "unsafe">]>'
+            '<phyphox version="1.7">&injected;</phyphox>'
+        )
+
+        errors = validate_phyphox(path)
+
+        assert len(errors) == 1
+        assert "XML parse error: unsafe XML rejected" in errors[0].message
+
+    def test_external_entity_is_rejected_without_reading_target(self, tmp_path, xml_factory):
+        secret = tmp_path / "secret.txt"
+        secret.write_text("must-not-be-read", encoding="utf-8")
+        path = xml_factory(
+            f'<!DOCTYPE phyphox [<!ENTITY external SYSTEM "{secret.as_uri()}">]>'
+            '<phyphox version="1.7">&external;</phyphox>'
+        )
+
+        errors = validate_phyphox(path)
+
+        assert len(errors) == 1
+        assert "XML parse error: unsafe XML rejected" in errors[0].message
+        assert "must-not-be-read" not in errors[0].message
+
+    def test_entity_expansion_is_rejected(self, xml_factory):
+        path = xml_factory(
+            textwrap.dedent("""\
+                <!DOCTYPE phyphox [
+                    <!ENTITY a "1234567890">
+                    <!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">
+                    <!ENTITY c "&b;&b;&b;&b;&b;&b;&b;&b;&b;&b;">
+                ]>
+                <phyphox version="1.7">&c;</phyphox>
+            """)
+        )
+
+        errors = validate_phyphox(path)
+
+        assert len(errors) == 1
+        assert "XML parse error: unsafe XML rejected" in errors[0].message
 
 
 # ---------------------------------------------------------------------------
@@ -500,6 +525,34 @@ class TestModeValidation:
 
         assert any("must be an active integer mode ID" in error.message for error in errors)
 
+    def test_source_mode_parser_rejects_entity_declarations(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        repo_root = _write_mode_repo(
+            tmp_path,
+            {
+                "acceleration": "1",
+                "gyroscope": "2",
+                "magnetometer": "3",
+                "pressure": "4",
+                "temperature": "5",
+                "light": "6",
+                "analog": "9",
+            },
+        )
+        source = repo_root / "src" / "phyphox" / "acceleration.phyphox.xml"
+        source.write_text(
+            '<!DOCTYPE phyphox [<!ENTITY mode "1">]>'
+            "<phyphox><output><bluetooth><config>&mode;</config></bluetooth></output></phyphox>",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(validate_module, "REPO_ROOT", repo_root)
+
+        errors = _load_expected_modes()
+
+        assert any("cannot parse mode config" in error.message for error in errors)
+        assert any("unsafe XML rejected" in error.message for error in errors)
+
 
 # ---------------------------------------------------------------------------
 # Analysis / export container references
@@ -659,3 +712,16 @@ class TestMainCli:
         samples = list(GENERATED_DIR.glob("*.phyphox"))
         assert samples, "No generated .phyphox files found in experiments/"
         assert main([str(p) for p in samples]) == 0
+
+    def test_unsafe_xml_returns_one_without_traceback(self, xml_factory, capsys) -> None:
+        path = xml_factory(
+            '<!DOCTYPE phyphox [<!ENTITY injected "unsafe">]>'
+            '<phyphox version="1.7">&injected;</phyphox>'
+        )
+
+        result = main([str(path)])
+        captured = capsys.readouterr()
+
+        assert result == 1
+        assert "XML parse error: unsafe XML rejected" in captured.err
+        assert "Traceback" not in captured.err

@@ -40,6 +40,7 @@ bash scripts/compile-arduino.sh
 
 echo
 echo "== Security baseline =="
+bash scripts/test-shell-guardrails.sh
 bash scripts/secret-scan.sh
 bash scripts/deps-scan.sh
 bash scripts/sast-minimal.sh

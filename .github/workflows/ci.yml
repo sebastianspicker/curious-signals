@@ -58,11 +58,11 @@ jobs:
       - name: Validate XML + phyphox references
         run: bash scripts/validate-xml.sh
 
-      - name: Rebuild *.phyphox from sources
-        run: bash scripts/build-phyphox.sh
-
       - name: Ensure generated files are up to date
         run: bash scripts/check-generated-clean.sh
+
+      - name: Rebuild *.phyphox from sources
+        run: bash scripts/build-phyphox.sh
 
   arduino:
     name: Arduino compile
@@ -110,6 +110,9 @@ jobs:
 
       - name: Secret scan
         run: bash scripts/secret-scan.sh
+
+      - name: Shell guardrails
+        run: bash scripts/test-shell-guardrails.sh
 
       - name: Dependency pin check
         run: bash scripts/deps-scan.sh

@@ -1,4 +1,5 @@
 #include <ArduinoBLE.h>
+#include <algorithm>
 #include <cmath>
 
 #include <Arduino_APDS9960.h>
@@ -21,6 +22,16 @@ enum class Mode : int {
   kTemperatureHumidity = 5,
   kLightRgb = 6,
   kAnalogInputs = 9,
+};
+
+constexpr Mode kSupportedModes[] = {
+    Mode::kAcceleration,
+    Mode::kGyroscope,
+    Mode::kMagnetometer,
+    Mode::kPressure,
+    Mode::kTemperatureHumidity,
+    Mode::kLightRgb,
+    Mode::kAnalogInputs,
 };
 
 // Payload = 5× float32; BLE default MTU is often 20–23, so this fits one packet.
@@ -66,6 +77,17 @@ float readFloat32LE(const uint8_t* buf, size_t len) {
   return value;
 }
 
+bool findSupportedMode(int raw, Mode& supportedMode) {
+  const Mode requestedMode = (Mode)raw;
+  const Mode* const end = kSupportedModes + (sizeof(kSupportedModes) / sizeof(kSupportedModes[0]));
+  const Mode* const match = std::find(kSupportedModes, end, requestedMode);
+  if (match == end) {
+    return false;
+  }
+  supportedMode = *match;
+  return true;
+}
+
 void setModeFromConfig(float configValue) {
   if (!std::isfinite(configValue)) {
     return;
@@ -75,18 +97,9 @@ void setModeFromConfig(float configValue) {
     return;
   }
   int raw = (int)rounded;
-  switch (raw) {
-    case (int)Mode::kAcceleration:
-    case (int)Mode::kGyroscope:
-    case (int)Mode::kMagnetometer:
-    case (int)Mode::kPressure:
-    case (int)Mode::kTemperatureHumidity:
-    case (int)Mode::kLightRgb:
-    case (int)Mode::kAnalogInputs:
-      mode = (Mode)raw;
-      break;
-    default:
-      break;
+  Mode supportedMode = mode;
+  if (findSupportedMode(raw, supportedMode)) {
+    mode = supportedMode;
   }
 }
 
@@ -98,71 +111,93 @@ void setChannelsFromXYZ(float x, float y, float z, float& ch2, float& ch3, float
   ch5 = sqrtf(x * x + y * y + z * z);
 }
 
+void readAcceleration(float& ch2, float& ch3, float& ch4, float& ch5) {
+  if (!imuOk || !IMU.accelerationAvailable()) {
+    return;
+  }
+  float x = 0, y = 0, z = 0;
+  IMU.readAcceleration(x, y, z);
+  setChannelsFromXYZ(x, y, z, ch2, ch3, ch4, ch5);
+}
+
+void readGyroscope(float& ch2, float& ch3, float& ch4, float& ch5) {
+  if (!imuOk || !IMU.gyroscopeAvailable()) {
+    return;
+  }
+  float x = 0, y = 0, z = 0;
+  IMU.readGyroscope(x, y, z);
+  setChannelsFromXYZ(x, y, z, ch2, ch3, ch4, ch5);
+}
+
+void readMagnetometer(float& ch2, float& ch3, float& ch4, float& ch5) {
+  if (!imuOk || !IMU.magneticFieldAvailable()) {
+    return;
+  }
+  float x = 0, y = 0, z = 0;
+  IMU.readMagneticField(x, y, z);
+  setChannelsFromXYZ(x, y, z, ch2, ch3, ch4, ch5);
+}
+
+void readPressure(float& ch2) {
+  if (baroOk) {
+    // kPa (matches pressure_plot_v1-2.phyphox, which converts to hPa in analysis)
+    ch2 = BARO.readPressure();
+  }
+}
+
+void readTemperatureHumidity(float& ch2, float& ch3) {
+  if (htsOk) {
+    ch2 = HTS.readTemperature();
+    ch3 = HTS.readHumidity();
+  }
+}
+
+void readLightRgb(float& ch2, float& ch3, float& ch4, float& ch5) {
+  if (!apdsOk || !APDS.colorAvailable()) {
+    return;
+  }
+  int r = 0, g = 0, b = 0, c = 0;
+  APDS.readColor(r, g, b, c);
+  ch2 = (float)c;
+  ch3 = (float)r;
+  ch4 = (float)g;
+  ch5 = (float)b;
+}
+
+void readAnalogInputs(float& ch2, float& ch3, float& ch4) {
+  ch2 = (float)analogRead(A0);
+  ch3 = (float)analogRead(A1);
+  ch4 = (float)analogRead(A2);
+}
+
 void readChannels(float& ch2, float& ch3, float& ch4, float& ch5) {
   ch2 = NAN;
   ch3 = NAN;
   ch4 = NAN;
   ch5 = NAN;
 
-  if (mode == Mode::kAcceleration) {
-    float x = 0, y = 0, z = 0;
-    if (imuOk && IMU.accelerationAvailable()) {
-      IMU.readAcceleration(x, y, z);
-      setChannelsFromXYZ(x, y, z, ch2, ch3, ch4, ch5);
-    }
-    return;
-  }
-
-  if (mode == Mode::kGyroscope) {
-    float x = 0, y = 0, z = 0;
-    if (imuOk && IMU.gyroscopeAvailable()) {
-      IMU.readGyroscope(x, y, z);
-      setChannelsFromXYZ(x, y, z, ch2, ch3, ch4, ch5);
-    }
-    return;
-  }
-
-  if (mode == Mode::kMagnetometer) {
-    float x = 0, y = 0, z = 0;
-    if (imuOk && IMU.magneticFieldAvailable()) {
-      IMU.readMagneticField(x, y, z);
-      setChannelsFromXYZ(x, y, z, ch2, ch3, ch4, ch5);
-    }
-    return;
-  }
-
-  if (mode == Mode::kPressure) {
-    if (baroOk) {
-      ch2 = BARO.readPressure(); // kPa (matches pressure_plot_v1-2.phyphox, which converts to hPa in analysis)
-    }
-    return;
-  }
-
-  if (mode == Mode::kTemperatureHumidity) {
-    if (htsOk) {
-      ch2 = HTS.readTemperature();
-      ch3 = HTS.readHumidity();
-    }
-    return;
-  }
-
-  if (mode == Mode::kLightRgb) {
-    int r = 0, g = 0, b = 0, c = 0;
-    if (apdsOk && APDS.colorAvailable()) {
-      APDS.readColor(r, g, b, c);
-      ch2 = (float)c;
-      ch3 = (float)r;
-      ch4 = (float)g;
-      ch5 = (float)b;
-    }
-    return;
-  }
-
-  if (mode == Mode::kAnalogInputs) {
-    ch2 = (float)analogRead(A0);
-    ch3 = (float)analogRead(A1);
-    ch4 = (float)analogRead(A2);
-    return;
+  switch (mode) {
+    case Mode::kAcceleration:
+      readAcceleration(ch2, ch3, ch4, ch5);
+      break;
+    case Mode::kGyroscope:
+      readGyroscope(ch2, ch3, ch4, ch5);
+      break;
+    case Mode::kMagnetometer:
+      readMagnetometer(ch2, ch3, ch4, ch5);
+      break;
+    case Mode::kPressure:
+      readPressure(ch2);
+      break;
+    case Mode::kTemperatureHumidity:
+      readTemperatureHumidity(ch2, ch3);
+      break;
+    case Mode::kLightRgb:
+      readLightRgb(ch2, ch3, ch4, ch5);
+      break;
+    case Mode::kAnalogInputs:
+      readAnalogInputs(ch2, ch3, ch4);
+      break;
   }
 }
 

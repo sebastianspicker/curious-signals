@@ -3609,9 +3609,6 @@
           "patternId": "cppcheck_strPlusChar"
         },
         {
-          "patternId": "cppcheck_missingIncludeSystem"
-        },
-        {
           "patternId": "cppcheck_pointerLessThanZero"
         },
         {

@@ -34,6 +34,12 @@ def _source_with_include(tmp_path: Path, href: str) -> Path:
     return source
 
 
+def _write_source(tmp_path: Path, xml: str) -> Path:
+    source = tmp_path / "experiment.phyphox.xml"
+    source.write_text(xml, encoding="utf-8")
+    return source
+
+
 def test_current_source_includes_are_within_allowed_directory() -> None:
     errors: list[str] = []
 
@@ -120,3 +126,74 @@ def test_cli_fails_on_unsafe_include_before_expansion(tmp_path: Path) -> None:
         pytest.fail(f"expected unsafe include failure, got {returncode}")
     if "must stay under includes/" not in stderr.getvalue():
         pytest.fail("expected unsafe include diagnostic")
+
+
+def test_rejects_internal_entity_declaration(tmp_path: Path) -> None:
+    source = _write_source(
+        tmp_path,
+        '<!DOCTYPE phyphox [<!ENTITY injected "unsafe">]><phyphox>&injected;</phyphox>',
+    )
+
+    errors = validate_xinclude_paths(source)
+
+    assert len(errors) == 1
+    assert "unsafe XML rejected before XInclude expansion" in errors[0]
+
+
+def test_rejects_external_entity_declaration(tmp_path: Path) -> None:
+    secret = tmp_path / "secret.txt"
+    secret.write_text("must-not-be-read", encoding="utf-8")
+    source = _write_source(
+        tmp_path,
+        f'<!DOCTYPE phyphox [<!ENTITY external SYSTEM "{secret.as_uri()}">]>'
+        "<phyphox>&external;</phyphox>",
+    )
+
+    errors = validate_xinclude_paths(source)
+
+    assert len(errors) == 1
+    assert "unsafe XML rejected before XInclude expansion" in errors[0]
+    assert "must-not-be-read" not in errors[0]
+
+
+def test_rejects_entity_expansion_payload(tmp_path: Path) -> None:
+    source = _write_source(
+        tmp_path,
+        textwrap.dedent("""\
+            <!DOCTYPE phyphox [
+                <!ENTITY a "1234567890">
+                <!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">
+                <!ENTITY c "&b;&b;&b;&b;&b;&b;&b;&b;&b;&b;">
+            ]>
+            <phyphox>&c;</phyphox>
+        """),
+    )
+
+    errors = validate_xinclude_paths(source)
+
+    assert len(errors) == 1
+    assert "unsafe XML rejected before XInclude expansion" in errors[0]
+
+
+def test_malformed_xml_keeps_controlled_parse_diagnostic(tmp_path: Path) -> None:
+    source = _write_source(tmp_path, "<phyphox>")
+
+    errors = validate_xinclude_paths(source)
+
+    assert len(errors) == 1
+    assert "cannot parse XML before XInclude expansion" in errors[0]
+
+
+def test_cli_rejects_unsafe_xml_without_traceback(tmp_path: Path) -> None:
+    source = _write_source(
+        tmp_path,
+        '<!DOCTYPE phyphox [<!ENTITY injected "unsafe">]><phyphox>&injected;</phyphox>',
+    )
+    stderr = io.StringIO()
+
+    with redirect_stderr(stderr):
+        returncode = main([str(source)])
+
+    assert returncode == 1
+    assert "unsafe XML rejected before XInclude expansion" in stderr.getvalue()
+    assert "Traceback" not in stderr.getvalue()

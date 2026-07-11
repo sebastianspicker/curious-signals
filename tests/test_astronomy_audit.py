@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import xml.etree.ElementTree as ET
 from pathlib import Path
+
+from defusedxml import ElementTree as ET
 
 ASTRO_DIR = Path(__file__).resolve().parents[1] / "experiments" / "astronomy"
 

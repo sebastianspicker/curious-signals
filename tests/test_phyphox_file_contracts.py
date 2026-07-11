@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from defusedxml import ElementTree as ET
 from validate_phyphox import _load_expected_uuids, validate_phyphox
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -31,14 +32,10 @@ def _generated_files() -> list[Path]:
 
 
 def _root_locale(path: Path) -> str:
-    import xml.etree.ElementTree as ET
-
     return ET.parse(path).getroot().attrib.get("locale", "")
 
 
 def _translation_locales(path: Path) -> set[str]:
-    import xml.etree.ElementTree as ET
-
     root = ET.parse(path).getroot()
     locales: set[str] = set()
     for translation in root.findall("./translations/translation"):

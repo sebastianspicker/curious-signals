@@ -89,7 +89,7 @@ bool findSupportedMode(int raw, Mode& supportedMode) {
 }
 
 void setModeFromConfig(float configValue) {
-  if (!std::isfinite(configValue)) {
+  if (!std::isfinite(configValue) || configValue < 0.5f || configValue >= 9.5f) {
     return;
   }
   float rounded = roundf(configValue);
@@ -101,6 +101,12 @@ void setModeFromConfig(float configValue) {
   if (findSupportedMode(raw, supportedMode)) {
     mode = supportedMode;
   }
+}
+
+void writeActiveModeToConfigCharacteristic() {
+  uint8_t configValue[4] = {0};
+  writeFloat32LE(configValue, 0, (float)(int)mode);
+  configCharacteristic.writeValue(configValue, sizeof(configValue));
 }
 
 // Fills ch2..ch5 from x,y,z and sets ch5 = magnitude (for IMU modes).
@@ -241,9 +247,13 @@ void setup() {
   phyphoxService.addCharacteristic(configCharacteristic);
   BLE.addService(phyphoxService);
 
+<<<<<<< HEAD
   uint8_t cfg[4] = {0, 0, 0, 0};
   writeFloat32LE(cfg, sizeof(cfg), 0, (float)Mode::kAcceleration);
   configCharacteristic.writeValue(cfg, sizeof(cfg));
+=======
+  writeActiveModeToConfigCharacteristic();
+>>>>>>> dev
 
   BLE.advertise();
 }
@@ -253,9 +263,11 @@ void pollConfigCharacteristic() {
     return;
   }
   uint8_t buf[4] = {0};
-  if (configCharacteristic.readValue(buf, sizeof(buf))) {
+  const int bytesRead = configCharacteristic.readValue(buf, sizeof(buf));
+  if (bytesRead == static_cast<int>(sizeof(buf))) {
     setModeFromConfig(readFloat32LE(buf, sizeof(buf)));
   }
+  writeActiveModeToConfigCharacteristic();
 }
 
 void loop() {

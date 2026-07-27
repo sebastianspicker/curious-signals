@@ -2,39 +2,52 @@
 
 ## Supported versions
 
-Security fixes are applied to the default development branch for the consolidated classroom kit.
+No public release has been published.
+
+| Ref | Security fixes |
+| --- | --- |
+| Default development branch | Accepted |
+| Tags and release archives | Not supported |
 
 ## Reporting a vulnerability
 
-Do not open a public issue with sensitive details.
+Do not open a public issue containing exploit details, credentials, private
+device identifiers, or other sensitive material.
 
-Preferred path:
+Use GitHub private vulnerability reporting if this repository offers a private
+report action. If it is unavailable, open a minimal public issue stating only
+that the matter is security-sensitive so a maintainer can arrange a private
+channel.
 
-1. Use GitHub Security Advisories for this repository if they are enabled.
-2. If private reporting is unavailable, open a minimal issue that states the problem is security-sensitive and omit exploit details.
+Include the affected component, reproduction conditions, impact, and the
+smallest safe proof needed to understand the issue.
 
-## Local security baseline
+The maintainers still need to confirm a reliable private reporting path before
+publishing a release.
 
-The repository keeps a small local security matrix:
+## Security boundary
+
+This repository builds local XML files and Arduino firmware. It does not deploy
+a service and does not require repository secrets at runtime.
+
+Core source experiments may use XInclude only for repository-owned fragments
+below `src/phyphox/includes/`. `tools/validate_xinclude_paths.py` rejects URLs,
+absolute paths, parent traversal, queries, fragments, missing targets, and
+resolved paths outside that directory before XInclude expansion.
+
+Run the local security checks with:
 
 ```sh
-bash scripts/secret-scan.sh
-bash scripts/deps-scan.sh
-bash scripts/sast-minimal.sh
+make security
 ```
 
-CI runs the same baseline on every push and pull request.
+This target runs the repository secret-pattern scan, dependency constraint
+checks, shell syntax checks, ShellCheck when installed, and Python bytecode
+compilation. These checks do not replace dependency advisory review, firmware
+review, hardware testing, or electrical safety review.
 
-## Local file-processing boundary
+## Hardware reports
 
-Core sensor experiment sources may use XInclude only for repository-owned XML
-fragments below `src/phyphox/includes/`. The build and validation scripts run:
-
-```sh
-python3 tools/validate_xinclude_paths.py src/phyphox/*.phyphox.xml src/phyphox/includes/*.xml
-```
-
-before `xmllint --xinclude`. Reject absolute paths, parent directory traversal,
-URL-style hrefs, query strings, and fragments so a modified experiment source
-cannot make CI or a maintainer workstation expand arbitrary local or remote
-content into generated `.phyphox` files.
+For firmware or BLE reports, include the exact board revision, Arduino core,
+library versions, phyphox version, and whether an external circuit was
+connected. The current firmware supports only the original Nano 33 BLE Sense.

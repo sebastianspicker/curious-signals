@@ -133,12 +133,26 @@ class TestMainFileArg:
         p = tmp_path / "input.xml"
         p.write_text(xml, encoding="utf-8")
 
+<<<<<<< HEAD
         stdout = io.StringIO()
         monkeypatch.setattr(sys, "argv", [str(_SCRIPT), str(p)])
+=======
+        script = _SCRIPT
+        result = subprocess.run(
+            [sys.executable, script, str(p)],
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+        assert result.returncode == 0
+        assert "xmlns:xi" not in result.stdout
+        assert "<phyphox>" in result.stdout
+>>>>>>> dev
 
         with redirect_stdout(stdout):
             returncode = main()
 
+<<<<<<< HEAD
         stdout_value = stdout.getvalue()
         if returncode != 0:
             pytest.fail(f"expected successful postprocess, got {returncode}")
@@ -146,6 +160,17 @@ class TestMainFileArg:
             pytest.fail("expected XInclude namespace cleanup")
         if "<phyphox>" not in stdout_value:
             pytest.fail("expected normalized phyphox root element")
+=======
+        script = _SCRIPT
+        result = subprocess.run(
+            [sys.executable, script, str(tmp_path / "missing.xml")],
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+        assert result.returncode == 1
+        assert "Error" in result.stderr
+>>>>>>> dev
 
     def test_missing_file_returns_error(self, monkeypatch, tmp_path):
         stderr = io.StringIO()
@@ -161,6 +186,7 @@ class TestMainFileArg:
 
     def test_stdin_mode(self, monkeypatch):
         xml = '<e xml:base="x.xml">V</e>'
+<<<<<<< HEAD
         stdout = io.StringIO()
         monkeypatch.setattr(sys, "argv", [str(_SCRIPT)])
         monkeypatch.setattr(sys, "stdin", io.StringIO(xml))
@@ -175,3 +201,16 @@ class TestMainFileArg:
             pytest.fail("expected xml:base cleanup in stdin mode")
         if stdout_value != "<e>V</e>":
             pytest.fail(f"unexpected stdin postprocess output: {stdout_value!r}")
+=======
+        script = _SCRIPT
+        result = subprocess.run(
+            [sys.executable, script],
+            input=xml,
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+        assert result.returncode == 0
+        assert "xml:base" not in result.stdout
+        assert "<e>V</e>" == result.stdout
+>>>>>>> dev

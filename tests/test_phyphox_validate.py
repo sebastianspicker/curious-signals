@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import json
 import textwrap
-from pathlib import Path
 
 import pytest
 import validate_phyphox as validate_module
 from defusedxml import ElementTree as ET
 from validate_phyphox import (
+<<<<<<< HEAD
     ValidationError,
     _child,
     _children,
@@ -17,6 +17,8 @@ from validate_phyphox import (
     _local_name,
     _text,
     main,
+=======
+>>>>>>> dev
     validate_phyphox,
 )
 
@@ -136,6 +138,7 @@ def _write_mode_repo(tmp_path: Path, mode_values: dict[str, str]) -> Path:
 
 
 # ---------------------------------------------------------------------------
+<<<<<<< HEAD
 # Helper function unit tests
 # ---------------------------------------------------------------------------
 
@@ -204,6 +207,8 @@ class TestText:
 
 
 # ---------------------------------------------------------------------------
+=======
+>>>>>>> dev
 # File-level error handling
 # ---------------------------------------------------------------------------
 
@@ -589,22 +594,6 @@ class TestContainerReferences:
 
 
 # ---------------------------------------------------------------------------
-# ValidationError dataclass
-# ---------------------------------------------------------------------------
-
-
-class TestValidationError:
-    def test_is_frozen(self):
-        ve = ValidationError("test")
-        with pytest.raises(AttributeError):
-            ve.message = "changed"
-
-    def test_message_stored(self):
-        ve = ValidationError("hello")
-        assert ve.message == "hello"
-
-
-# ---------------------------------------------------------------------------
 # Offset validation specifics
 # ---------------------------------------------------------------------------
 
@@ -629,9 +618,14 @@ class TestOffsetPlausibility:
 
     def test_duplicate_offsets_reported(self, xml_factory):
         xml = MINIMAL_VALID_XML.replace('offset="16">CH5', 'offset="0">CH5')
+<<<<<<< HEAD
         path = xml_factory(xml)
         errors = validate_phyphox(path)
         assert any("duplicate bluetooth output offsets" in e.message for e in errors)
+=======
+        errors = validate_phyphox(xml_factory(xml))
+        assert any("duplicate bluetooth output offsets" in error.message for error in errors)
+>>>>>>> dev
 
 
 # ---------------------------------------------------------------------------
@@ -669,6 +663,7 @@ class TestOutputBluetoothBlocks:
         path = xml_factory(xml)
         errors = validate_phyphox(path)
         assert any("expected exactly one <output><bluetooth><config>" in e.message for e in errors)
+<<<<<<< HEAD
 
 
 # ---------------------------------------------------------------------------
@@ -725,3 +720,5 @@ class TestMainCli:
         assert result == 1
         assert "XML parse error: unsafe XML rejected" in captured.err
         assert "Traceback" not in captured.err
+=======
+>>>>>>> dev

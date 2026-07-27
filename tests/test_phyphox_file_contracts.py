@@ -69,6 +69,17 @@ def test_source_files_reference_shared_includes(path: Path) -> None:
     assert 'href="includes/bluetooth_outputs_ch1_ch5.xml"' in text
 
 
+@pytest.mark.parametrize("path", _source_files(), ids=lambda path: path.name)
+def test_source_links_use_complete_https_urls(path: Path) -> None:
+    import xml.etree.ElementTree as ET
+
+    root = ET.parse(path).getroot()
+    links = [link.text.strip() for link in root.findall(".//link") if link.text]
+
+    assert links
+    assert all(link.startswith("https://") for link in links)
+
+
 @pytest.mark.parametrize("path", _generated_files(), ids=lambda path: path.name)
 def test_generated_files_validate(
     path: Path, expected_uuids: tuple[str | None, str | None, str | None]

@@ -4,10 +4,16 @@
 .Spotlight-V100
 .Trashes
 
-# Codex / Kilo / audit tooling (optional local use)
-.codex/
-.kilo/
+# Local analysis and tool state
+/.codacy/
+/.codegraph/
+/.serena/
+/.codex/
+/.kilo/
+/.agents/
+/.internal/
 
+<<<<<<< HEAD
 # Codacy local run artifacts. Keep .codacy/codacy.config.json visible when it is
 # intentionally used as repository configuration.
 .codacy/generated/
@@ -19,6 +25,13 @@
 
 # Internal AI operator guide (not user-facing documentation)
 agent.md
+=======
+# Local maintainer guidance and work records
+/AGENTS.md
+/agent.md
+/CLAUDE.md
+/docs/agent/
+>>>>>>> dev
 
 # Editors
 .vscode/
@@ -35,32 +48,37 @@ agent.md
 __pycache__/
 *.pyc
 *.pyo
-.venv/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
+/.venv/
+/.tox/
+/.nox/
+/.hypothesis/
+/.pytest_cache/
+/.mypy_cache/
+/.ruff_cache/
+/.coverage
+/.coverage.*
+/coverage.xml
+/htmlcov/
+
+# Local environment and log files
+.env
+.env.*
+!.env.example
+*.log
 
 # CI/test artifacts
-coverage/
-junit.xml
-test-results/
-reports/
-*.lcov
-.nyc_output/
-.cache/
-node_modules/
-dist/
-build/
+/coverage/
+/junit.xml
+/test-results/
 
 # Arduino build artifacts (if a custom build path is used)
-**/build/
+/arduino/**/build/
 
 # Generated outputs
 /patched/
 /reference/
-phyphox-experiments.zip
-AGENT_AUDIT_REPORT.md
-.coverage
+/phyphox-experiments.zip
+/AGENT_AUDIT_REPORT.md
 
 # docs (local findings/logs/decisions)
 /DECISIONS.md

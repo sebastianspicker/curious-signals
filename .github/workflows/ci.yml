@@ -48,10 +48,7 @@ jobs:
       - name: Validate XML + phyphox references
         run: bash scripts/validate-xml.sh
 
-      - name: Rebuild *.phyphox from sources
-        run: bash scripts/build-phyphox.sh
-
-      - name: Ensure generated files are up to date
+      - name: Check generated experiments are up to date
         run: bash scripts/check-generated-clean.sh
 
   arduino:

@@ -26,22 +26,28 @@ def _is_within(path: Path, parent: Path) -> bool:
     return True
 
 
-def _validate_href(source: Path, href: str) -> str | None:
+def _validate_url_boundary(source: Path, href: str) -> str | None:
     parsed = urlsplit(href)
     if parsed.scheme or parsed.netloc:
         return f"{source}: XInclude href {href!r} must not use a URL"
     if parsed.query or parsed.fragment:
         return f"{source}: XInclude href {href!r} must not contain query or fragment data"
+    return None
 
-    decoded_path = unquote(parsed.path)
+
+def _decode_include_path(source: Path, href: str) -> tuple[Path | None, str | None]:
+    decoded_path = unquote(urlsplit(href).path)
     include_path = Path(decoded_path)
     if include_path.is_absolute():
-        return f"{source}: XInclude href {href!r} must be a relative includes/ path"
+        return None, f"{source}: XInclude href {href!r} must be a relative includes/ path"
 
     parts = include_path.parts
     if not parts or parts[0] != ALLOWED_INCLUDE_DIR or ".." in parts:
-        return f"{source}: XInclude href {href!r} must stay under includes/"
+        return None, f"{source}: XInclude href {href!r} must stay under includes/"
+    return include_path, None
 
+
+def _validate_include_target(source: Path, href: str, include_path: Path) -> str | None:
     allowed_dir = source.parent / ALLOWED_INCLUDE_DIR
     if not allowed_dir.is_dir():
         return f"{source}: expected XInclude directory {allowed_dir}"
@@ -57,6 +63,20 @@ def _validate_href(source: Path, href: str) -> str | None:
     if not candidate_resolved.is_file():
         return f"{source}: XInclude target is not a file: {href!r}"
     return None
+
+
+def _validate_href(source: Path, href: str) -> str | None:
+    url_error = _validate_url_boundary(source, href)
+    if url_error:
+        return url_error
+
+    include_path, path_error = _decode_include_path(source, href)
+    if path_error:
+        return path_error
+    if include_path is None:
+        return f"{source}: XInclude href {href!r} must stay under includes/"
+
+    return _validate_include_target(source, href, include_path)
 
 
 def validate_xinclude_paths(path: str | Path) -> list[str]:

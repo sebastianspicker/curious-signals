@@ -27,8 +27,7 @@ echo "== XML + phyphox validation =="
 bash scripts/validate-xml.sh
 
 echo
-echo "== Rebuild generated experiments =="
-bash scripts/build-phyphox.sh
+echo "== Generated experiment parity =="
 bash scripts/check-generated-clean.sh
 
 echo

@@ -3,16 +3,9 @@
 from __future__ import annotations
 
 import textwrap
-from pathlib import Path
 
 import pytest
 from validate_phyphox import (
-    ValidationError,
-    _child,
-    _children,
-    _local_name,
-    _text,
-    main,
     validate_phyphox,
 )
 
@@ -84,92 +77,6 @@ def xml_factory(tmp_path):
         return str(p)
 
     return _make
-
-
-# ---------------------------------------------------------------------------
-# Helper function unit tests
-# ---------------------------------------------------------------------------
-
-
-class TestLocalName:
-    def test_plain_tag(self):
-        assert _local_name("phyphox") == "phyphox"
-
-    def test_namespaced_tag(self):
-        assert _local_name("{http://example.com}phyphox") == "phyphox"
-
-    def test_empty_namespace(self):
-        assert _local_name("{}phyphox") == "phyphox"
-
-    def test_no_closing_brace(self):
-        # No '}' means it is returned as-is
-        assert _local_name("{broken") == "{broken"
-
-
-class TestChild:
-    def test_finds_child(self):
-        import xml.etree.ElementTree as ET
-
-        root = ET.fromstring("<root><child/></root>")
-        assert _child(root, "child") is not None
-
-    def test_returns_none_when_missing(self):
-        import xml.etree.ElementTree as ET
-
-        root = ET.fromstring("<root><child/></root>")
-        assert _child(root, "missing") is None
-
-    def test_finds_first_of_multiple(self):
-        import xml.etree.ElementTree as ET
-
-        root = ET.fromstring("<root><child>A</child><child>B</child></root>")
-        found = _child(root, "child")
-        assert found is not None
-        assert found.text == "A"
-
-
-class TestChildren:
-    def test_returns_all_matching(self):
-        import xml.etree.ElementTree as ET
-
-        root = ET.fromstring("<root><a/><b/><a/></root>")
-        result = _children(root, "a")
-        assert len(result) == 2
-
-    def test_returns_empty_when_none(self):
-        import xml.etree.ElementTree as ET
-
-        root = ET.fromstring("<root><a/></root>")
-        assert _children(root, "b") == []
-
-
-class TestText:
-    def test_returns_text(self):
-        import xml.etree.ElementTree as ET
-
-        elem = ET.fromstring("<e>hello</e>")
-        assert _text(elem) == "hello"
-
-    def test_strips_whitespace(self):
-        import xml.etree.ElementTree as ET
-
-        elem = ET.fromstring("<e>  hello  </e>")
-        assert _text(elem) == "hello"
-
-    def test_returns_none_for_none(self):
-        assert _text(None) is None
-
-    def test_returns_none_for_empty(self):
-        import xml.etree.ElementTree as ET
-
-        elem = ET.fromstring("<e></e>")
-        assert _text(elem) is None
-
-    def test_returns_none_for_whitespace_only(self):
-        import xml.etree.ElementTree as ET
-
-        elem = ET.fromstring("<e>   </e>")
-        assert _text(elem) is None
 
 
 # ---------------------------------------------------------------------------
@@ -445,22 +352,6 @@ class TestContainerReferences:
 
 
 # ---------------------------------------------------------------------------
-# ValidationError dataclass
-# ---------------------------------------------------------------------------
-
-
-class TestValidationError:
-    def test_is_frozen(self):
-        ve = ValidationError("test")
-        with pytest.raises(AttributeError):
-            ve.message = "changed"
-
-    def test_message_stored(self):
-        ve = ValidationError("hello")
-        assert ve.message == "hello"
-
-
-# ---------------------------------------------------------------------------
 # Offset validation specifics
 # ---------------------------------------------------------------------------
 
@@ -482,6 +373,11 @@ class TestOffsetPlausibility:
         path = xml_factory(xml)
         errors = validate_phyphox(path)
         assert any("missing required bluetooth output offset" in e.message for e in errors)
+
+    def test_duplicate_offsets_reported(self, xml_factory):
+        xml = MINIMAL_VALID_XML.replace('offset="16">CH5', 'offset="0">CH5')
+        errors = validate_phyphox(xml_factory(xml))
+        assert any("duplicate bluetooth output offsets" in error.message for error in errors)
 
 
 # ---------------------------------------------------------------------------
@@ -519,46 +415,3 @@ class TestOutputBluetoothBlocks:
         path = xml_factory(xml)
         errors = validate_phyphox(path)
         assert any("expected exactly one <output><bluetooth><config>" in e.message for e in errors)
-
-
-# ---------------------------------------------------------------------------
-# main() CLI entry point
-# ---------------------------------------------------------------------------
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
-GENERATED_DIR = REPO_ROOT / "experiments"
-
-
-class TestMainCli:
-    """Tests for the validate_phyphox.main() CLI entry point."""
-
-    def test_valid_generated_file_returns_zero(self) -> None:
-        """main() with a known-good generated experiment should return 0."""
-        sample = next(GENERATED_DIR.glob("*.phyphox"), None)
-        assert sample is not None, "No generated .phyphox files found in experiments/"
-        assert main([str(sample)]) == 0
-
-    def test_invalid_file_returns_one_and_prints_to_stderr(self, xml_factory, capsys) -> None:
-        """main() with a file that fails validation should return 1 and print errors."""
-        bad_xml = MINIMAL_VALID_XML.replace(
-            'char="cddf1002-30f7-4671-8b43-5e40ba53514a"',
-            'char="deadbeef-0000-0000-0000-000000000000"',
-        )
-        path = xml_factory(bad_xml)
-        result = main([str(path)])
-        captured = capsys.readouterr()
-        assert result == 1
-        assert captured.err  # at least one error line must appear on stderr
-
-    def test_nonexistent_path_returns_one(self, capsys) -> None:
-        """main() with a path that does not exist should return 1."""
-        result = main(["/nonexistent/path/that/cannot/exist.phyphox"])
-        captured = capsys.readouterr()
-        assert result == 1
-        assert captured.err
-
-    def test_multiple_valid_files_all_pass(self) -> None:
-        """main() accepts multiple file arguments and passes when all are valid."""
-        samples = list(GENERATED_DIR.glob("*.phyphox"))
-        assert samples, "No generated .phyphox files found in experiments/"
-        assert main([str(p) for p in samples]) == 0

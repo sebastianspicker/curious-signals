@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import base64
 import json
+import re
 import subprocess
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import validate_phyphox
@@ -15,6 +18,7 @@ CI_LOCAL_PATH = REPO_ROOT / "scripts" / "ci-local.sh"
 GENERATED_CLEAN_PATH = REPO_ROOT / "scripts" / "check-generated-clean.sh"
 SECRET_SCAN_PATH = REPO_ROOT / "scripts" / "secret-scan.sh"
 WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "ci.yml"
+LOCAL_MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 
 
 def test_service_uuid_matches_between_constants_and_firmware() -> None:
@@ -31,6 +35,19 @@ def test_guardrail_scripts_check_untracked_generated_files() -> None:
     assert helper_call in CI_LOCAL_PATH.read_text(encoding="utf-8")
     assert helper_call in WORKFLOW_PATH.read_text(encoding="utf-8")
     assert helper_body in GENERATED_CLEAN_PATH.read_text(encoding="utf-8")
+
+
+def test_ci_checks_generated_files_before_any_in_place_rebuild() -> None:
+    freshness_call = "bash scripts/check-generated-clean.sh"
+    in_place_build_call = "bash scripts/build-phyphox.sh"
+
+    for path in (CI_LOCAL_PATH, WORKFLOW_PATH):
+        text = path.read_text(encoding="utf-8")
+        freshness_index = text.index(freshness_call)
+        build_index = text.find(in_place_build_call)
+        assert build_index == -1 or freshness_index < build_index, (
+            f"{path.relative_to(REPO_ROOT)} overwrites generated files before checking parity"
+        )
 
 
 def test_secret_scan_flags_untracked_files() -> None:
@@ -110,3 +127,56 @@ def test_constants_json_documents_reserved_modes() -> None:
             f"mode {m} appears in both 'modes' and 'reserved_modes'; "
             "a mode cannot be active and reserved at the same time"
         )
+
+
+def test_firmware_bounds_config_conversion_and_reports_active_mode() -> None:
+    firmware = SKETCH_PATH.read_text(encoding="utf-8")
+
+    range_check = "configValue < 0.5f || configValue >= 9.5f"
+    assert range_check in firmware
+    assert firmware.index(range_check) < firmware.index("roundf(configValue)")
+    assert "bytesRead == static_cast<int>(sizeof(buf))" in firmware
+    assert firmware.count("writeActiveModeToConfigCharacteristic();") >= 2
+
+
+def test_local_markdown_links_resolve() -> None:
+    excluded_roots = {
+        ".codacy",
+        ".codegraph",
+        ".git",
+        ".internal",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".serena",
+        "reference",
+    }
+    broken: list[str] = []
+
+    for path in sorted(REPO_ROOT.rglob("*.md")):
+        relative_path = path.relative_to(REPO_ROOT)
+        if relative_path.parts[0] in excluded_roots:
+            continue
+        for raw_target in LOCAL_MARKDOWN_LINK.findall(path.read_text(encoding="utf-8")):
+            target = raw_target.strip("<>").split("#", 1)[0]
+            if not target or "://" in target or target.startswith("mailto:"):
+                continue
+            if not (path.parent / target).resolve().exists():
+                broken.append(f"{relative_path}: {raw_target}")
+
+    assert broken == []
+
+
+def test_embedded_icons_are_valid_png_images() -> None:
+    experiment_paths = sorted((REPO_ROOT / "src" / "phyphox").glob("*.phyphox.xml"))
+    experiment_paths.extend(sorted((REPO_ROOT / "experiments" / "astronomy").glob("*.phyphox")))
+    icons: list[tuple[Path, ET.Element]] = []
+
+    for path in experiment_paths:
+        root = ET.parse(path).getroot()
+        icons.extend((path, icon) for icon in root.findall("icon"))
+
+    assert len(icons) == 9
+    for path, icon in icons:
+        assert icon.attrib.get("format") == "base64", path
+        image = base64.b64decode(icon.text or "", validate=True)
+        assert image.startswith(b"\x89PNG\r\n\x1a\n"), path

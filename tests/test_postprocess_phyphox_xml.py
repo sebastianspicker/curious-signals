@@ -136,6 +136,7 @@ class TestMainFileArg:
         result = subprocess.run(
             [sys.executable, script, str(p)],
             capture_output=True,
+            check=False,
             text=True,
         )
         assert result.returncode == 0
@@ -149,6 +150,7 @@ class TestMainFileArg:
         result = subprocess.run(
             [sys.executable, script, str(tmp_path / "missing.xml")],
             capture_output=True,
+            check=False,
             text=True,
         )
         assert result.returncode == 1
@@ -163,6 +165,7 @@ class TestMainFileArg:
             [sys.executable, script],
             input=xml,
             capture_output=True,
+            check=False,
             text=True,
         )
         assert result.returncode == 0

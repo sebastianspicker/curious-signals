@@ -1,12 +1,13 @@
 ---
 name: Bug report
-description: Report a problem or regression
+description: Report reproducible firmware, experiment, or tooling behavior
 labels: [bug]
 ---
 
 ## Summary
 
 ## Reproduction
+
 1.
 2.
 3.
@@ -16,11 +17,18 @@ labels: [bug]
 ## Actual behavior
 
 ## Environment
-- OS:
-- phyphox app version:
-- Board: (e.g., Nano 33 BLE Sense)
-- Arduino core version (if compiling locally):
 
-## Logs / Screenshots
+- operating system:
+- repository commit:
+- phyphox app version:
+- board model, revision, and SKU:
+- Arduino core version:
+- Arduino library versions:
+- external circuits or sensors:
+
+## Validation output
+
+Paste only the relevant error or log excerpt. Remove credentials, private device
+identifiers, local usernames, and unrelated paths.
 
 ## Additional context

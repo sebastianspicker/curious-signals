@@ -46,3 +46,18 @@ class TestMainCli:
         samples = list(GENERATED_DIR.glob("*.phyphox"))
         assert samples, "No generated .phyphox files found in experiments/"
         assert main([str(p) for p in samples]) == 0
+
+    def test_unsafe_xml_returns_one_without_traceback(self, tmp_path, capsys) -> None:
+        path = tmp_path / "unsafe.phyphox"
+        path.write_text(
+            '<!DOCTYPE phyphox [<!ENTITY injected "unsafe">]>'
+            '<phyphox version="1.7">&injected;</phyphox>',
+            encoding="utf-8",
+        )
+
+        result = main([str(path)])
+        captured = capsys.readouterr()
+
+        assert result == 1
+        assert "XML parse error: unsafe XML rejected" in captured.err
+        assert "Traceback" not in captured.err

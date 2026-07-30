@@ -17,19 +17,6 @@ labels: [bug]
 ## Actual behavior
 
 ## Environment
-<<<<<<< HEAD
-- OS:
-- phyphox app version:
-- Board: (e.g., Nano 33 BLE Sense)
-- Arduino core version (if compiling locally):
-- Affected area:
-  - [ ] Arduino firmware / BLE runtime
-  - [ ] Core generated `experiments/*.phyphox`
-  - [ ] Astronomy `experiments/astronomy/*.phyphox`
-  - [ ] Build, validation, or CI tooling
-  - [ ] Documentation
-=======
->>>>>>> dev
 
 - operating system:
 - repository commit:
@@ -38,6 +25,14 @@ labels: [bug]
 - Arduino core version:
 - Arduino library versions:
 - external circuits or sensors:
+
+## Affected area
+
+- [ ] Arduino firmware / BLE runtime
+- [ ] Core generated `experiments/*.phyphox`
+- [ ] Astronomy `experiments/astronomy/*.phyphox`
+- [ ] Build, validation, or CI tooling
+- [ ] Documentation
 
 ## Validation output
 

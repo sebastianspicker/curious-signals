@@ -2,23 +2,7 @@
 
 ## Product boundaries
 
-<<<<<<< HEAD
-- `README.md`: classroom-facing overview and quickstart
-- `CONTRIBUTING.md`, `SECURITY.md`: maintainer policy surface
-- `experiments/*.phyphox`: committed importable core sensor experiments
-- `experiments/astronomy/*.phyphox`: committed importable astronomy experiments with localized UI and their own phone/SensorTag/Owon runtime paths
-- `experiments/phyphox_constants.json`: BLE UUID and mode metadata
-- `src/phyphox/*.phyphox.xml`: source XML with XInclude deduplication
-- `src/phyphox/includes/*`: shared XML fragments
-- `arduino/phyphox_ble_sense/phyphox_ble_sense.ino`: canonical Arduino sketch
-- `scripts/`: build, validation, compile, and local CI entrypoints
-- `tools/`: XML post-processing and phyphox plausibility validation
-- `docs/ASTRONOMY_EXPERIMENTS_COMPANION.md`: teacher/operator companion for astronomy methods, physics, and didactics
-- `docs/`: runbook, CI notes, repository map, and current classroom companion
-  docs. `docs/archive/` is retained only for superseded audit/status material.
-=======
 The repository contains two experiment sets with different source ownership.
->>>>>>> dev
 
 ### Core sensor experiments
 

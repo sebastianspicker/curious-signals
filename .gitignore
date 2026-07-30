@@ -5,7 +5,6 @@
 .Trashes
 
 # Local analysis and tool state
-/.codacy/
 /.codegraph/
 /.serena/
 /.codex/
@@ -13,7 +12,6 @@
 /.agents/
 /.internal/
 
-<<<<<<< HEAD
 # Codacy local run artifacts. Keep .codacy/codacy.config.json visible when it is
 # intentionally used as repository configuration.
 .codacy/generated/
@@ -23,15 +21,11 @@
 .codacy/*.sarif
 .codacy/*.log
 
-# Internal AI operator guide (not user-facing documentation)
-agent.md
-=======
 # Local maintainer guidance and work records
 /AGENTS.md
 /agent.md
 /CLAUDE.md
 /docs/agent/
->>>>>>> dev
 
 # Editors
 .vscode/

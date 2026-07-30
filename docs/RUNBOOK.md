@@ -84,18 +84,10 @@ phyphox behavior.
 
 For a manual device test:
 
-<<<<<<< HEAD
-1. Flash `arduino/phyphox_ble_sense/phyphox_ble_sense.ino`.
-2. Import one file from `experiments/` into phyphox on a phone.
-3. Start the experiment and confirm that `phyphox-sense` connects and streams values.
-4. Change to a different core sensor experiment and confirm the mode switch changes the sensor payload.
-5. If a mode shows blank, missing, or `NaN` channel values, treat that as an unavailable sensor or stale sample condition rather than a valid zero reading; record the affected mode and hardware state.
-=======
 1. Record the board revision. The supported target is the original Nano 33 BLE
    Sense, not Rev2.
 2. List connected boards with `arduino-cli board list`.
 3. Upload the sketch:
->>>>>>> dev
 
    ```sh
    arduino-cli upload -p <serial-port> \

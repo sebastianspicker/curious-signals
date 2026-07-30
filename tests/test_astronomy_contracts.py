@@ -4,15 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-<<<<<<< HEAD:tests/test_astronomy_audit.py
 from defusedxml import ElementTree as ET
 
-ASTRO_DIR = Path(__file__).resolve().parents[1] / "experiments" / "astronomy"
-=======
 REPO_ROOT = Path(__file__).resolve().parents[1]
 ASTRO_DIR = REPO_ROOT / "experiments" / "astronomy"
 DOCS_PATH = REPO_ROOT / "docs" / "ASTRONOMY_EXPERIMENTS_COMPANION.md"
->>>>>>> dev:tests/test_astronomy_contracts.py
 
 EXPECTED_FILES = {
     "albedo.phyphox",

@@ -8,8 +8,8 @@
 - hardware revisions tested:
 - license or attribution impact:
 
-<<<<<<< HEAD
 ## Scope
+
 - [ ] Arduino firmware / BLE runtime
 - [ ] Core generated `experiments/*.phyphox`
 - [ ] Astronomy `experiments/astronomy/*.phyphox`
@@ -17,21 +17,6 @@
 - [ ] Documentation
 - [ ] Archive/deprecated docs only
 
-## Verification
-- [ ] `ruff check .`
-- [ ] `pytest`
-- [ ] `bash scripts/validate-xml.sh`
-- [ ] `bash scripts/check-generated-clean.sh`
-- [ ] `make security`
-- [ ] `make compile` (requires `arduino-cli`; note if skipped)
-
-## Generated files
-- [ ] Source XML changes were rebuilt with `bash scripts/build-phyphox.sh`
-- [ ] Generated `experiments/*.phyphox` changes are intentional
-- [ ] Not applicable
-
-## Skipped checks / Notes
-=======
 ## Verification
 
 - [ ] `make lint`
@@ -42,5 +27,10 @@
 - [ ] `make security`
 - [ ] relevant manual device checks, or an explanation of why they were skipped
 
+## Generated files
+
+- [ ] Source XML changes were rebuilt with `bash scripts/build-phyphox.sh`
+- [ ] Generated `experiments/*.phyphox` changes are intentional
+- [ ] Not applicable
+
 ## Residual uncertainty
->>>>>>> dev

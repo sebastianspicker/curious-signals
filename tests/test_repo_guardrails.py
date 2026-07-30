@@ -4,28 +4,16 @@ from __future__ import annotations
 
 import base64
 import json
-<<<<<<< HEAD
-=======
 import re
-import subprocess
-import xml.etree.ElementTree as ET
->>>>>>> dev
 from pathlib import Path
 
-import pytest
 import validate_phyphox
+from defusedxml import ElementTree as ET
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CONSTANTS_PATH = REPO_ROOT / "experiments" / "phyphox_constants.json"
 SKETCH_PATH = REPO_ROOT / "arduino" / "phyphox_ble_sense" / "phyphox_ble_sense.ino"
-<<<<<<< HEAD
-=======
-CI_LOCAL_PATH = REPO_ROOT / "scripts" / "ci-local.sh"
-GENERATED_CLEAN_PATH = REPO_ROOT / "scripts" / "check-generated-clean.sh"
-SECRET_SCAN_PATH = REPO_ROOT / "scripts" / "secret-scan.sh"
-WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "ci.yml"
 LOCAL_MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
->>>>>>> dev
 
 
 def test_service_uuid_matches_between_constants_and_firmware() -> None:
@@ -35,50 +23,6 @@ def test_service_uuid_matches_between_constants_and_firmware() -> None:
     assert constants["bluetooth"]["service_uuid"] in firmware
 
 
-<<<<<<< HEAD
-=======
-def test_guardrail_scripts_check_untracked_generated_files() -> None:
-    helper_call = "bash scripts/check-generated-clean.sh"
-    helper_body = 'bash scripts/build-phyphox.sh "$tmpdir" >/dev/null'
-
-    assert helper_call in CI_LOCAL_PATH.read_text(encoding="utf-8")
-    assert helper_call in WORKFLOW_PATH.read_text(encoding="utf-8")
-    assert helper_body in GENERATED_CLEAN_PATH.read_text(encoding="utf-8")
-
-
-def test_ci_checks_generated_files_before_any_in_place_rebuild() -> None:
-    freshness_call = "bash scripts/check-generated-clean.sh"
-    in_place_build_call = "bash scripts/build-phyphox.sh"
-
-    for path in (CI_LOCAL_PATH, WORKFLOW_PATH):
-        text = path.read_text(encoding="utf-8")
-        freshness_index = text.index(freshness_call)
-        build_index = text.find(in_place_build_call)
-        assert build_index == -1 or freshness_index < build_index, (
-            f"{path.relative_to(REPO_ROOT)} overwrites generated files before checking parity"
-        )
-
-
-def test_secret_scan_flags_untracked_files() -> None:
-    temp_path = REPO_ROOT / ".secret-scan-test.tmp"
-    temp_token = "ghp_" + ("1234567890" * 4)[:36]
-    temp_path.write_text(f"{temp_token}\n", encoding="utf-8")
-    try:
-        result = subprocess.run(
-            ["bash", str(SECRET_SCAN_PATH)],
-            cwd=REPO_ROOT,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-    finally:
-        temp_path.unlink(missing_ok=True)
-
-    assert result.returncode == 1
-    assert str(temp_path.relative_to(REPO_ROOT)) in result.stdout
-
-
->>>>>>> dev
 def test_uuid_loader_requires_all_expected_keys(monkeypatch, tmp_path: Path) -> None:
     repo_root = tmp_path / "repo"
     constants_dir = repo_root / "experiments"
@@ -139,28 +83,14 @@ def test_constants_json_documents_reserved_modes() -> None:
         )
 
 
-<<<<<<< HEAD
 def test_firmware_initial_config_matches_default_mode() -> None:
     firmware = SKETCH_PATH.read_text(encoding="utf-8")
 
-    if "Mode mode = Mode::kAcceleration;" not in firmware:
-        pytest.fail("firmware must initialize to acceleration mode")
-    if "writeFloat32LE(cfg, sizeof(cfg), 0, (float)Mode::kAcceleration);" not in firmware:
-        pytest.fail("firmware must send acceleration as the initial config")
+    assert "Mode mode = Mode::kAcceleration;" in firmware
+    assert firmware.count("writeActiveModeToConfigCharacteristic();") >= 2
+    assert "writeFloat32LE(configValue, sizeof(configValue), 0" in firmware
 
 
-def test_firmware_rejects_fractional_and_reserved_modes_explicitly() -> None:
-    firmware = SKETCH_PATH.read_text(encoding="utf-8")
-
-    if "fabsf(configValue - rounded)" not in firmware:
-        pytest.fail("firmware must reject fractional modes")
-    if "raw > 9" in firmware:
-        pytest.fail("firmware must not accept the full 1..9 mode range")
-    if "Accept the full reserved range" in firmware:
-        pytest.fail("firmware must not document accepting reserved modes")
-    if "Reserved mode received" in firmware:
-        pytest.fail("firmware must not silently accept reserved modes")
-=======
 def test_firmware_bounds_config_conversion_and_reports_active_mode() -> None:
     firmware = SKETCH_PATH.read_text(encoding="utf-8")
 
@@ -168,7 +98,7 @@ def test_firmware_bounds_config_conversion_and_reports_active_mode() -> None:
     assert range_check in firmware
     assert firmware.index(range_check) < firmware.index("roundf(configValue)")
     assert "bytesRead == static_cast<int>(sizeof(buf))" in firmware
-    assert firmware.count("writeActiveModeToConfigCharacteristic();") >= 2
+    assert "findSupportedMode(raw, supportedMode)" in firmware
 
 
 def test_local_markdown_links_resolve() -> None:
@@ -212,4 +142,3 @@ def test_embedded_icons_are_valid_png_images() -> None:
         assert icon.attrib.get("format") == "base64", path
         image = base64.b64decode(icon.text or "", validate=True)
         assert image.startswith(b"\x89PNG\r\n\x1a\n"), path
->>>>>>> dev

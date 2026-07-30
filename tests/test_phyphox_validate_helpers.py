@@ -155,6 +155,34 @@ class TestModeValidation:
         errors = _load_expected_modes()
         assert any("must be an active integer mode ID" in error.message for error in errors)
 
+    def test_source_mode_parser_rejects_entity_declarations(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        repo_root = _write_mode_repo(
+            tmp_path,
+            {
+                "acceleration": "1",
+                "gyroscope": "2",
+                "magnetometer": "3",
+                "pressure": "4",
+                "temperature": "5",
+                "light": "6",
+                "analog": "9",
+            },
+        )
+        source = repo_root / "src" / "phyphox" / "acceleration.phyphox.xml"
+        source.write_text(
+            '<!DOCTYPE phyphox [<!ENTITY mode "1">]>'
+            "<phyphox><output><bluetooth><config>&mode;</config></bluetooth></output></phyphox>",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(validate_module, "REPO_ROOT", repo_root)
+
+        errors = _load_expected_modes()
+
+        assert any("cannot parse mode config" in error.message for error in errors)
+        assert any("unsafe XML rejected" in error.message for error in errors)
+
 
 class TestValidationError:
     def test_is_frozen(self):

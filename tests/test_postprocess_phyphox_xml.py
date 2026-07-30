@@ -5,13 +5,8 @@ from __future__ import annotations
 import io
 import sys
 import textwrap
-from contextlib import redirect_stderr, redirect_stdout
-from pathlib import Path
 
-import pytest
 from postprocess_phyphox_xml import main, postprocess
-
-_SCRIPT = Path(__file__).resolve().parents[1] / "tools" / "postprocess_phyphox_xml.py"
 
 # ---------------------------------------------------------------------------
 # postprocess() unit tests
@@ -121,96 +116,38 @@ class TestPostprocessEdgeCases:
 
 
 # ---------------------------------------------------------------------------
-# main() integration via subprocess
+# main() integration
 # ---------------------------------------------------------------------------
 
 
 class TestMainFileArg:
     """Test the CLI entry point with a file argument."""
 
-    def test_reads_file_and_postprocesses(self, monkeypatch, tmp_path):
+    def test_reads_file_and_postprocesses(self, tmp_path, monkeypatch, capsys):
         xml = '<phyphox xmlns:xi="http://www.w3.org/2001/XInclude"><title>T</title></phyphox>'
         p = tmp_path / "input.xml"
         p.write_text(xml, encoding="utf-8")
 
-<<<<<<< HEAD
-        stdout = io.StringIO()
-        monkeypatch.setattr(sys, "argv", [str(_SCRIPT), str(p)])
-=======
-        script = _SCRIPT
-        result = subprocess.run(
-            [sys.executable, script, str(p)],
-            capture_output=True,
-            check=False,
-            text=True,
-        )
-        assert result.returncode == 0
-        assert "xmlns:xi" not in result.stdout
-        assert "<phyphox>" in result.stdout
->>>>>>> dev
+        monkeypatch.setattr(sys, "argv", ["postprocess_phyphox_xml.py", str(p)])
 
-        with redirect_stdout(stdout):
-            returncode = main()
+        assert main() == 0
+        captured = capsys.readouterr()
+        assert "xmlns:xi" not in captured.out
+        assert "<phyphox>" in captured.out
 
-<<<<<<< HEAD
-        stdout_value = stdout.getvalue()
-        if returncode != 0:
-            pytest.fail(f"expected successful postprocess, got {returncode}")
-        if "xmlns:xi" in stdout_value:
-            pytest.fail("expected XInclude namespace cleanup")
-        if "<phyphox>" not in stdout_value:
-            pytest.fail("expected normalized phyphox root element")
-=======
-        script = _SCRIPT
-        result = subprocess.run(
-            [sys.executable, script, str(tmp_path / "missing.xml")],
-            capture_output=True,
-            check=False,
-            text=True,
-        )
-        assert result.returncode == 1
-        assert "Error" in result.stderr
->>>>>>> dev
+    def test_missing_file_returns_error(self, tmp_path, monkeypatch, capsys):
+        missing = tmp_path / "missing.xml"
+        monkeypatch.setattr(sys, "argv", ["postprocess_phyphox_xml.py", str(missing)])
 
-    def test_missing_file_returns_error(self, monkeypatch, tmp_path):
-        stderr = io.StringIO()
-        monkeypatch.setattr(sys, "argv", [str(_SCRIPT), str(tmp_path / "missing.xml")])
+        assert main() == 1
+        assert "Error" in capsys.readouterr().err
 
-        with redirect_stderr(stderr):
-            returncode = main()
-
-        if returncode != 1:
-            pytest.fail(f"expected missing file error, got {returncode}")
-        if "Error" not in stderr.getvalue():
-            pytest.fail("expected error message for missing file")
-
-    def test_stdin_mode(self, monkeypatch):
+    def test_stdin_mode(self, monkeypatch, capsys):
         xml = '<e xml:base="x.xml">V</e>'
-<<<<<<< HEAD
-        stdout = io.StringIO()
-        monkeypatch.setattr(sys, "argv", [str(_SCRIPT)])
+        monkeypatch.setattr(sys, "argv", ["postprocess_phyphox_xml.py"])
         monkeypatch.setattr(sys, "stdin", io.StringIO(xml))
 
-        with redirect_stdout(stdout):
-            returncode = main()
-
-        stdout_value = stdout.getvalue()
-        if returncode != 0:
-            pytest.fail(f"expected stdin mode success, got {returncode}")
-        if "xml:base" in stdout_value:
-            pytest.fail("expected xml:base cleanup in stdin mode")
-        if stdout_value != "<e>V</e>":
-            pytest.fail(f"unexpected stdin postprocess output: {stdout_value!r}")
-=======
-        script = _SCRIPT
-        result = subprocess.run(
-            [sys.executable, script],
-            input=xml,
-            capture_output=True,
-            check=False,
-            text=True,
-        )
-        assert result.returncode == 0
-        assert "xml:base" not in result.stdout
-        assert "<e>V</e>" == result.stdout
->>>>>>> dev
+        assert main() == 0
+        captured = capsys.readouterr()
+        assert "xml:base" not in captured.out
+        assert "<e>V</e>" == captured.out

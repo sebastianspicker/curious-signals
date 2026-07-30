@@ -46,102 +46,6 @@ Explore the [static classroom demo](https://sebastianspicker.github.io/curious-s
 
 ## Limitations
 
-<<<<<<< HEAD
-## Experiments
-
-### Core sensor experiments
-
-- `accelerometer_plot_v1-2.phyphox` (config/mode `1.0`)
-- `gyroscope_plot_v1-2.phyphox` (config/mode `2.0`)
-- `magnetometer_plot_v1-2.phyphox` (config/mode `3.0`)
-- `pressure_plot_v1-2.phyphox` (config/mode `4.0`)
-- `temperature_plot_v1-2.phyphox` (config/mode `5.0`)
-- `light_plot_v1-2.phyphox` (config/mode `6.0`)
-- `analog_input_plot_v1-2.phyphox` (config/mode `9.0`)
-
-Import the generated files from `experiments/`. Compatibility target: phyphox app 1.x; experiments v1.2.
-
-### Astronomy experiments
-
-Import these files from `experiments/astronomy/`:
-
-- `albedo.phyphox`
-- `greenhouse.phyphox`
-- `ir-dist_habitable.phyphox`
-- `missiontomars.phyphox`
-- `pt-star.phyphox`
-- `tidal-locking.phyphox`
-- `transitmethode.phyphox`
-
-Auxiliary hardware helper:
-
-- `owon_digital_multimeter-debug.phyphox` is a supported Owon multimeter debug
-  and integration utility, not an astronomy teaching experiment.
-
-The astronomy files are classroom analogies or bounded model experiments, not standalone scientific calculators. Their measurement paths, physical claims, and didactic limits are documented in the companion file linked below.
-
-## How it works
-
-**Core sensor build pipeline:** Experiment sources (XML with XInclude) are expanded with `xmllint`, post-processed (strip `xml:base`, leftover namespaces), and written to `experiments/*.phyphox`. The Arduino sketch is compiled separately with `arduino-cli`. Validation runs `xmllint` and `tools/validate_phyphox.py` on generated files and expanded source output.
-
-```mermaid
-flowchart LR
-  subgraph phyphoxBuild [phyphox build]
-    xmlSources[XML sources + includes]
-    xmllint[xmllint --xinclude]
-    postprocess[postprocess_phyphox_xml.py]
-    phyphoxFiles["experiments/*.phyphox"]
-    xmlSources --> xmllint --> postprocess --> phyphoxFiles
-  end
-  subgraph arduinoBuild [Arduino build]
-    sketch[phyphox_ble_sense.ino]
-    arduinoCli[arduino-cli compile]
-    binary[sketch binary]
-    sketch --> arduinoCli --> binary
-  end
-  subgraph validation [validation]
-    validate[validate-xml.sh]
-    phyphoxValidate[validate_phyphox.py]
-    phyphoxFiles -.-> validate
-    validate --> phyphoxValidate
-  end
-```
-
-**Core sensor runtime:** The Arduino advertises as `phyphox-sense`. The phyphox app connects, writes an active mode (`1`-`6` or `9`) to the config characteristic, and subscribes to the data characteristic. The Arduino reads the selected sensor(s), packs time and four channel values as 5× float32 LE, and notifies every 50 ms.
-
-```mermaid
-sequenceDiagram
-  participant Arduino
-  participant App as phyphox app
-  Arduino->>Arduino: Advertise "phyphox-sense"
-  App->>Arduino: Connect
-  App->>Arduino: Write config (active mode 1-6 or 9)
-  Arduino->>Arduino: Set mode, read sensors
-  loop Every 50 ms
-    Arduino->>App: Notify (time, CH2, CH3, CH4, CH5)
-    App->>App: Plot / update views
-  end
-```
-
-## Lifecycle
-
-**Developer flow** from clone to tested device:
-
-```mermaid
-flowchart LR
-  clone[Clone repo]
-  installDeps[Install deps]
-  validate[make validate]
-  build[make build]
-  compile[make compile]
-  flash[Flash sketch]
-  importInApp[Import .phyphox in app]
-  connectAndTest[Connect and verify]
-  clone --> installDeps --> validate --> build --> compile --> flash --> importInApp --> connectAndTest
-```
-
-**User flow** (pre-built experiments): Download or clone this repo, then follow the [Quickstart](#quickstart) to flash the sketch, import an experiment into the phyphox app, and start measuring.
-=======
 - Every board advertises as `phyphox-sense` with the same service UUID. Device
   selection can be ambiguous when several boards are nearby.
 - A failed or unavailable sensor sample is transmitted as `NaN`. The firmware
@@ -159,7 +63,6 @@ flowchart LR
   environment.
 - Component license scope and embedded asset provenance are not resolved. See
   [License status](#license-status).
->>>>>>> dev
 
 ## Requirements
 
@@ -185,36 +88,11 @@ Repository development uses:
 - `ripgrep` and `shellcheck` for the local security checks
 - `zip` for `make bundle`
 
-<<<<<<< HEAD
-### Core sensor quickstart
-
-Use this flow for the files in `experiments/*.phyphox`:
-
-1. **Flash the Arduino sketch.** Open `arduino/phyphox_ble_sense/phyphox_ble_sense.ino` in the Arduino IDE, select board "Arduino Nano 33 BLE", and upload. (If using `arduino-cli`, run `make compile` then `arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:mbed_nano:nano33ble arduino/phyphox_ble_sense`.)
-2. **Import an experiment into phyphox.** Transfer one of the files from `experiments/` to your phone (e.g., via AirDrop, email attachment, or USB). Open it with the phyphox app.
-3. **Connect and measure.** In the phyphox app, tap the imported experiment. It connects to the Arduino over Bluetooth LE (device name: `phyphox-sense`). Sensor data appears as live plots.
-
-Each file in `experiments/` is a self-contained experiment. You can import several and switch between them; the app tells the Arduino which sensor to stream.
-
-### Astronomy quickstart
-
-Use this flow for the files in `experiments/astronomy/*.phyphox`:
-
-1. **Choose the required sensor path.**
-   - Some files use the phone sensor directly.
-   - Some require a TI SensorTag.
-   - `transitmethode.phyphox` can also use a solar cell on the supported Owon multimeter.
-2. **Import the file into phyphox.** Transfer one of the files from `experiments/astronomy/` to your phone and open it with the phyphox app.
-3. **Run the experiment with the matching hardware path.** Do not expect these astronomy files to connect to `phyphox-sense` unless the individual file explicitly targets that Arduino runtime, which the current astronomy subtree does not.
-
-### Developer commands
-=======
 ## Installation
->>>>>>> dev
 
 ```sh
-git clone https://github.com/sebastianspicker/phyphox-arduino-classroom-kit.git
-cd phyphox-arduino-classroom-kit
+git clone https://github.com/sebastianspicker/curious-signals.git
+cd curious-signals
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements-test.txt
@@ -257,22 +135,9 @@ Shared BLE values are defined in:
 | Data characteristic | `cddf1002-30f7-4671-8b43-5e40ba53514a` |
 | Config characteristic | `cddf1003-30f7-4671-8b43-5e40ba53514a` |
 
-<<<<<<< HEAD
-For core sensor experiments, follow the [core sensor quickstart](#core-sensor-quickstart) and verify:
-
-- The plot updates with live sensor data after connecting.
-- Switching to a different experiment changes the streamed sensor (e.g., accelerometer vs. gyroscope).
-
-For astronomy experiments, verify instead that the selected file matches the required phone/SensorTag/Owon path and that the lesson framing matches the companion document.
-
-## Security
-
-Minimal security checks:
-=======
 `scripts/build-phyphox.sh` writes to `experiments/` by default. Set
 `PHYPHOX_OUTDIR` or pass an output directory as its first argument to write
 elsewhere:
->>>>>>> dev
 
 ```sh
 PHYPHOX_OUTDIR=/tmp/phyphox-output bash scripts/build-phyphox.sh
@@ -431,14 +296,8 @@ make bundle
 If `ruff` or `pytest` is missing, activate `.venv` and reinstall
 `requirements-test.txt`.
 
-<<<<<<< HEAD
-- **Arduino not found in phyphox:** Make sure the Arduino is powered and not connected to another device. Bluetooth LE does not show up in the system Bluetooth settings -- the phyphox app handles the connection directly.
-- **No data / flat plot:** Check that you imported the correct file from `experiments/` for the sensor you want. Each experiment selects a different sensor mode on the Arduino. If the selected sensor is unavailable or has no fresh sample, the firmware sends `NaN` for the affected channels; treat blank, missing, or `NaN` values as an unavailable-sensor condition, not as a real zero reading.
-- **Board not advertising after flash:** Power-cycle the Arduino. If it still does not advertise as `phyphox-sense`, re-flash the sketch.
-=======
 If `xmllint` is missing, install libxml2 utilities and confirm that `xmllint`
 is on `PATH`.
->>>>>>> dev
 
 If Arduino package installation fails, confirm network access and retry
 `make compile`. Keep the version pins intact.
@@ -456,18 +315,9 @@ phyphox rather than the operating system Bluetooth settings.
 
 ## Security considerations
 
-<<<<<<< HEAD
-- [docs/REPO_MAP.md](docs/REPO_MAP.md) — technical map (entrypoints, hot spots)
-- [docs/RUNBOOK.md](docs/RUNBOOK.md) — reproducible setup and verification loop
-- [docs/ASTRONOMY_EXPERIMENTS_COMPANION.md](docs/ASTRONOMY_EXPERIMENTS_COMPANION.md) — astronomy experiment companion covering method, physics basis, didactic goal, and scope limits
-- [docs/ci.md](docs/ci.md) — CI matrix overview
-- [arduino/phyphox_ble_sense/README.md](arduino/phyphox_ble_sense/README.md) — BLE UUIDs, data layout, mode mapping, and Arduino sketch behaviour
-- [CONTRIBUTING.md](CONTRIBUTING.md) — maintainer workflow
-=======
 The XInclude validator permits only repository-owned files below
 `src/phyphox/includes/`. It rejects URLs, absolute paths, parent traversal,
 queries, fragments, missing files, and resolved paths outside that directory.
->>>>>>> dev
 
 Do not commit credentials, private device identifiers, local captures, caches,
 or generated bundles. The local security scripts perform narrow secret,

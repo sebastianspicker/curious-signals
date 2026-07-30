@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
+import io
 import sys
 import textwrap
-from pathlib import Path
 
-from postprocess_phyphox_xml import postprocess
-
-_SCRIPT = Path(__file__).resolve().parents[1] / "tools" / "postprocess_phyphox_xml.py"
+from postprocess_phyphox_xml import main, postprocess
 
 # ---------------------------------------------------------------------------
 # postprocess() unit tests
@@ -118,56 +116,38 @@ class TestPostprocessEdgeCases:
 
 
 # ---------------------------------------------------------------------------
-# main() integration via subprocess
+# main() integration
 # ---------------------------------------------------------------------------
 
 
 class TestMainFileArg:
     """Test the CLI entry point with a file argument."""
 
-    def test_reads_file_and_postprocesses(self, tmp_path):
-        import subprocess
-
+    def test_reads_file_and_postprocesses(self, tmp_path, monkeypatch, capsys):
         xml = '<phyphox xmlns:xi="http://www.w3.org/2001/XInclude"><title>T</title></phyphox>'
         p = tmp_path / "input.xml"
         p.write_text(xml, encoding="utf-8")
 
-        script = _SCRIPT
-        result = subprocess.run(
-            [sys.executable, script, str(p)],
-            capture_output=True,
-            check=False,
-            text=True,
-        )
-        assert result.returncode == 0
-        assert "xmlns:xi" not in result.stdout
-        assert "<phyphox>" in result.stdout
+        monkeypatch.setattr(sys, "argv", ["postprocess_phyphox_xml.py", str(p)])
 
-    def test_missing_file_returns_error(self, tmp_path):
-        import subprocess
+        assert main() == 0
+        captured = capsys.readouterr()
+        assert "xmlns:xi" not in captured.out
+        assert "<phyphox>" in captured.out
 
-        script = _SCRIPT
-        result = subprocess.run(
-            [sys.executable, script, str(tmp_path / "missing.xml")],
-            capture_output=True,
-            check=False,
-            text=True,
-        )
-        assert result.returncode == 1
-        assert "Error" in result.stderr
+    def test_missing_file_returns_error(self, tmp_path, monkeypatch, capsys):
+        missing = tmp_path / "missing.xml"
+        monkeypatch.setattr(sys, "argv", ["postprocess_phyphox_xml.py", str(missing)])
 
-    def test_stdin_mode(self, tmp_path):
-        import subprocess
+        assert main() == 1
+        assert "Error" in capsys.readouterr().err
 
+    def test_stdin_mode(self, monkeypatch, capsys):
         xml = '<e xml:base="x.xml">V</e>'
-        script = _SCRIPT
-        result = subprocess.run(
-            [sys.executable, script],
-            input=xml,
-            capture_output=True,
-            check=False,
-            text=True,
-        )
-        assert result.returncode == 0
-        assert "xml:base" not in result.stdout
-        assert "<e>V</e>" == result.stdout
+        monkeypatch.setattr(sys, "argv", ["postprocess_phyphox_xml.py"])
+        monkeypatch.setattr(sys, "stdin", io.StringIO(xml))
+
+        assert main() == 0
+        captured = capsys.readouterr()
+        assert "xml:base" not in captured.out
+        assert "<e>V</e>" == captured.out

@@ -42,6 +42,8 @@ multimeter transit path. See the
 [astronomy experiments companion](docs/ASTRONOMY_EXPERIMENTS_COMPANION.md) for
 the measurement path and interpretation limits of each file.
 
+Explore the [static classroom demo](https://sebastianspicker.github.io/curious-signals/). It uses deterministic fixture data and clearly marked simulated controls; the repository remains the source of truth.
+
 ## Limitations
 
 - Every board advertises as `phyphox-sense` with the same service UUID. Device

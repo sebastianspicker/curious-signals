@@ -1,6 +1,6 @@
 # Release Status
 
-Updated: 2026-07-24  
+Updated: 2026-08-09
 Status: not ready for public alpha publication
 
 No public release has been published.
@@ -42,11 +42,25 @@ electrical behavior, or operation in the phyphox mobile application.
   analog-input, electrical, and phyphox application tests.
 - The release candidate must be reconciled with upstream history before a
   release commit or tag is selected.
-- A reliable private vulnerability reporting path must be confirmed.
+
+The repository's demo workflow is validation-only and does not deploy while
+the distribution-rights blocker remains open. This source-side control does not
+prove that an earlier Pages deployment has been removed from GitHub.
+
+## Confirmed external controls
+
+- A read-only GitHub API check on 2026-08-09 reported private vulnerability
+  reporting as enabled. `SECURITY.md` now points reporters directly to that
+  private route. Maintainer response and notification handling remain an
+  operational responsibility rather than a source-verifiable control.
 
 ## Follow-up decisions
 
-- Decide whether the Arduino CLI download requires checksum verification.
+- CI pins and verifies the upstream SHA-256 for
+  `arduino-cli_1.4.1_Linux_64bit.tar.gz` before extraction. The Arduino package
+  index, board core, and library downloads remain separate network trust
+  boundaries.
 - Decide whether Python test dependencies require a hash-locked environment.
-- Decide whether multi-board classroom use requires a unique advertised device
-  identifier.
+- Multi-board classroom discovery is not supported by the current firmware;
+  support would require a deliberate identity/provisioning contract and new
+  hardware/app verification.

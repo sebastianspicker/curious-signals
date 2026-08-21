@@ -39,13 +39,13 @@ English root strings.
 
 ### `albedo.phyphox`
 
-#### Method
+#### Method — `albedo.phyphox`
 
 - Measures reflected light under fixed geometry.
 - Supports either the phone light sensor or the TI SensorTag light sensor.
 - Reports a relative reflected-light level and a reflectance proxy.
 
-#### Physics basis
+#### Physics basis — `albedo.phyphox`
 
 - The encoded proxy is the fractional contrast between the maximum and minimum
   reflected signal within one run.
@@ -55,61 +55,61 @@ English root strings.
 - The output depends on geometry, source intensity, surface orientation, and
   sensor response.
 
-#### Didactic goal
+#### Didactic goal — `albedo.phyphox`
 
 - Introduce the idea that brighter reflected signals can stand in for higher
   reflectivity.
 - Support classroom discussion of why real astronomical albedo work requires
   calibration, geometry control, and model assumptions.
 
-#### Scope limits
+#### Scope limits — `albedo.phyphox`
 
 - Safe claim: relative comparison between surfaces in one setup.
 - Unsafe claim: direct planetary albedo determination.
 
 ### `greenhouse.phyphox`
 
-#### Method
+#### Method — `greenhouse.phyphox`
 
 - Uses one or two TI SensorTags to record temperature over time.
 - Supports either a single setup or a direct comparison of two enclosed gas
   setups under the same illumination.
 
-#### Physics basis
+#### Physics basis — `greenhouse.phyphox`
 
 - Encodes temperature logging only.
 - The meaningful variable is the comparative temperature trend between setups,
   not an absolute climate model.
 
-#### Didactic goal
+#### Didactic goal — `greenhouse.phyphox`
 
 - Teach controlled comparison:
   - same illumination
   - different enclosure or gas condition
   - compare warming curves and extrema
 
-#### Scope limits
+#### Scope limits — `greenhouse.phyphox`
 
 - Safe claim: relative warming comparison in a classroom model.
 - Unsafe claim: complete atmospheric or planetary greenhouse modelling.
 
 ### `ir-dist_habitable.phyphox`
 
-#### Method
+#### Method — `ir-dist_habitable.phyphox`
 
 - Uses TI SensorTag IR and ambient temperature channels.
 - Uses mouse displacement as an uncalibrated distance proxy.
 - Plots IR temperature signal and ambient temperature against that uncalibrated
   distance.
 
-#### Physics basis
+#### Physics basis — `ir-dist_habitable.phyphox`
 
 - The file is intentionally qualitative.
 - It supports discussion of how changing distance affects a heating-related
   signal.
 - It does not encode a physically calibrated habitable-zone law.
 
-#### Didactic goal
+#### Didactic goal — `ir-dist_habitable.phyphox`
 
 - Show that “closer” and “farther” can be discussed through changing thermal
   response without pretending the setup is an astronomical calculator.
@@ -118,7 +118,7 @@ English root strings.
   - ambient condition
   - true astrophysical interpretation
 
-#### Scope limits
+#### Scope limits — `ir-dist_habitable.phyphox`
 
 - Safe claim: qualitative distance-versus-heating discussion.
 - Unsafe claim: quantitative habitable-zone boundaries or inverse-square-law
@@ -126,98 +126,98 @@ English root strings.
 
 ### `missiontomars.phyphox`
 
-#### Method
+#### Method — `missiontomars.phyphox`
 
 - Uses either the phone pressure sensor or the TI SensorTag pressure sensor.
 - Records air pressure over time and reports maximum, minimum, mean, and
   pressure range.
 
-#### Physics basis
+#### Physics basis — `missiontomars.phyphox`
 
 - The encoded quantity is ambient air pressure in `hPa`.
 - The lesson is framed as spaceship atmosphere or cabin safety, not direct Mars
   atmosphere measurement.
 
-#### Didactic goal
+#### Didactic goal — `missiontomars.phyphox`
 
 - Use a spaceflight narrative to motivate pressure measurement and safety
   thresholds.
 - Let students reason about stability, leakage, pressure loss, and reference
   values in a bounded analogue.
 
-#### Scope limits
+#### Scope limits — `missiontomars.phyphox`
 
 - Safe claim: cabin-pressure or prototype-atmosphere analogy.
 - Unsafe claim: direct Mars environmental measurement.
 
 ### `owon_digital_multimeter-debug.phyphox`
 
-#### Method
+#### Method — `owon_digital_multimeter-debug.phyphox`
 
 - Contains decoder paths labeled for Owon B35T and W18B digital multimeters.
 - Exposes raw values and helper channels for debugging.
 
-#### Physics basis
+#### Physics basis — `owon_digital_multimeter-debug.phyphox`
 
 - No astronomy model is encoded here.
 - This is an instrumentation helper for the multimeter-supported transit path.
 
-#### Didactic goal
+#### Didactic goal — `owon_digital_multimeter-debug.phyphox`
 
 - None as a stand-alone classroom astronomy experiment.
 
-#### Scope limits
+#### Scope limits — `owon_digital_multimeter-debug.phyphox`
 
 - Treat as a debug and integration utility only.
 - Do not treat the model labels as current hardware compatibility evidence.
 
 ### `pt-star.phyphox`
 
-#### Method
+#### Method — `pt-star.phyphox`
 
 - Uses TI SensorTag pressure and temperature channels.
 - Logs both quantities over time.
 - Includes in-file questions that ask learners to compare how both quantities
   change together.
 
-#### Physics basis
+#### Physics basis — `pt-star.phyphox`
 
 - The encoded file measures only pressure and temperature.
 - The astronomy connection is analogical, not a star-formation simulation.
 
-#### Didactic goal
+#### Didactic goal — `pt-star.phyphox`
 
 - Train students to think about coupled variables and trends.
 - Use the analogy to discuss why astrophysical stories often involve linked
   physical quantities without pretending the classroom setup reproduces stellar
   collapse.
 
-#### Scope limits
+#### Scope limits — `pt-star.phyphox`
 
 - Safe claim: structured analogy for comparison and discussion.
 - Unsafe claim: direct model of star formation.
 
 ### `tidal-locking.phyphox`
 
-#### Method
+#### Method — `tidal-locking.phyphox`
 
 - Uses two TI SensorTags.
 - Compares temperature, IR temperature, ambient temperature, and illuminance
   across differently illuminated model sides.
 
-#### Physics basis
+#### Physics basis — `tidal-locking.phyphox`
 
 - Encodes side-by-side sensor comparison.
 - The relevant physical idea is persistent asymmetry between differently
   illuminated sides.
 
-#### Didactic goal
+#### Didactic goal — `tidal-locking.phyphox`
 
 - Support discussion of day-side versus night-side differences in a
   tidally-locked framing.
 - Emphasize comparison across two simultaneously measured model conditions.
 
-#### Scope limits
+#### Scope limits — `tidal-locking.phyphox`
 
 - Safe claim: comparative analogue for persistent illuminated versus shaded
   sides.
@@ -225,7 +225,7 @@ English root strings.
 
 ### `transitmethode.phyphox`
 
-#### Method
+#### Method — `transitmethode.phyphox`
 
 - Supports three measurement paths:
   - phone light sensor
@@ -234,7 +234,7 @@ English root strings.
 - Treats all three as a relative signal over time.
 - Uses phyphox timing logic to identify transits and derive duration and period.
 
-#### Physics basis
+#### Physics basis — `transitmethode.phyphox`
 
 - The core observable is a relative light-curve dip.
 - In the simple model used here, transit depth scales like
@@ -246,7 +246,7 @@ English root strings.
 - This is a model experiment that encodes the logic of transit reasoning, not a
   telescope pipeline.
 
-#### Didactic goal
+#### Didactic goal — `transitmethode.phyphox`
 
 - Show how a dimming event can imply:
   - transit depth
@@ -255,7 +255,7 @@ English root strings.
   - estimated planet radius in a model system
 - Help students distinguish measured quantities from inferred quantities.
 
-#### Scope limits
+#### Scope limits — `transitmethode.phyphox`
 
 - Safe claim: transit-light-curve logic in a classroom model.
 - Unsafe claim: real exoplanet discovery precision or physically calibrated

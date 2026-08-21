@@ -27,17 +27,12 @@ echo "== XML + phyphox validation =="
 bash scripts/validate-xml.sh
 
 echo
-<<<<<<< HEAD
-echo "== Generated experiments are current =="
+echo "== Generated experiment parity =="
 bash scripts/check-generated-clean.sh
 
 echo
 echo "== Rebuild generated experiments =="
 bash scripts/build-phyphox.sh
-=======
-echo "== Generated experiment parity =="
-bash scripts/check-generated-clean.sh
->>>>>>> dev
 
 echo
 echo "== Arduino compile =="

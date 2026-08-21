@@ -52,12 +52,10 @@ interpretation limit changes.
 `owon_digital_multimeter-debug.phyphox` is an integration helper for the
 multimeter transit path. Its filename does not indicate disposable output.
 
-Run the focused astronomy checks while editing:
+Run the focused runtime contracts while editing:
 
 ```sh
-pytest -q \
-  tests/test_astronomy_contracts.py \
-  tests/test_phyphox_physics.py
+pytest -q tests/test_runtime_contracts.py
 bash scripts/validate-xml.sh
 ```
 

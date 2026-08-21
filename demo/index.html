@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A static, simulated preview of the Curious Signals Arduino and phyphox classroom workflow.">
+    <title>Curious Signals · Static classroom preview</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23009297'/%3E%3Cpath d='M15 36h9l5-15 8 27 5-17h7' fill='none' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="styles.css">
+    <script src="demo.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="Curious Signals home">Curious Signals</a>
+      <nav aria-label="Primary navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="https://github.com/sebastianspicker/curious-signals/tree/main/experiments">Experiment files</a>
+        <a href="https://github.com/sebastianspicker/curious-signals">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="lab" aria-labelledby="experiment-title">
+        <aside class="mode-rail" aria-label="Core experiment modes">
+          <h2>Modes</h2>
+          <div id="mode-list" class="mode-list"></div>
+        </aside>
+
+        <div class="workspace">
+          <div class="workspace-heading">
+            <div>
+              <h1 id="experiment-title">Temperature &amp; humidity</h1>
+              <p id="experiment-description">Explore a deterministic fixture shaped like the real mode 5 data contract.</p>
+            </div>
+            <p class="simulation-status" aria-label="Simulation status">Simulated · no Bluetooth</p>
+          </div>
+
+          <div class="readouts" id="readouts" aria-live="polite"></div>
+
+          <figure class="chart-shell">
+            <figcaption>
+              <span id="chart-label">Temperature &amp; humidity</span>
+              <span id="chart-progress">24.0 s fixture</span>
+            </figcaption>
+            <svg id="chart" viewBox="0 0 920 360" role="img" aria-labelledby="chart-title chart-description">
+              <title id="chart-title">Simulated temperature and humidity traces</title>
+              <desc id="chart-description">A deterministic line chart that previews the structure of mode 5 measurements. It is not recorded sensor data.</desc>
+              <g id="chart-grid"></g>
+              <g id="chart-lines"></g>
+              <g id="chart-labels"></g>
+            </svg>
+            <div id="legend" class="legend" aria-label="Chart legend"></div>
+          </figure>
+
+          <div class="simulation-controls">
+            <button id="toggle-stream" type="button">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></svg>
+              Start simulated stream
+            </button>
+            <button id="reset-fixture" class="secondary" type="button">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v6h-6"/></svg>
+              Reset simulated fixture
+            </button>
+            <p>These controls only animate fixture data in this page.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works" class="workflow" aria-labelledby="workflow-title">
+        <h2 id="workflow-title" class="sr-only">How the real classroom kit works</h2>
+        <article>
+          <div class="step-heading"><span>1</span><h3>Flash firmware</h3></div>
+          <p>Compile and upload the canonical sketch to an original Arduino Nano 33 BLE Sense.</p>
+          <code>make compile</code>
+          <strong>Not run here</strong>
+        </article>
+        <article>
+          <div class="step-heading"><span>2</span><h3>Import experiment</h3></div>
+          <p>Transfer one generated <code>.phyphox</code> file to a phone or tablet and open it in phyphox.</p>
+          <a href="https://github.com/sebastianspicker/curious-signals/tree/main/experiments">Browse real files</a>
+          <strong>Not run here</strong>
+        </article>
+        <article>
+          <div class="step-heading"><span>3</span><h3>Measure in phyphox</h3></div>
+          <p>The app connects to <code>phyphox-sense</code>, selects a mode, and plots BLE notifications.</p>
+          <code>20 bytes · every 50 ms</code>
+          <strong>Not run here</strong>
+        </article>
+      </section>
+
+      <section class="scope" aria-labelledby="scope-title">
+        <h2 id="scope-title">What this preview represents</h2>
+        <div class="scope-columns">
+          <article>
+            <h3>Real repository contract</h3>
+            <ul>
+              <li>Device name <code>phyphox-sense</code></li>
+              <li>Five little-endian <code>float32</code> values per packet</li>
+              <li>Device time plus four mode-dependent channels</li>
+              <li>Seven generated core experiments using modes 1–6 and 9</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Preview limits</h3>
+            <ul>
+              <li>Deterministic, synthetic fixture values</li>
+              <li>No Bluetooth, hardware, firmware upload, or phone app</li>
+              <li>No scientific recording, calibration, or device claim</li>
+              <li>Astronomy experiments remain a separate classroom subtree</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Static classroom preview. The repository remains the source of truth.</p>
+      <nav aria-label="Footer navigation">
+        <a href="https://github.com/sebastianspicker/curious-signals">Repository</a>
+        <a href="https://github.com/sebastianspicker/curious-signals/blob/main/docs/ASTRONOMY_EXPERIMENTS_COMPANION.md">Classroom companion</a>
+        <a href="https://github.com/sebastianspicker/curious-signals/blob/main/LICENSE">License</a>
+      </nav>
+    </footer>
+  </body>
+</html>

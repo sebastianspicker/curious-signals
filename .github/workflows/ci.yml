@@ -58,14 +58,10 @@ jobs:
       - name: Validate XML + phyphox references
         run: bash scripts/validate-xml.sh
 
-<<<<<<< HEAD
-      - name: Ensure generated files are up to date
-=======
       - name: Check generated experiments are up to date
->>>>>>> dev
         run: bash scripts/check-generated-clean.sh
 
-      - name: Rebuild *.phyphox from sources
+      - name: Rebuild generated experiments
         run: bash scripts/build-phyphox.sh
 
   arduino:
@@ -80,11 +76,13 @@ jobs:
         env:
           ARDUINO_CLI_VERSION: "1.4.1"
           ARDUINO_CLI_TAG: "v1.4.1"
+          ARDUINO_CLI_SHA256: "683cf2a6b8953e3d632e7e4512c36667839d2073349c4b6d312e4c67592359bd"
         run: |
           set -euo pipefail
           mkdir -p "$HOME/.local/bin"
           url="https://github.com/arduino/arduino-cli/releases/download/${ARDUINO_CLI_TAG}/arduino-cli_${ARDUINO_CLI_VERSION}_Linux_64bit.tar.gz"
           curl -fL --retry 3 --retry-delay 2 "$url" -o /tmp/arduino-cli.tar.gz
+          printf '%s  %s\n' "$ARDUINO_CLI_SHA256" /tmp/arduino-cli.tar.gz | sha256sum --check --strict -
           tar -xzf /tmp/arduino-cli.tar.gz -C /tmp
           install -m 0755 /tmp/arduino-cli "$HOME/.local/bin/arduino-cli"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"

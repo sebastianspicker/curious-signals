@@ -92,11 +92,7 @@ void setModeFromConfig(float configValue) {
   if (!std::isfinite(configValue) || configValue < 0.5f || configValue >= 9.5f) {
     return;
   }
-  float rounded = roundf(configValue);
-  if (fabsf(configValue - rounded) > 0.001f) {
-    return;
-  }
-  int raw = (int)rounded;
+  const int raw = (int)roundf(configValue);
   Mode supportedMode = mode;
   if (findSupportedMode(raw, supportedMode)) {
     mode = supportedMode;
@@ -105,7 +101,7 @@ void setModeFromConfig(float configValue) {
 
 void writeActiveModeToConfigCharacteristic() {
   uint8_t configValue[4] = {0};
-  writeFloat32LE(configValue, 0, (float)(int)mode);
+  writeFloat32LE(configValue, sizeof(configValue), 0, (float)(int)mode);
   configCharacteristic.writeValue(configValue, sizeof(configValue));
 }
 
@@ -247,13 +243,7 @@ void setup() {
   phyphoxService.addCharacteristic(configCharacteristic);
   BLE.addService(phyphoxService);
 
-<<<<<<< HEAD
-  uint8_t cfg[4] = {0, 0, 0, 0};
-  writeFloat32LE(cfg, sizeof(cfg), 0, (float)Mode::kAcceleration);
-  configCharacteristic.writeValue(cfg, sizeof(cfg));
-=======
   writeActiveModeToConfigCharacteristic();
->>>>>>> dev
 
   BLE.advertise();
 }

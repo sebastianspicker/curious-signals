@@ -5,7 +5,6 @@
 .Trashes
 
 # Local analysis and tool state
-/.codacy/
 /.codegraph/
 /.serena/
 /.codex/
@@ -13,7 +12,6 @@
 /.agents/
 /.internal/
 
-<<<<<<< HEAD
 # Codacy local run artifacts. Keep .codacy/codacy.config.json visible when it is
 # intentionally used as repository configuration.
 .codacy/generated/
@@ -23,17 +21,14 @@
 .codacy/*.sarif
 .codacy/*.log
 
-# Internal AI operator guide (not user-facing documentation)
-agent.md
-=======
 # Local maintainer guidance and work records
 /AGENTS.md
 /agent.md
 /CLAUDE.md
 /docs/agent/
->>>>>>> dev
 
 # Editors
+/.mcp.json
 .vscode/
 .cursor/
 .idea/
@@ -91,3 +86,69 @@ __pycache__/
 /*-status.md
 docs/*-ledger.md
 docs/*-status.md
+
+# Shared local indexes and operator records
+.repowise/
+/.claude/
+/GEMINI.md
+/AUDIT_LEDGER.md
+/progress.md
+
+# Public environment templates
+!.env.*.example
+!.env.sample
+!.env.template
+
+# Local-only credentials
+secrets.local.*
+credentials.local.*
+*.local.pem
+*.local.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+.netrc
+.npmrc.local
+
+# Python caches and test reports
+.pyright/
+playwright-report/
+blob-report/
+junit*.xml
+*.sarif
+
+# Shared build output
+node_modules/
+target/
+.build/
+DerivedData/
+xcuserdata/
+
+# Local database sidecars
+*.local.db
+*.local.sqlite
+*.local.sqlite3
+*.db-shm
+*.db-wal
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite3-shm
+*.sqlite3-wal
+
+# Codacy local generated state
+.codacy/tools-configs/
+.codacy/cli-config.yaml
+
+# Generated test and coverage output (local only)
+/coverage/
+/htmlcov/
+/.coverage
+/.coverage.*
+/.pytest_cache/
+/test-results/
+/playwright-report/
+/blob-report/
+/coverage.xml
+/junit.xml
+/junit-*.xml

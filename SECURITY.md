@@ -14,16 +14,15 @@ No public release has been published.
 Do not open a public issue containing exploit details, credentials, private
 device identifiers, or other sensitive material.
 
-Use GitHub private vulnerability reporting if this repository offers a private
-report action. If it is unavailable, open a minimal public issue stating only
-that the matter is security-sensitive so a maintainer can arrange a private
-channel.
+GitHub private vulnerability reporting is enabled for this repository. Use the
+repository's Security tab and select **Report a vulnerability**. Do not open a
+public issue as a substitute for the private report.
 
 Include the affected component, reproduction conditions, impact, and the
 smallest safe proof needed to understand the issue.
 
-The maintainers still need to confirm a reliable private reporting path before
-publishing a release.
+Maintainers should keep private-report notifications enabled and review new
+reports through the repository's private vulnerability reporting queue.
 
 ## Security boundary
 

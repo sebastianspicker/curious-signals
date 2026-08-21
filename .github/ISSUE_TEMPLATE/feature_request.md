@@ -17,15 +17,13 @@ labels: [enhancement]
 
 ## Alternatives considered
 
-<<<<<<< HEAD
-## Verification idea
-=======
 ## Compatibility and hardware scope
 
 - affected experiment or firmware path:
 - board revisions or external hardware:
 - BLE or file-format impact:
 - license or attribution impact:
->>>>>>> dev
+
+## Verification idea
 
 ## Additional context

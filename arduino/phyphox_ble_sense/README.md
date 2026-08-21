@@ -27,25 +27,12 @@ Nano 33 BLE Sense Rev2 uses different sensor libraries and is not supported.
 The data characteristic is notify-only with a 20-byte value. The config
 characteristic is readable and writable with a four-byte value.
 
-<<<<<<< HEAD
-The app writes a float value to the config characteristic. The value must be
-finite and integer-valued; fractional, non-finite, out-of-range, and reserved
-values leave the current mode unchanged.
-
-- `1` acceleration: `x,y,z,|a|`
-- `2` gyroscope: `x,y,z,|ω|`
-- `3` magnetometer: `x,y,z,|B|`
-- `4` pressure: `kPa` (converted to `hPa` in the phyphox experiment)
-- `5` temperature/humidity: `°C,%rH`
-- `6` light/rgb: clear-channel plus `R,G,B` counts from `Arduino_APDS9960`
-- `7`, `8` reserved for future experiments; when received, the sketch silently stays on the last valid mode
-- `9` analog inputs: `A0,A1,A2` raw ADC readings (converted to mV in the phyphox experiment)
-=======
-All boards use the same name and UUIDs. The protocol does not expose a unique
-device identifier for selecting among nearby boards.
+The supported topology is one powered board within discovery range at a time.
+Multi-board discovery is not supported: all boards use the same name and UUIDs,
+and the protocol does not expose a unique device identifier for selecting among
+nearby boards.
 
 ## Data packet
->>>>>>> dev
 
 Each notification contains five little-endian `float32` values:
 

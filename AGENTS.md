@@ -2,8 +2,8 @@
 
 Durable repository guidance for Codex and other coding agents.
 
-Keep this file compact. Put one-off task instructions, audit prompts, and large
-remediation plans in task prompts or `plan.md`.
+Keep this file compact. Put one-off task instructions, audit prompts, and
+temporary plans in the task that needs them.
 
 ## Project Purpose
 
@@ -35,15 +35,6 @@ Permission boundaries: sensitive actions need explicit user approval from the
 user. This includes commits, pushes, pull requests, dependency additions, Cloud
 imports/reanalysis, destructive file operations, and marking scanner findings
 false positive or suppressed.
-
-## Memory Strategy
-
-For long audits or remediation work, keep durable state in a repo-local ledger,
-`plan.md`, or another named task document.
-
-File-based notes and state tracking: update the ledger or plan as slices are
-completed so the task can resume from the latest verified state. Write it down;
-do not rely on mental notes or chat-only memory for resumable state.
 
 ## Commands
 

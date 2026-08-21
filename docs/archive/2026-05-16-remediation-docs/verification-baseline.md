@@ -1,7 +1,6 @@
 # Verification Baseline
 
-Baseline established on 2026-05-16 from
-`/Users/sebastian/Git/phyphox-arduino-classroom-kit`.
+Baseline established on 2026-05-16 from the repository root.
 
 This is a verification record, not a remediation pass. No production code was
 changed. Existing worktree state before this pass included a deleted tracked

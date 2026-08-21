@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
 
 from defusedxml import ElementTree as ET
@@ -94,15 +95,22 @@ def _duplicate_container_errors(path: str, names: list[str]) -> list[ValidationE
     ]
 
 
-def _input_references(root: ET.Element) -> set[str]:
-    referenced: set[str] = set()
+def _iter_bluetooth_output_references(bluetooth: ET.Element) -> Iterator[str]:
+    for output in _children(bluetooth, "output"):
+        if target := _text(output):
+            yield target
+
+
+def _iter_input_references(root: ET.Element) -> Iterator[str]:
     input_element = _child(root, "input")
-    if input_element is not None:
-        for bluetooth in _children(input_element, "bluetooth"):
-            for output in _children(bluetooth, "output"):
-                if target := _text(output):
-                    referenced.add(target)
-    return referenced
+    if input_element is None:
+        return
+    for bluetooth in _children(input_element, "bluetooth"):
+        yield from _iter_bluetooth_output_references(bluetooth)
+
+
+def _input_references(root: ET.Element) -> set[str]:
+    return set(_iter_input_references(root))
 
 
 def _section_references(root: ET.Element, parent_name: str, allowed_tags: set[str]) -> set[str]:

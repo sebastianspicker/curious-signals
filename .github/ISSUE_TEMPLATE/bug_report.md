@@ -39,7 +39,4 @@ labels: [bug]
 Paste only the relevant error or log excerpt. Remove credentials, private device
 identifiers, local usernames, and unrelated paths.
 
-Paste command output as text where possible. Do not include tokens, local
-credentials, private Bluetooth identifiers, or unrelated personal data.
-
 ## Additional context

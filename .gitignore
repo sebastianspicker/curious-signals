@@ -1,154 +1,137 @@
+# Operating-system metadata
 .DS_Store
 .AppleDouble
 .LSOverride
 .Spotlight-V100
 .Trashes
+Thumbs.db
+Desktop.ini
 
-# Local analysis and tool state
-/.codegraph/
-/.serena/
-/.codex/
-/.kilo/
-/.agents/
-/.internal/
-
-# Codacy local run artifacts. Keep .codacy/codacy.config.json visible when it is
-# intentionally used as repository configuration.
-.codacy/generated/
-.codacy/*summary*.json
-.codacy/*ledger*.md
-.codacy/results/
-.codacy/*.sarif
-.codacy/*.log
-
-# Local maintainer guidance and work records
-/AGENTS.md
-/agent.md
-/CLAUDE.md
-/docs/agent/
-
-# Editors
+# Editor and local tool state
+/.vscode/
+/.idea/
 /.mcp.json
-.vscode/
-.cursor/
-.idea/
 *.swp
 *.swo
 *~
 *.bak
 *.orig
 *.rej
+*.tmp
+*.temp
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
+# Python environments, caches, and packaging output
 /.venv/
-/.tox/
-/.nox/
-/.hypothesis/
+__pycache__/
+*.py[cod]
+*.egg-info/
+/build/
+/dist/
 /.pytest_cache/
-/.mypy_cache/
 /.ruff_cache/
+
+# Test and coverage output
 /.coverage
 /.coverage.*
 /coverage.xml
 /htmlcov/
+/junit*.xml
+/test-results/
 
-# Local environment and log files
+# Project-generated output
+/arduino/**/build/
+/phyphox-experiments.zip
+/reference/
+
+# Logs and local environment
+*.log
 .env
 .env.*
 !.env.example
-*.log
-
-# CI/test artifacts
-/coverage/
-/junit.xml
-/test-results/
-
-# Arduino build artifacts (if a custom build path is used)
-/arduino/**/build/
-
-# Generated outputs
-/patched/
-/reference/
-/phyphox-experiments.zip
-/AGENT_AUDIT_REPORT.md
-
-# docs (local findings/logs/decisions)
-/DECISIONS.md
-/FINDINGS.md
-/LOG.md
-/plan.md
-/plan-*.md
-/REFACTOR_PLAN.md
-/*-ledger.md
-/*-status.md
-docs/*-ledger.md
-docs/*-status.md
-
-# Shared local indexes and operator records
-.repowise/
-/.claude/
-/GEMINI.md
-/AUDIT_LEDGER.md
-/progress.md
-
-# Public environment templates
 !.env.*.example
 !.env.sample
 !.env.template
-
-# Local-only credentials
 secrets.local.*
 credentials.local.*
 *.local.pem
 *.local.key
 *.p12
 *.pfx
-*.jks
-*.keystore
 .netrc
-.npmrc.local
 
-# Python caches and test reports
-.pyright/
-playwright-report/
-blob-report/
-junit*.xml
-*.sarif
+# Local analysis state
+/.codegraph/
+/.repowise/
+/.serena/
+/.internal/
+/.codacy/cli-config.yaml
+/.codacy/codacy.config.json
+/.codacy/generated/
+/.codacy/logs/
+/.codacy/results/
+/.codacy/tools-configs/
+/.codacy/*.sarif
+/.codacy/*summary*.json
+/.codacy/*ledger*.md
 
-# Shared build output
-node_modules/
-target/
-.build/
-DerivedData/
-xcuserdata/
+# Development-assistant configuration
+/AGENT.md
+/AGENTS.md
+/agent.md
+/agents.md
+/CLAUDE.md
+/CODEX.md
+/GEMINI.md
+/.agent/
+/.agents/
+/.ai/
+/.claude/
+/.codex/
+/.cursor/
+/.kilo/
+/.opencode/
+/.cursorrules
+/.github/copilot-instructions.md
+/prompt/
+/prompts/
+/agent-prompts/
+/ai-prompts/
+/instructions-for-agent.*
+/agent-instructions.*
+/agent-context*
+/agent-memory*
+/agent-notes*
+/agent-output*
+/agent-report*
 
-# Local database sidecars
-*.local.db
-*.local.sqlite
-*.local.sqlite3
-*.db-shm
-*.db-wal
-*.sqlite-shm
-*.sqlite-wal
-*.sqlite3-shm
-*.sqlite3-wal
-
-# Codacy local generated state
-.codacy/tools-configs/
-.codacy/cli-config.yaml
-
-# Generated test and coverage output (local only)
-/coverage/
-/htmlcov/
-/.coverage
-/.coverage.*
-/.pytest_cache/
-/test-results/
-/playwright-report/
-/blob-report/
-/coverage.xml
-/junit.xml
-/junit-*.xml
+# Local work records and generated analysis
+/*-ledger.md
+/*_ledger.md
+/TASK_LEDGER.md
+/IMPLEMENTATION_LEDGER.md
+/CHANGE_LEDGER.md
+/DECISION_LEDGER.md
+/PROGRESS_LEDGER.md
+/AGENT_LEDGER.md
+/tasks.md
+/progress.md
+/status.md
+/worklog.md
+/work-log.md
+/devlog.md
+/development-log.md
+/implementation-notes.md
+/handoff.md
+/handover.md
+/scratchpad*
+/notes-for-agent.md
+/AI_NOTES*
+/AI_REPORT*
+/AI_AUDIT*
+/AI_SUMMARY*
+/generated-summary.*
+/repo-analysis.*
+/repository-analysis.*
+/audit-output.*
+/implementation-report.*
+/completion-report.*

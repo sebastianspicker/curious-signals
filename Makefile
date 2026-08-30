@@ -1,5 +1,10 @@
-.PHONY: help lint test validate check-generated build compile security ci ci-local bundle
+.PHONY: help lint test validate check-generated build compile security ci bundle
 .DEFAULT_GOAL := help
+
+PYTHON ?= python3
+TOOL = PYTHONPATH=src $(PYTHON) -m curious_signals
+PYTEST = PYTHONPATH=src $(PYTHON) -m pytest
+RUFF = $(PYTHON) -m ruff
 
 help:
 	@echo "Targets:"
@@ -9,40 +14,39 @@ help:
 	@echo "  check-generated - Verify tracked experiments match their sources"
 	@echo "  build    - Rebuild experiments/*.phyphox from src/phyphox/*.phyphox.xml"
 	@echo "  compile  - Compile Arduino sketch (arduino-cli, no upload)"
-	@echo "  security - Secret scan, dependency pin check, minimal SAST"
-	@echo "  ci       - Run lint, test, validate, generated check, compile, security"
-	@echo "  ci-local - Run the canonical local CI entrypoint"
+	@echo "  security - Secret scan plus dependency, shell, and Python sanity checks"
+	@echo "  ci       - Run the full checkout-non-mutating local gate"
 	@echo "  bundle   - Build and zip the seven core sensor experiments"
 
 lint:
-	ruff check .
-	ruff format --check .
+	$(RUFF) check .
+	$(RUFF) format --check .
 
 test:
-	pytest
+	$(PYTEST)
 
 validate:
-	./scripts/validate-xml.sh
+	$(TOOL) validate
 
 check-generated:
-	bash scripts/check-generated-clean.sh
+	$(TOOL) check-generated
 
 build:
-	./scripts/build-phyphox.sh
+	$(TOOL) build
 
 compile:
 	./scripts/compile-arduino.sh
 
 security:
-	bash scripts/test-shell-guardrails.sh
-	./scripts/secret-scan.sh
-	./scripts/deps-scan.sh
-	./scripts/sast-minimal.sh
+	bash scripts/security.sh
 
-ci: lint test validate check-generated build compile security
+ci:
+	+$(MAKE) --no-print-directory lint
+	+$(MAKE) --no-print-directory test
+	+$(MAKE) --no-print-directory validate
+	+$(MAKE) --no-print-directory check-generated
+	+$(MAKE) --no-print-directory compile
+	+$(MAKE) --no-print-directory security
 
-ci-local:
-	./scripts/ci-local.sh
-
-bundle: build
-	@zip -q -j phyphox-experiments.zip experiments/*.phyphox && echo "Created phyphox-experiments.zip"
+bundle:
+	$(TOOL) bundle

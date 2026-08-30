@@ -30,9 +30,9 @@ This repository builds local XML files and Arduino firmware. It does not deploy
 a service and does not require repository secrets at runtime.
 
 Core source experiments may use XInclude only for repository-owned fragments
-below `src/phyphox/includes/`. `tools/validate_xinclude_paths.py` rejects URLs,
-absolute paths, parent traversal, queries, fragments, missing targets, and
-resolved paths outside that directory before XInclude expansion.
+below `src/phyphox/includes/`. The validator in `src/curious_signals/` rejects
+URLs, absolute paths, parent traversal, queries, fragments, missing targets,
+and resolved paths outside that directory before XInclude expansion.
 
 Run the local security checks with:
 
@@ -40,10 +40,10 @@ Run the local security checks with:
 make security
 ```
 
-This target runs the repository secret-pattern scan, dependency constraint
-checks, shell syntax checks, ShellCheck when installed, and Python bytecode
-compilation. These checks do not replace dependency advisory review, firmware
-review, hardware testing, or electrical safety review.
+This target runs the repository secret-pattern scan, dependency and pin sanity
+checks, shell syntax checks, ShellCheck when installed, and non-writing Python
+syntax compilation. These checks do not replace dependency advisory review,
+firmware review, hardware testing, or electrical safety review.
 
 ## Hardware reports
 

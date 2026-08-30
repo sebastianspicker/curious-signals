@@ -15,7 +15,6 @@
 - [ ] Astronomy `experiments/astronomy/*.phyphox`
 - [ ] Build, validation, or CI tooling
 - [ ] Documentation
-- [ ] Archive/deprecated docs only
 
 ## Verification
 
@@ -29,7 +28,7 @@
 
 ## Generated files
 
-- [ ] Source XML changes were rebuilt with `bash scripts/build-phyphox.sh`
+- [ ] Source XML changes were rebuilt with `make build`
 - [ ] Generated `experiments/*.phyphox` changes are intentional
 - [ ] Not applicable
 

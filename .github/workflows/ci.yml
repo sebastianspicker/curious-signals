@@ -2,17 +2,7 @@ name: ci
 
 on:
   push:
-    paths-ignore:
-      - "docs/archive/**"
-      - "docs/deprecated/**"
-      - "docs/ci/**"
-      - "reference/**"
   pull_request:
-    paths-ignore:
-      - "docs/archive/**"
-      - "docs/deprecated/**"
-      - "docs/ci/**"
-      - "reference/**"
   workflow_dispatch:
 
 permissions:
@@ -45,24 +35,19 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements-test.txt
+          python -m pip install -e '.[test]'
 
       - name: Ruff
-        run: |
-          ruff check .
-          ruff format --check .
+        run: make lint
 
       - name: Pytest
-        run: pytest
+        run: make test
 
       - name: Validate XML + phyphox references
-        run: bash scripts/validate-xml.sh
+        run: make validate
 
       - name: Check generated experiments are up to date
-        run: bash scripts/check-generated-clean.sh
-
-      - name: Rebuild generated experiments
-        run: bash scripts/build-phyphox.sh
+        run: make check-generated
 
   arduino:
     name: Arduino compile
@@ -97,7 +82,7 @@ jobs:
           key: arduino-cli-${{ runner.os }}-${{ hashFiles('scripts/compile-arduino.sh') }}
 
       - name: Compile sketches
-        run: bash scripts/compile-arduino.sh
+        run: make compile
 
   security:
     name: Security baseline
@@ -107,17 +92,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.11"
+
       - name: Install security tools
         run: sudo apt-get update && sudo apt-get install -y ripgrep shellcheck
 
-      - name: Secret scan
-        run: bash scripts/secret-scan.sh
-
-      - name: Shell guardrails
-        run: bash scripts/test-shell-guardrails.sh
-
-      - name: Dependency pin check
-        run: bash scripts/deps-scan.sh
-
-      - name: Minimal static checks
-        run: bash scripts/sast-minimal.sh
+      - name: Security baseline
+        run: make security

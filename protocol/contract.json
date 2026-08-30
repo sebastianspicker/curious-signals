@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "device": {
+    "name": "phyphox-sense"
+  },
+  "bluetooth": {
+    "service_uuid": "cddf0001-30f7-4671-8b43-5e40ba53514a",
+    "data_char_uuid": "cddf1002-30f7-4671-8b43-5e40ba53514a",
+    "config_char_uuid": "cddf1003-30f7-4671-8b43-5e40ba53514a"
+  },
+  "frame": {
+    "sample_period_ms": 50,
+    "data": {
+      "access": ["notify"],
+      "byte_length": 20,
+      "encoding": "float32LittleEndian",
+      "fields": [
+        {"name": "device_time_seconds", "offset": 0, "type": "float32"},
+        {"name": "channel_2", "offset": 4, "type": "float32"},
+        {"name": "channel_3", "offset": 8, "type": "float32"},
+        {"name": "channel_4", "offset": 12, "type": "float32"},
+        {"name": "channel_5", "offset": 16, "type": "float32"}
+      ]
+    },
+    "config": {
+      "access": ["read", "write"],
+      "byte_length": 4,
+      "encoding": "float32LittleEndian",
+      "type": "float32",
+      "selection": {
+        "rounding": "nearest_integer",
+        "minimum": 0.5,
+        "maximum_exclusive": 9.5,
+        "invalid_behavior": "keep_active_mode"
+      }
+    }
+  },
+  "modes": {
+    "default": 1,
+    "active": [
+      {
+        "id": 1,
+        "name": "acceleration",
+        "experiment": "accelerometer_plot_v1-2.phyphox",
+        "channels": {"CH1": "device time in seconds", "CH2": "acceleration x", "CH3": "acceleration y", "CH4": "acceleration z", "CH5": "acceleration magnitude"}
+      },
+      {
+        "id": 2,
+        "name": "gyroscope",
+        "experiment": "gyroscope_plot_v1-2.phyphox",
+        "channels": {"CH1": "device time in seconds", "CH2": "angular velocity x", "CH3": "angular velocity y", "CH4": "angular velocity z", "CH5": "angular velocity magnitude"}
+      },
+      {
+        "id": 3,
+        "name": "magnetometer",
+        "experiment": "magnetometer_plot_v1-2.phyphox",
+        "channels": {"CH1": "device time in seconds", "CH2": "magnetic field x", "CH3": "magnetic field y", "CH4": "magnetic field z", "CH5": "magnetic field magnitude"}
+      },
+      {
+        "id": 4,
+        "name": "pressure",
+        "experiment": "pressure_plot_v1-2.phyphox",
+        "channels": {"CH1": "device time in seconds", "CH2": "pressure in kPa", "CH3": "not available", "CH4": "not available", "CH5": "not available"}
+      },
+      {
+        "id": 5,
+        "name": "temperature_humidity",
+        "experiment": "temperature_plot_v1-2.phyphox",
+        "channels": {"CH1": "device time in seconds", "CH2": "temperature in degrees Celsius", "CH3": "relative humidity percent", "CH4": "not available", "CH5": "not available"}
+      },
+      {
+        "id": 6,
+        "name": "light_rgb",
+        "experiment": "light_plot_v1-2.phyphox",
+        "channels": {"CH1": "device time in seconds", "CH2": "clear light", "CH3": "red light", "CH4": "green light", "CH5": "blue light"}
+      },
+      {
+        "id": 9,
+        "name": "analog_inputs",
+        "experiment": "analog_input_plot_v1-2.phyphox",
+        "channels": {"CH1": "device time in seconds", "CH2": "analog input A0", "CH3": "analog input A1", "CH4": "analog input A2", "CH5": "not available"}
+      }
+    ],
+    "reserved": [7, 8]
+  }
+}

@@ -1,3 +1,25 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "curious-signals"
+version = "0.1.0"
+description = "Local build and validation tooling for the curious-signals classroom kit"
+requires-python = ">=3.11"
+dependencies = [
+    "defusedxml>=0.7,<1.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0,<9.0",
+    "ruff>=0.12,<1.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.ruff]
 target-version = "py311"
 line-length = 100
@@ -11,11 +33,7 @@ exclude = [
 select = ["E", "F", "W", "I"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["tools"]
-
-[tool.bandit.assert_used]
-skips = ["tests/test_*.py", "*/tests/test_*.py"]
+known-first-party = ["curious_signals"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["tools"]

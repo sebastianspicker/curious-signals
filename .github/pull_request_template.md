@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD041 -->
+
 ## Summary
 
 ## Behavior and compatibility impact
@@ -20,6 +22,7 @@
 
 - [ ] `make lint`
 - [ ] `make test`
+- [ ] `make test-browser`
 - [ ] `make validate`
 - [ ] `make check-generated`
 - [ ] `make compile`

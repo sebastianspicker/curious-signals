@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import shutil
 import subprocess
 import sys
 import zipfile
@@ -22,7 +21,7 @@ def run_cli(*arguments: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-@pytest.mark.skipif(shutil.which("xmllint") is None, reason="xmllint is unavailable")
+@pytest.mark.usefixtures("xmllint_executable")
 def test_validate_cli_succeeds_for_current_repository() -> None:
     result = run_cli("validate")
 
@@ -36,7 +35,7 @@ def test_cli_rejects_unknown_command_without_traceback() -> None:
     assert "traceback" not in result.stderr.lower()
 
 
-@pytest.mark.skipif(shutil.which("xmllint") is None, reason="xmllint is unavailable")
+@pytest.mark.usefixtures("xmllint_executable")
 def test_build_cli_reports_unwritable_output_without_traceback(tmp_path) -> None:
     blocker = tmp_path / "not-a-directory"
     blocker.write_text("", encoding="utf-8")
@@ -54,12 +53,11 @@ def test_make_help_advertises_only_current_entry_points() -> None:
     )
 
     assert result.returncode == 0, result.stderr
-    assert "ci-local" not in result.stdout
     for target in ("build", "validate", "check-generated", "compile", "security", "ci", "bundle"):
         assert target in result.stdout
 
 
-@pytest.mark.skipif(shutil.which("xmllint") is None, reason="xmllint is unavailable")
+@pytest.mark.usefixtures("xmllint_executable")
 def test_build_and_bundle_cli_create_requested_outputs(tmp_path) -> None:
     build = run_cli("build", "--output", str(tmp_path / "built"))
     first_archive = tmp_path / "experiments-one.zip"

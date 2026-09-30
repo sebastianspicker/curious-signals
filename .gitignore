@@ -61,7 +61,6 @@ credentials.local.*
 
 # Local analysis state
 /.codegraph/
-/.repowise/
 /.serena/
 /.internal/
 /.codacy/cli-config.yaml

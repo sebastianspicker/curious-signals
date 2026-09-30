@@ -11,30 +11,27 @@ from tests.conftest import CONTRACT_PATH, CORE_ARTIFACT_DIR, CORE_SOURCE_DIR, RE
 
 
 def test_contract_schema_and_declared_inventory_are_valid() -> None:
+    contract = read_contract(CONTRACT_PATH)
     protocol = load_protocol(CONTRACT_PATH)
 
-    assert contract_errors(read_contract(CONTRACT_PATH)) == []
-    assert protocol.device_name == "phyphox-sense"
+    assert contract_errors(contract) == []
+    assert contract["device"]["name"] == "phyphox-sense"
     assert protocol.data_encoding == "float32LittleEndian"
     assert protocol.data_offsets == (0, 4, 8, 12, 16)
-    assert protocol.reserved_modes == (7, 8)
+    assert contract["modes"]["reserved"] == [7, 8]
     assert len(protocol.modes) == 7
 
 
 def test_version_one_compatibility_baseline_is_explicit() -> None:
     contract = read_contract(CONTRACT_PATH)
-    protocol = load_protocol(CONTRACT_PATH)
 
-    assert protocol.device_name == "phyphox-sense"
+    assert contract["device"]["name"] == "phyphox-sense"
     assert contract["bluetooth"] == {
         "service_uuid": "cddf0001-30f7-4671-8b43-5e40ba53514a",
         "data_char_uuid": "cddf1002-30f7-4671-8b43-5e40ba53514a",
         "config_char_uuid": "cddf1003-30f7-4671-8b43-5e40ba53514a",
     }
-    assert (protocol.service_uuid, protocol.data_char_uuid, protocol.config_char_uuid) == tuple(
-        contract["bluetooth"].values()
-    )
-    assert protocol.sample_period_ms == 50
+    assert contract["frame"]["sample_period_ms"] == 50
     assert contract["frame"]["data"]["byte_length"] == 20
     assert contract["frame"]["data"]["access"] == ["notify"]
     assert contract["frame"]["config"]["access"] == ["read", "write"]
@@ -44,22 +41,15 @@ def test_version_one_compatibility_baseline_is_explicit() -> None:
         "maximum_exclusive": 9.5,
         "invalid_behavior": "keep_active_mode",
     }
-    assert [mode.id for mode in protocol.modes] == [1, 2, 3, 4, 5, 6, 9]
-    assert protocol.default_mode == 1
-    assert protocol.reserved_modes == (7, 8)
+    assert [mode["id"] for mode in contract["modes"]["active"]] == [1, 2, 3, 4, 5, 6, 9]
+    assert contract["modes"]["default"] == 1
 
 
-def test_contract_conforms_to_firmware_sources_artifacts_and_preview() -> None:
+def test_contract_inventory_and_mode_config_match_sources_and_artifacts() -> None:
     protocol = load_protocol(CONTRACT_PATH)
-    firmware = (REPO_ROOT / "arduino" / "phyphox_ble_sense" / "phyphox_ble_sense.ino").read_text(
-        encoding="utf-8"
-    )
-    preview = (REPO_ROOT / "demo" / "fixtures.js").read_text(encoding="utf-8")
     artifacts = {path.name for path in CORE_ARTIFACT_DIR.glob("*.phyphox")}
     sources = {path.name.removesuffix(".xml") for path in CORE_SOURCE_DIR.glob("*.phyphox.xml")}
 
-    for uuid in (protocol.service_uuid, protocol.data_char_uuid, protocol.config_char_uuid):
-        assert uuid in firmware
     assert set(protocol.experiments) == artifacts == sources
     for mode in protocol.modes:
         source_config = ET.parse(CORE_SOURCE_DIR / f"{mode.experiment}.xml").find(
@@ -72,20 +62,23 @@ def test_contract_conforms_to_firmware_sources_artifacts_and_preview() -> None:
         assert source_config.text == artifact_config.text == f"{mode.id}.0"
         assert source_config.attrib["char"] == artifact_config.attrib["char"]
         assert source_config.attrib["char"] == protocol.config_char_uuid
-        assert f"id: {mode.id}" in preview
-        assert mode.channels
 
 
 def test_contributor_docs_name_the_contract_device_and_uuids() -> None:
-    protocol = load_protocol(CONTRACT_PATH)
+    bluetooth = read_contract(CONTRACT_PATH)["bluetooth"]
+    device_name = read_contract(CONTRACT_PATH)["device"]["name"]
     root_readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     firmware_readme = (REPO_ROOT / "arduino" / "phyphox_ble_sense" / "README.md").read_text(
         encoding="utf-8"
     )
 
-    assert f"`{protocol.device_name}`" in root_readme
-    assert f"`{protocol.device_name}`" in firmware_readme
-    for uuid in (protocol.service_uuid, protocol.data_char_uuid, protocol.config_char_uuid):
+    assert f"`{device_name}`" in root_readme
+    assert f"`{device_name}`" in firmware_readme
+    for uuid in (
+        bluetooth["service_uuid"],
+        bluetooth["data_char_uuid"],
+        bluetooth["config_char_uuid"],
+    ):
         assert f"`{uuid}`" in firmware_readme
 
 

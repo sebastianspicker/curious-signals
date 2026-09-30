@@ -4,11 +4,18 @@ description: Suggest an improvement or new experiment
 labels: [enhancement]
 ---
 
+<!-- markdownlint-disable MD041 -->
+
+Ideas are welcome, including ones that never turn into code. A short note about
+the classroom or teaching problem you are trying to solve helps more than a
+detailed spec.
+
 ## Problem
 
 ## Proposed solution
 
 ## Affected area
+
 - [ ] Arduino firmware / BLE runtime
 - [ ] Core generated `experiments/*.phyphox`
 - [ ] Astronomy `experiments/astronomy/*.phyphox`

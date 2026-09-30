@@ -42,9 +42,9 @@ def test_core_inventory_validates_and_declares_mode_config_and_classroom_units()
             value.attrib.get("unit") == EXPECTED_MODES[path.name][1]
             for value in root.findall(".//value")
         )
-        mode = protocol.mode_for_experiment(path.name)
-        assert mode is not None
-        assert check_core_experiment(path, protocol, expected_mode=mode.id) == []
+        mode_id = protocol.mode_id_for(path.name)
+        assert mode_id is not None
+        assert check_core_experiment(path, protocol, expected_mode=mode_id) == []
 
 
 def test_core_exports_keep_device_time_and_measurement_channels() -> None:

@@ -22,33 +22,26 @@ CONFIG_ACCESS = {"read", "write"}
 @dataclass(frozen=True)
 class Mode:
     id: int
-    name: str
     experiment: str
-    channels: tuple[tuple[str, str], ...]
 
 
 @dataclass(frozen=True)
 class Protocol:
-    device_name: str
-    service_uuid: str
     data_char_uuid: str
     config_char_uuid: str
-    sample_period_ms: int
     data_encoding: str
     data_offsets: tuple[int, ...]
     config_encoding: str
-    default_mode: int
     modes: tuple[Mode, ...]
-    reserved_modes: tuple[int, ...]
 
     @property
     def experiments(self) -> tuple[str, ...]:
         return tuple(mode.experiment for mode in self.modes)
 
-    def mode_for_experiment(self, filename: str) -> Mode | None:
-        """Return the active mode whose generated experiment has this filename."""
+    def mode_id_for(self, filename: str) -> int | None:
+        """Return the active mode id whose generated experiment has this filename."""
 
-        return next((mode for mode in self.modes if mode.experiment == filename), None)
+        return next((mode.id for mode in self.modes if mode.experiment == filename), None)
 
 
 def read_contract(path: Path) -> object:
@@ -334,27 +327,15 @@ def parse_protocol(raw: object) -> Protocol:
         raise TypeError("contract root must be an object")
     bluetooth = raw["bluetooth"]
     frame = raw["frame"]
-    modes = raw["modes"]
     return Protocol(
-        device_name=raw["device"]["name"],
-        service_uuid=bluetooth["service_uuid"],
         data_char_uuid=bluetooth["data_char_uuid"],
         config_char_uuid=bluetooth["config_char_uuid"],
-        sample_period_ms=frame["sample_period_ms"],
         data_encoding=frame["data"]["encoding"],
         data_offsets=tuple(field["offset"] for field in frame["data"]["fields"]),
         config_encoding=frame["config"]["encoding"],
-        default_mode=modes["default"],
         modes=tuple(
-            Mode(
-                id=mode["id"],
-                name=mode["name"],
-                experiment=mode["experiment"],
-                channels=tuple(mode["channels"].items()),
-            )
-            for mode in modes["active"]
+            Mode(id=mode["id"], experiment=mode["experiment"]) for mode in raw["modes"]["active"]
         ),
-        reserved_modes=tuple(modes["reserved"]),
     )
 
 

@@ -70,10 +70,12 @@ in the same change.
 `protocol/contract.json` owns the shared device name, UUIDs, frame layout,
 timing, mode numbers, channel meanings, and filenames. When you change a fact
 there, update every concrete implementation that depends on it, including the
-preview fixtures.
+preview fixtures. The sketch keeps its own literals so it stays a single file;
+`tests/firmware/` runs it on the host and fails if any of them disagree with the
+contract.
 
 ```sh
-python3 -m pytest tests/protocol/test_contract.py
+python3 -m pytest tests/protocol tests/firmware
 make validate
 make check-generated
 make compile
@@ -109,7 +111,7 @@ boundaries. It fails when Playwright or Chromium is missing, and it is separate
 from `make test` but included in `make ci`.
 
 `make provision` installs the versions recorded in
-`scripts/arduino-toolchain.json` and is the only step that needs the network.
+`arduino/toolchain.json` and is the only step that needs the network.
 `make compile` verifies those installed versions and builds without refreshing
 indexes or installing packages. `make ci` provisions and therefore needs network
 access.

@@ -91,8 +91,8 @@ make compile
 ```
 
 Provisioning installs the core and libraries pinned in
-`scripts/arduino-toolchain.json`. The compile script verifies the installed
-versions without installing anything, then builds the sketch. It does not
+`arduino/toolchain.json`. `make compile` verifies the installed versions
+without installing anything, then builds the sketch. It does not
 upload it or test a connected board.
 
 To flash a board:

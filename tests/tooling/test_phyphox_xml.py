@@ -13,10 +13,7 @@ PROTOCOL = load_protocol(CONTRACT_PATH)
 
 
 def validate_phyphox(path: Path) -> list[str]:
-    mode = PROTOCOL.mode_for_experiment(path.name)
-    return check_core_experiment(
-        path, PROTOCOL, expected_mode=mode.id if mode is not None else None
-    )
+    return check_core_experiment(path, PROTOCOL, expected_mode=PROTOCOL.mode_id_for(path.name))
 
 
 @pytest.mark.parametrize(

@@ -63,11 +63,13 @@ def _run(command: str, args: argparse.Namespace, checkout: Checkout) -> int:
 
         provision(checkout.arduino_toolchain)
         return 0
-    from .arduino import compile_sketch
+    if command == "compile":
+        from .arduino import compile_sketch
 
-    compile_sketch(checkout.arduino_toolchain, checkout.sketch_dir)
-    print("OK")
-    return 0
+        compile_sketch(checkout.arduino_toolchain, checkout.sketch_dir)
+        print("OK")
+        return 0
+    raise ToolError(f"unknown command: {command}")
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -38,8 +38,20 @@ flowchart LR
 
 The dashed edges are conformance expectations, not imports. The firmware, the
 experiment files, and the preview never load the JSON contract at runtime; each
-duplicates the few values it needs, and the tests exist to stop those copies
-from drifting apart.
+duplicates the few values it needs, and checks derived from the contract stop
+those copies from drifting apart:
+
+- **Firmware:** the sketch stays one self-contained `.ino` that teachers can
+  copy into the Arduino IDE. `tests/firmware/` compiles that exact file on the
+  host against BLE, sensor, and clock doubles, runs its own `setup()` and
+  `loop()`, and asserts the advertised name, UUIDs, characteristic properties
+  and sizes, default mode, mode selection, and packet layout against
+  expectations rendered from `protocol/contract.json`. Mutation cases prove the
+  test catches each kind of drift.
+- **Core experiments:** `make validate` checks sources and generated files
+  against the parsed contract (UUIDs, offsets, conversions, mode per filename).
+- **Preview:** `tests/preview/` evaluates `demo/fixtures.js` and compares its
+  modes and channel shapes with the contract.
 
 ## Components and ownership
 
@@ -51,8 +63,10 @@ from drifting apart.
 | `experiments/*.phyphox` | Seven generated, importable core experiments | Tracked distributable artifacts |
 | `experiments/astronomy/` | Eight directly maintained astronomy experiments | Independent importable artifacts |
 | `demo/` | Deterministic simulated traces for the core mode shapes | Static browser content; not a BLE client |
-| `src/curious_signals/` | Contract checks, XML generation, validation, parity, and bundling | Internal contributor tooling |
-| `tests/` | Observable contract, artifact, preview, and tooling behavior | Development and CI only |
+| `arduino/toolchain.json` | Pinned board core, sensor libraries, and FQBN | Firmware build reproducibility contract |
+| `src/curious_signals/` | Contract parsing, XML generation, validation, parity, bundling, and Arduino provisioning/compilation | Internal contributor tooling |
+| `scripts/secret-scan.sh` | Credential-pattern scan behind `make security` | Contributor and CI guardrail |
+| `tests/` | Observable contract, artifact, firmware, preview, and tooling behavior, grouped by component | Development and CI only |
 
 The astronomy collection may use phone sensors, TI SensorTags, Bluetooth HID, or
 supported Owon multimeters. It has no dependency on the Arduino protocol and
@@ -104,8 +118,8 @@ module for generation, validation, parity checks, and bundling.
 flowchart LR
     Contract["Protocol contract"]
     Sources["Core XML sources and includes"]
-    Preflight["Contract, inventory, firmware,<br/>and XInclude checks"]
-    Expand["xmllint XInclude expansion<br/>and post-processing"]
+    Preflight["Contract, inventory,<br/>and XInclude checks"]
+    Expand["xmllint XInclude expansion<br/>and metadata stripping"]
     Validate["Temporary rendered XML validation"]
     Artifacts["Tracked core experiments"]
     Parity["Temporary rebuild and byte comparison"]
@@ -136,7 +150,7 @@ timestamps. Astronomy files and the preview are not part of that bundle.
   does XML syntax checks and XInclude expansion.
 - `make provision` needs the network: it updates the Arduino package index and
   installs the board core and libraries pinned in
-  `scripts/arduino-toolchain.json`. `make compile` then verifies those installed
+  `arduino/toolchain.json`. `make compile` then verifies those installed
   versions and compiles without installing anything. The full `make ci` gate
   provisions before compiling. None of those downloads are vendored, so hosted
   CI verifies the Arduino CLI checksum separately.
@@ -149,10 +163,45 @@ timestamps. Astronomy files and the preview are not part of that bundle.
 
 Hosted job details and their local equivalents are in [ci.md](ci.md).
 
+## Tooling internals
+
+`python -m curious_signals` is the only entry point, and Make is its only
+supported caller. The package is organized by responsibility, and its
+dependencies point one way:
+
+```text
+__main__ ──► generation ──► phyphox_xml ──► protocol
+   │   │         │   └────► xmllint ──► xinclude
+   │   │         └────────► xinclude
+   │   └──► validation ──► generation, phyphox_xml, protocol, xmllint
+   └──► arduino   (standard library only)
+__main__, generation, validation ──► checkout (paths)
+__main__, arduino, protocol, xmllint, generation, validation ──► ToolError
+```
+
+| Module | Owns |
+| --- | --- |
+| `checkout.py` | Every repository path, derived from one `Checkout` root |
+| `protocol.py` | Reading `contract.json`, its schema errors, and the frozen `Protocol` model the rest of the tooling consumes |
+| `xinclude.py` | The XInclude safety boundary enforced before `xmllint` runs |
+| `xmllint.py` | Locating and running `xmllint`, XInclude expansion, and stripping generator-only metadata |
+| `phyphox_xml.py` | Structural and protocol checks for core and astronomy experiment XML |
+| `generation.py` | Render preflight, fail-closed rendering, `build`, `check-generated`, and `bundle` |
+| `validation.py` | The complete non-mutating `make validate` sequence |
+| `arduino.py` | Provisioning, pin verification, and compilation with `arduino-cli` |
+
+`__main__` imports command modules lazily, so `make provision` and
+`make compile` never need `defusedxml`. Every failure the command line reports is
+a `ToolError`, which exits 2 without a traceback; validation findings exit 1.
+New checks belong in the module that owns the artifact they inspect. Tests build
+a disposable `Checkout` copy instead of patching module internals.
+
 ## Change invariants
 
 - Change shared wire or mode facts in `protocol/contract.json`, update every
-  affected concrete implementation, and describe the compatibility impact.
+  affected concrete implementation (firmware, XML sources and includes, preview
+  fixtures, docs tables), and describe the compatibility impact. The firmware,
+  experiment, and preview tests fail until those implementations agree.
 - Edit core experiments under `src/phyphox/` and rebuild their matching root
   artifacts. Generated root experiments never become source inputs.
 - Edit astronomy files directly and retain English root content plus the German

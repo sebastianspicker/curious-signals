@@ -106,7 +106,7 @@ The internals are a Python package you never have to import. `make` is the
 interface:
 
 ```sh
-make lint             # Ruff lint and format checks
+make lint             # Ruff lint and format checks, ShellCheck
 make test             # behavior-focused pytest suite
 make test-browser     # Chromium preview interaction and accessibility checks
 make validate         # protocol, XML, core, and astronomy validation
@@ -114,15 +114,15 @@ make check-generated  # non-mutating byte parity check
 make build            # rewrite the seven tracked generated files
 make provision        # install pinned Arduino packages (network)
 make compile          # check installed pins and compile, no installs or upload
-make security         # secret, pin, shell, and Python sanity checks
+make security         # credential-pattern scan
 make ci               # full checkout-non-mutating local gate
 make bundle           # deterministic core experiment ZIP
 ```
 
 Requirements: Make, Bash, Git, Python 3.11+, a C++17 compiler (`c++`, or set
 `CXX`) for the host firmware tests, Node.js 22+ for the preview fixtures,
-`xmllint`, `arduino-cli` for firmware compilation, and `ripgrep` for the security
-scan. ShellCheck is optional locally and required in CI.
+`xmllint`, ShellCheck for `make lint`, `arduino-cli` for firmware compilation,
+and `ripgrep` for the security scan.
 
 ```sh
 python3 -m venv .venv
@@ -172,13 +172,14 @@ Know the limits before you build a lesson around it:
 | --- | --- |
 | `protocol/contract.json` | Normative cross-component protocol and mode data |
 | `arduino/phyphox_ble_sense/` | Firmware and hardware notes |
+| `arduino/toolchain.json` | Pinned board core, sensor libraries, and FQBN |
 | `src/phyphox/` | Editable core experiment sources |
 | `experiments/*.phyphox` | Generated importable core artifacts |
 | `experiments/astronomy/` | Hand-edited astronomy collection |
 | `demo/` | Deterministic static preview |
 | `src/curious_signals/` | Internal build and validation package |
 | `tests/` | Observable behavior and contract checks |
-| `scripts/` | Firmware compile and shell-native security checks |
+| `scripts/` | Shell credential scan behind `make security` |
 
 Start with [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the dependency rules
 and the reasoning behind them, [CONTRIBUTING.md](CONTRIBUTING.md) for the

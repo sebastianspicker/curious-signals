@@ -4,6 +4,11 @@ description: Report reproducible firmware, experiment, or tooling behavior
 labels: [bug]
 ---
 
+<!-- markdownlint-disable MD041 -->
+
+Thanks for filing a report. The details below are usually the difference between
+a fix and a guess, so fill in as much as you can and skip what does not apply.
+
 ## Summary
 
 ## Reproduction
@@ -36,7 +41,7 @@ labels: [bug]
 
 ## Validation output
 
-Paste only the relevant error or log excerpt. Remove credentials, private device
-identifiers, local usernames, and unrelated paths.
+Paste only the relevant error or log excerpt, and strip credentials, private
+device identifiers, local usernames, and unrelated paths before you post.
 
 ## Additional context

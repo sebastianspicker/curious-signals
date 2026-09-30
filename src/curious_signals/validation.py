@@ -4,15 +4,10 @@ from __future__ import annotations
 
 from . import ToolError
 from .checkout import Checkout
-from .generation import (
-    find_xmllint,
-    render_core_experiments,
-    run_xmllint,
-    source_inventory_errors,
-    xml_safety_errors,
-)
+from .generation import render_core_experiments, source_inventory_errors, xml_safety_errors
 from .phyphox_xml import check_astronomy_experiment, check_core_experiment
 from .protocol import contract_errors, parse_protocol, read_contract
+from .xmllint import find_xmllint, run_xmllint
 
 
 def validate(checkout: Checkout) -> list[str]:
@@ -42,11 +37,8 @@ def validate(checkout: Checkout) -> list[str]:
             f"{checkout.experiments_dir}: generated filenames do not match protocol contract"
         )
     for path in generated:
-        mode = protocol.mode_for_experiment(path.name)
         errors.extend(
-            check_core_experiment(
-                path, protocol, expected_mode=mode.id if mode is not None else None
-            )
+            check_core_experiment(path, protocol, expected_mode=protocol.mode_id_for(path.name))
         )
     for path in astronomy:
         errors.extend(check_astronomy_experiment(path))

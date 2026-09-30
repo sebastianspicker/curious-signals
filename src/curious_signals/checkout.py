@@ -14,7 +14,11 @@ class Checkout:
 
     @classmethod
     def default(cls) -> Checkout:
-        """Return the checkout containing this source package."""
+        """Return the checkout containing this source package.
+
+        This assumes a source checkout (``PYTHONPATH=src`` or an editable install); an
+        installed copy in site-packages has no repository root above it.
+        """
 
         return cls(Path(__file__).resolve().parents[2])
 

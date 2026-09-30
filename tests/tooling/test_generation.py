@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -9,12 +8,13 @@ import pytest
 
 from curious_signals import ToolError
 from curious_signals.checkout import Checkout
-from curious_signals.generation import build, strip_xinclude_metadata
+from curious_signals.generation import build
 from curious_signals.validation import validate
+from curious_signals.xmllint import strip_xinclude_metadata
 from tests.conftest import CORE_ARTIFACT_DIR, CORE_SOURCE_DIR, REPO_ROOT, install_fake_xmllint
 
 
-def test_postprocess_is_deterministic_and_preserves_experiment_content() -> None:
+def test_strip_xinclude_metadata_is_deterministic_and_preserves_experiment_content() -> None:
     source = (
         '<phyphox xmlns:xi="http://www.w3.org/2001/XInclude" xml:base="source.xml">'
         '<title>Stable</title><container unit="m/s²">CH1</container></phyphox>'
@@ -28,10 +28,8 @@ def test_postprocess_is_deterministic_and_preserves_experiment_content() -> None
     assert '<container unit="m/s²">CH1</container>' in result
 
 
-def test_core_sources_and_committed_artifacts_have_byte_parity_when_xmllint_is_available() -> None:
-    if shutil.which("xmllint") is None:
-        pytest.skip("xmllint is required for generated-artifact parity")
-
+@pytest.mark.usefixtures("xmllint_executable")
+def test_core_sources_and_committed_artifacts_have_byte_parity() -> None:
     result = subprocess.run(
         [sys.executable, "-m", "curious_signals", "check-generated"],
         cwd=REPO_ROOT,
@@ -46,7 +44,7 @@ def test_core_sources_and_committed_artifacts_have_byte_parity_when_xmllint_is_a
     }
 
 
-@pytest.mark.skipif(shutil.which("xmllint") is None, reason="xmllint is unavailable")
+@pytest.mark.usefixtures("xmllint_executable")
 @pytest.mark.parametrize("inventory_change", ["missing", "extra", "invalid"])
 def test_build_rejects_bad_source_inventory_or_content_before_writing(
     checkout_copy: Checkout, tmp_path: Path, inventory_change: str
@@ -89,13 +87,14 @@ def test_build_and_validate_reject_unsafe_xml_before_invoking_xmllint(
     assert not (tmp_path / "output").exists()
 
 
-@pytest.mark.skipif(shutil.which("xmllint") is None, reason="xmllint is unavailable")
+@pytest.mark.usefixtures("xmllint_executable")
 def test_validate_expands_each_source_once(
-    checkout_copy: Checkout, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    checkout_copy: Checkout,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    xmllint_executable: str,
 ) -> None:
-    real_xmllint = shutil.which("xmllint")
-    assert real_xmllint is not None
-    calls = install_fake_xmllint(tmp_path / "bin", monkeypatch, delegate_to=real_xmllint)
+    calls = install_fake_xmllint(tmp_path / "bin", monkeypatch, delegate_to=xmllint_executable)
 
     assert validate(checkout_copy) == []
     expansions = [

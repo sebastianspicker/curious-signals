@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-import re
-import shutil
-import subprocess
 import tempfile
 import zipfile
 from collections.abc import Iterable
@@ -15,35 +12,9 @@ from .checkout import Checkout
 from .phyphox_xml import check_core_experiment
 from .protocol import Protocol, load_protocol
 from .xinclude import validate_xinclude_paths
+from .xmllint import expand_xincludes, find_xmllint
 
-XML_BASE_ATTRIBUTE_RE = re.compile(r'\s+xml:base="[^"]*"')
-XINCLUDE_NAMESPACE_DECLARATION = ' xmlns:xi="http://www.w3.org/2001/XInclude"'
 BUNDLE_DATE_TIME = (1980, 1, 1, 0, 0, 0)
-
-
-def find_xmllint() -> str:
-    executable = shutil.which("xmllint")
-    if executable is None:
-        raise ToolError("xmllint not found. Install libxml2 utilities first.")
-    return executable
-
-
-def run_xmllint(arguments: list[str]) -> str:
-    """Run xmllint and return its stdout, raising ToolError when it fails."""
-
-    try:
-        result = subprocess.run(arguments, check=False, capture_output=True, text=True)
-    except OSError as error:
-        raise ToolError(f"cannot run xmllint: {error}") from error
-    if result.returncode:
-        raise ToolError(result.stderr.strip() or result.stdout.strip() or "xmllint failed")
-    return result.stdout
-
-
-def strip_xinclude_metadata(xml_text: str) -> str:
-    """Strip generator-only XML base metadata without changing experiment XML."""
-
-    return XML_BASE_ATTRIBUTE_RE.sub("", xml_text).replace(XINCLUDE_NAMESPACE_DECLARATION, "")
 
 
 def source_inventory_errors(checkout: Checkout, protocol: Protocol) -> list[str]:
@@ -68,11 +39,6 @@ def xml_safety_errors(paths: Iterable[Path], include_root: Path) -> list[str]:
     ]
 
 
-def _expected_mode(protocol: Protocol, filename: str) -> int | None:
-    mode = protocol.mode_for_experiment(filename)
-    return mode.id if mode is not None else None
-
-
 def render_core_experiments(checkout: Checkout, protocol: Protocol) -> list[tuple[str, str]]:
     """Validate every core input and render all outputs before any destination write."""
 
@@ -83,11 +49,7 @@ def render_core_experiments(checkout: Checkout, protocol: Protocol) -> list[tupl
         raise ToolError("\n".join(errors))
     xmllint = find_xmllint()
     rendered = [
-        (
-            source.name.removesuffix(".xml"),
-            strip_xinclude_metadata(run_xmllint([xmllint, "--xinclude", str(source)])),
-        )
-        for source in sources
+        (source.name.removesuffix(".xml"), expand_xincludes(source, xmllint)) for source in sources
     ]
     with tempfile.TemporaryDirectory(prefix="curious-signals-prewrite-") as temporary:
         temporary_dir = Path(temporary)
@@ -95,9 +57,7 @@ def render_core_experiments(checkout: Checkout, protocol: Protocol) -> list[tupl
             candidate = temporary_dir / name
             candidate.write_text(content, encoding="utf-8")
             errors.extend(
-                check_core_experiment(
-                    candidate, protocol, expected_mode=_expected_mode(protocol, name)
-                )
+                check_core_experiment(candidate, protocol, expected_mode=protocol.mode_id_for(name))
             )
     if errors:
         raise ToolError("\n".join(errors))

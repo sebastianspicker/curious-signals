@@ -17,6 +17,13 @@ ASTRONOMY_DIR = CORE_ARTIFACT_DIR / "astronomy"
 
 
 @pytest.fixture()
+def xmllint_executable() -> str:
+    executable = shutil.which("xmllint")
+    assert executable is not None, "Tests require xmllint (libxml2 utilities) on PATH."
+    return executable
+
+
+@pytest.fixture()
 def valid_phyphox_xml() -> str:
     return """\
 <phyphox version="1.7" locale="en">

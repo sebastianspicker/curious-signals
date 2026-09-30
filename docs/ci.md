@@ -7,7 +7,7 @@ same ref, so a branch that is pushed twice only tests once.
 ## XML and Python
 
 The first job installs Python 3.11, Node.js 22, a C++17 compiler, the `test` and
-`browser` extras, Chromium, `xmllint`, and `ripgrep`, then runs:
+`browser` extras, Chromium, `xmllint`, ShellCheck, and `ripgrep`, then runs:
 
 ```sh
 make lint
@@ -17,11 +17,13 @@ make validate
 make check-generated
 ```
 
-Validation covers the protocol catalog, firmware and source conformance, core
+Validation covers the protocol catalog, source inventory, XInclude safety, core
 XML, the expanded core experiments, the committed generated artifacts, and the
-astronomy XML and locales. The host tests run the actual sketch against
-controlled sensor, BLE, and clock doubles, while scalar scientific fixtures pin
-down conversions and nominal time axes. The browser checks walk every preview
+astronomy XML and locales. Firmware conformance is behavioral: the host tests
+run the actual sketch, including `setup()`, against controlled sensor, BLE, and
+clock doubles and check its name, UUIDs, characteristic properties, default
+mode, and wire behavior against `protocol/contract.json`, while scalar
+scientific fixtures pin down conversions and nominal time axes. The browser checks walk every preview
 mode and cover playback, keyboard use, reduced motion, contrast, and the
 forbidden runtime APIs at desktop and mobile viewport sizes.
 
@@ -32,9 +34,10 @@ tracked artifact.
 ## Firmware
 
 The Arduino job downloads Arduino CLI 1.4.1 and verifies the SHA-256 of the
-pinned Linux archive before unpacking it. It restores the Arduino package cache,
-runs `make provision` to install the Nano core and the sensor libraries pinned
-in `scripts/arduino-toolchain.json`, then runs `make compile` to verify the
+pinned Linux archive before unpacking it. It sets up Python 3.11 for the
+repository tooling, restores the Arduino package cache, runs `make provision` to
+install the Nano core and the sensor libraries pinned in
+`arduino/toolchain.json`, then runs `make compile` to verify the
 installed versions and build for `arduino:mbed_nano:nano33ble` without
 refreshing indexes or installing anything new.
 
@@ -44,11 +47,9 @@ the checksum-verified CLI archive.
 
 ## Security
 
-The security job installs `ripgrep` and ShellCheck, then runs `make security`.
-That gate searches tracked and untracked files for a narrow set of credential
-patterns in bounded batches and also checks dependency and Arduino pin sanity,
-shell syntax, ShellCheck, and Python syntax. A scanner that cannot run fails the
-gate; when it does find something, the report carries filenames and line numbers
+The security job installs `ripgrep`, then runs `make security`. That gate
+searches tracked and untracked files for a narrow set of credential patterns in
+bounded batches. A scanner that cannot run fails the gate; when it does find something, the report carries filenames and line numbers
 but never the matched credential contents.
 
 These are repository guardrails. They do not replace supply-chain review,

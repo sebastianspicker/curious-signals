@@ -45,11 +45,12 @@ Run the local checks with:
 make security
 ```
 
-That target scans for credential patterns, sanity-checks dependencies and
-Arduino pins, checks shell syntax (including ShellCheck when installed), and
-compiles Python without writing bytecode. It is a guardrail, not a replacement
-for dependency advisory review, firmware review, hardware testing, or electrical
-safety review.
+That target runs `scripts/secret-scan.sh`, which searches tracked and
+untracked files for a narrow set of credential patterns and reports only file
+names and line numbers. Dependency version bounds and the Arduino pins are
+checked by `make test`, and shell scripts by ShellCheck in `make lint`. None of
+this replaces dependency advisory review, firmware review, hardware testing, or
+electrical safety review.
 
 ## Reports about hardware
 

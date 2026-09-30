@@ -16,6 +16,7 @@ test = [
     "pytest>=8.0,<9.0",
     "ruff>=0.12,<1.0",
 ]
+browser = ["playwright>=1.58,<2"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -37,3 +38,5 @@ known-first-party = ["curious_signals"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-m 'not browser'"
+markers = ["browser: rendered preview checks requiring Playwright and Chromium"]

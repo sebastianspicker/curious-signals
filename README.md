@@ -1,19 +1,76 @@
 # Curious Signals
 
-Curious Signals is a classroom kit for collecting sensor data from an original
-Arduino Nano 33 BLE Sense in the phyphox mobile app. The repository also
-contains a separate set of astronomy classroom experiments and a deterministic
-static preview.
+[![ci](https://github.com/sebastianspicker/curious-signals/actions/workflows/ci.yml/badge.svg)](https://github.com/sebastianspicker/curious-signals/actions/workflows/ci.yml)
+[![pages](https://github.com/sebastianspicker/curious-signals/actions/workflows/pages.yml/badge.svg)](https://github.com/sebastianspicker/curious-signals/actions/workflows/pages.yml)
 
-## What is included
+Plug an original Arduino Nano 33 BLE Sense into a laptop, flash one sketch, and
+read its sensors live in the [phyphox](https://phyphox.org) app on a phone. No
+server, no account, and no mobile app to build.
 
-### Arduino and phyphox kit
+This repository packages that workflow as a classroom kit: the firmware, seven
+ready-to-import experiments, a separate astronomy collection that uses phone and
+lab sensors on its own, and a static browser preview you can open without any
+hardware.
 
-The firmware advertises as `phyphox-sense`. A phyphox experiment selects one
-sensor mode and receives five little-endian `float32` values per BLE
-notification: device time followed by four mode-dependent channels.
+**Live preview:** <https://sebastianspicker.github.io/curious-signals/>
 
-| Mode | Experiment | Measurement |
+## What is in the box
+
+| Part | What it gives you |
+| --- | --- |
+| **Arduino + phyphox kit** | Firmware for the original Nano 33 BLE Sense, plus seven importable experiments (`experiments/*.phyphox`) |
+| **Astronomy collection** | Eight self-contained experiments for phone sensors, TI SensorTags, a Bluetooth HID mouse, or Owon multimeters (`experiments/astronomy/`) |
+| **Static preview** | A deterministic, offline demo of the kit's data shapes (`demo/`) |
+
+## Screenshot tour
+
+The preview renders fixed fixtures, so what you see here is reproducible and not
+recorded hardware data. Pick a mode on the left, hit **Start simulated stream**,
+and the traces and readouts fill in.
+
+![The static preview at desktop width, showing the mode rail and a temperature and humidity chart](docs/images/preview-1440.png)
+
+It reflows to a phone-sized viewport, so students can compare it with the real
+phyphox layout:
+
+<img src="docs/images/preview-390.png" alt="The static preview at mobile width" width="320">
+
+Each mode has its own chart, units, and readouts:
+
+| Acceleration (mode 1) | Light and RGB (mode 6) | Analog input (mode 9) |
+| --- | --- | --- |
+| ![Acceleration chart with x, y, z, and magnitude](docs/images/mode-1.png) | ![Light chart with ambient, red, green, and blue](docs/images/mode-6.png) | ![Analog input chart with A0, A1, and A2](docs/images/mode-9.png) |
+
+## Flash the firmware
+
+1. Open `arduino/phyphox_ble_sense/phyphox_ble_sense.ino` in the Arduino IDE.
+2. Select the **original** Arduino Nano 33 BLE Sense and upload the sketch.
+3. Copy one `experiments/*.phyphox` file to a phone or tablet.
+4. Open it in phyphox and start the experiment.
+
+Prefer the command line?
+
+```sh
+make provision   # install the pinned board core and libraries (uses the network)
+make compile     # verify the installed pins and compile
+arduino-cli upload -p /dev/ttyACM0 \
+  --fqbn arduino:mbed_nano:nano33ble arduino/phyphox_ble_sense
+```
+
+`make provision` is the only step that downloads packages. `make compile` checks
+the installed versions and builds; it never installs anything or touches a
+connected board.
+
+The firmware targets the original Nano 33 BLE Sense (LSM9DS1, HTS221, LPS22HB,
+APDS9960). The Rev2 board is not supported.
+
+## The seven core experiments
+
+The firmware advertises as `phyphox-sense`. Each experiment selects one sensor
+mode and receives five little-endian `float32` values per BLE notification:
+device time, then four mode-dependent channels.
+
+| Mode | Experiment file | Measurement |
 | --- | --- | --- |
 | 1 | `accelerometer_plot_v1-2.phyphox` | x, y, z, magnitude |
 | 2 | `gyroscope_plot_v1-2.phyphox` | x, y, z, magnitude |
@@ -23,126 +80,93 @@ notification: device time followed by four mode-dependent channels.
 | 6 | `light_plot_v1-2.phyphox` | clear, red, green, blue |
 | 9 | `analog_input_plot_v1-2.phyphox` | A0, A1, A2 |
 
-The importable files are the seven root files in `experiments/`. Their editable
-sources are in `src/phyphox/`. The firmware is in
-`arduino/phyphox_ble_sense/` and supports the original Nano 33 BLE Sense with
-LSM9DS1, HTS221, LPS22HB, and APDS9960 sensors. Rev2 is not supported.
+Modes 7 and 8 are reserved. Channels a mode cannot produce are sent as `NaN`.
 
-### Astronomy collection
+The importable files in `experiments/` are generated. Edit the sources in
+`src/phyphox/` and rebuild, rather than changing the root files by hand.
 
-Eight hand-edited files under `experiments/astronomy/` cover reflected light,
-comparative warming, thermal response to distance, pressure, pressure and
-temperature trends, tidal locking, and transit light curves. They use phone
-sensors, TI SensorTags, a Bluetooth HID input, or supported Owon multimeters.
-They do not use the Arduino firmware.
+## The astronomy collection
 
-See the [astronomy companion](docs/ASTRONOMY_EXPERIMENTS_COMPANION.md) for each
-activity's measurement path and interpretation limits.
+`experiments/astronomy/` is a separate, hand-maintained set of eight activities
+covering reflected light, comparative warming, thermal response to distance,
+pressure, pressure and temperature trends, tidal locking, and transit light
+curves. They run on phone sensors, TI SensorTags, a Bluetooth HID mouse, or
+supported Owon multimeters, and they never touch the Arduino firmware.
 
-### Static preview
+`owon_digital_multimeter-debug.phyphox` is an integration helper rather than a
+standalone lesson, so its name is not a sign that it can be deleted.
 
-`demo/` renders deterministic sample traces shaped like the core modes. It does
-not use Bluetooth, sensors, storage, or network data and is not evidence of
-hardware behavior.
+Every astronomy file keeps English as the root locale and ships German and
+French translations. The [astronomy companion](docs/ASTRONOMY_EXPERIMENTS_COMPANION.md)
+explains what each activity measures and where its interpretation stops.
 
-## Use the kit
+## Build and verify
 
-1. Open `arduino/phyphox_ble_sense/phyphox_ble_sense.ino` in the Arduino IDE.
-2. Select the original Arduino Nano 33 BLE Sense and upload the sketch.
-3. Transfer one root `experiments/*.phyphox` file to a phone or tablet.
-4. Open it in phyphox and start the experiment.
-
-For command-line compilation:
-
-```sh
-make compile
-arduino-cli upload -p /dev/ttyACM0 \
-  --fqbn arduino:mbed_nano:nano33ble arduino/phyphox_ble_sense
-```
-
-The compile target installs pinned Arduino packages and compiles but does not
-upload or test a connected board.
-
-## Development setup
-
-Requirements:
-
-- Python 3.11 or newer
-- `xmllint`
-- `arduino-cli` for firmware compilation
-- `ripgrep` for the local security check
-- `zip` or `unzip` only when inspecting bundles outside the build tooling
-
-Install the Python package and development tools:
-
-```sh
-python3 -m pip install -e '.[test]'
-```
-
-Use Make as the command interface:
+The internals are a Python package you never have to import. `make` is the
+interface:
 
 ```sh
 make lint             # Ruff lint and format checks
 make test             # behavior-focused pytest suite
+make test-browser     # Chromium preview interaction and accessibility checks
 make validate         # protocol, XML, core, and astronomy validation
 make check-generated  # non-mutating byte parity check
-make build            # update the seven tracked generated files
-make compile          # pinned firmware compile, no upload
+make build            # rewrite the seven tracked generated files
+make provision        # install pinned Arduino packages (network)
+make compile          # check installed pins and compile, no installs or upload
 make security         # secret, pin, shell, and Python sanity checks
 make ci               # full checkout-non-mutating local gate
 make bundle           # deterministic core experiment ZIP
 ```
 
-The full gate includes the network-backed firmware compile. Hosted CI runs the
-same concerns in separate jobs.
+Requirements: Make, Bash, Git, Python 3.11+, a C++17 compiler (`c++`, or set
+`CXX`) for the host firmware tests, Node.js 22+ for the preview fixtures,
+`xmllint`, `arduino-cli` for firmware compilation, and `ripgrep` for the security
+scan. ShellCheck is optional locally and required in CI.
 
-To build into a temporary directory without changing tracked artifacts:
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[test,browser]'
+python -m playwright install chromium
+```
+
+To regenerate the screenshots in this README:
+
+```sh
+PREVIEW_SCREENSHOT_DIR=docs/images make test-browser
+```
+
+To build into a temporary directory without touching tracked artifacts:
 
 ```sh
 PYTHONPATH=src python3 -m curious_signals build --output /tmp/phyphox-output
 ```
 
-The Python module is an internal tooling interface. Contributor documentation
-and automation should use Make.
-
-## Source and generated files
-
-Edit `src/phyphox/*.phyphox.xml` and shared fragments under
-`src/phyphox/includes/`, then run:
-
-```sh
-make build
-make check-generated
-make validate
-```
-
-Do not hand-edit matching root `experiments/*.phyphox` files. Astronomy files
-are maintained directly and never pass through the core generator.
-
-`protocol/contract.json` is the normative shared contract for the device name,
-UUIDs, frame encoding, mode selection, channel meanings, and distributable
-filenames. Firmware and XML remain concrete implementations; validation checks
-that they conform.
-
-## BLE contract and limitations
+## The BLE contract
 
 - Device and local name: `phyphox-sense`.
 - Data characteristic: notify-only, 20 bytes, five little-endian `float32`
   values.
 - Config characteristic: readable/writable, one little-endian `float32` mode.
 - Minimum notification interval: 50 ms.
-- Modes 7 and 8 are reserved.
 - Unavailable sensor channels are sent as `NaN`.
-- Every board uses the same name and UUIDs, so multi-board discovery is not
-  supported.
-- BLE initialization failure stops the sketch; no detailed status
-  characteristic, serial diagnostic, or LED error protocol exists.
 
-Automated checks do not verify physical sensors, BLE radio behavior, analog
-electrical behavior, calibration, phyphox mobile import/rendering, content
-rights, or classroom safety.
+`protocol/contract.json` is the normative record of the device name, UUIDs,
+frame encoding, mode numbers, channel meanings, and filenames. The firmware, the
+experiment XML, and the preview are concrete implementations, and validation
+keeps them in step with that record.
 
-## Repository map
+Know the limits before you build a lesson around it:
+
+- Every board uses the same name and UUIDs, so you cannot tell two boards apart.
+- If BLE initialization fails the sketch stops. There is no status
+  characteristic, serial diagnostic, or error LED to tell you why.
+- The checks in this repository are software checks. They cannot confirm real
+  sensor readings, radio behavior, analog wiring, calibration, whether phyphox
+  imports and renders a file, content rights, or classroom safety.
+
+## Repository layout
 
 | Path | Responsibility |
 | --- | --- |
@@ -156,14 +180,13 @@ rights, or classroom safety.
 | `tests/` | Observable behavior and contract checks |
 | `scripts/` | Firmware compile and shell-native security checks |
 
-The dependency rules and rationale are in
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Contributor workflows are in
-[CONTRIBUTING.md](CONTRIBUTING.md), and hosted checks are documented in
-[docs/ci.md](docs/ci.md).
+Start with [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the dependency rules
+and the reasoning behind them, [CONTRIBUTING.md](CONTRIBUTING.md) for the
+day-to-day workflows, and [docs/ci.md](docs/ci.md) for what runs in CI.
 
-## License and attribution
+## License
 
-See [LICENSE](LICENSE) for the repository license. Component provenance and
-distribution rights are not yet fully reconciled; do not infer release
-readiness from the presence of a root license. Core phyphox attribution notes
-are in [src/phyphox/README.md](src/phyphox/README.md).
+See [LICENSE](LICENSE). Component provenance and distribution rights have not
+been fully reconciled yet, so a root license file is not a claim that the
+repository is release-ready. Core phyphox attribution notes live in
+[src/phyphox/README.md](src/phyphox/README.md).

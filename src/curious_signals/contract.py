@@ -11,7 +11,11 @@ from typing import Any
 from .layout import contract_path
 
 UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+MODE_NAME_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 TYPE_WIDTHS = {"float32": 4}
+WIRE_ENCODING = "float32LittleEndian"
+DATA_ACCESS = {"notify"}
+CONFIG_ACCESS = {"read", "write"}
 
 
 def load_contract(path: Path | None = None) -> dict[str, Any]:
@@ -76,6 +80,21 @@ def _string_list(value: object, location: str, errors: list[str]) -> list[str]:
     return value
 
 
+def _required_choice(
+    mapping: dict[str, Any], key: str, location: str, allowed: set[str], errors: list[str]
+) -> str:
+    value = _required_string(mapping, key, location, errors)
+    if value and value not in allowed:
+        errors.append(f"contract: {location}.{key} must be one of {', '.join(sorted(allowed))}")
+    return value
+
+
+def _validate_access(value: object, location: str, expected: set[str], errors: list[str]) -> None:
+    access = _string_list(value, location, errors)
+    if access and set(access) != expected:
+        errors.append(f"contract: {location} must contain exactly {', '.join(sorted(expected))}")
+
+
 def _validate_bluetooth(contract: dict[str, Any], errors: list[str]) -> None:
     bluetooth = _mapping(contract.get("bluetooth"), "bluetooth", errors)
     values: list[str] = []
@@ -89,126 +108,173 @@ def _validate_bluetooth(contract: dict[str, Any], errors: list[str]) -> None:
         errors.append("contract: bluetooth UUIDs must be unique")
 
 
-def _validate_frame(contract: dict[str, Any], errors: list[str]) -> set[str]:
-    frame = _mapping(contract.get("frame"), "frame", errors)
-    _integer(frame.get("sample_period_ms"), "frame.sample_period_ms", errors, positive=True)
-    data = _mapping(frame.get("data"), "frame.data", errors)
-    data_length = _integer(data.get("byte_length"), "frame.data.byte_length", errors, positive=True)
-    _string_list(data.get("access"), "frame.data.access", errors)
-    _required_string(data, "encoding", "frame.data", errors)
-    fields = data.get("fields")
-    channel_keys: set[str] = set()
+def _validate_data_fields(fields: object, data_length: int | None, errors: list[str]) -> set[str]:
     if not isinstance(fields, list) or not fields:
         errors.append("contract: frame.data.fields must be a non-empty list")
-    else:
-        names: list[str] = []
-        offsets: list[int] = []
-        ends: list[int] = []
-        for index, field in enumerate(fields):
-            if not isinstance(field, dict):
-                errors.append(f"contract: frame.data.fields[{index}] must be an object")
-                continue
-            location = f"frame.data.fields[{index}]"
-            name = _required_string(field, "name", location, errors)
-            field_type = _required_string(field, "type", location, errors)
-            offset = _integer(field.get("offset"), f"{location}.offset", errors)
-            width = TYPE_WIDTHS.get(field_type)
-            if field_type and width is None:
-                errors.append(f"contract: {location}.type is not supported")
-            if offset is not None and offset < 0:
-                errors.append(f"contract: {location}.offset must not be negative")
-            if name:
-                names.append(name)
-            if offset is not None:
-                offsets.append(offset)
-                if width is not None:
-                    ends.append(offset + width)
-        if len(names) != len(set(names)):
-            errors.append("contract: frame.data field names must be unique")
-        if len(offsets) != len(set(offsets)):
-            errors.append("contract: frame.data field offsets must be unique")
-        if offsets and offsets != sorted(offsets):
-            errors.append("contract: frame.data fields must be ordered by offset")
-        if data_length is not None and ends and max(ends) != data_length:
+        return set()
+    names: list[str] = []
+    spans: list[tuple[int, int]] = []
+    for index, field in enumerate(fields):
+        if not isinstance(field, dict):
+            errors.append(f"contract: frame.data.fields[{index}] must be an object")
+            continue
+        location = f"frame.data.fields[{index}]"
+        name = _required_string(field, "name", location, errors)
+        field_type = _required_choice(field, "type", location, set(TYPE_WIDTHS), errors)
+        offset = _integer(field.get("offset"), f"{location}.offset", errors)
+        if name:
+            names.append(name)
+        if offset is not None and offset < 0:
+            errors.append(f"contract: {location}.offset must not be negative")
+        elif offset is not None and field_type in TYPE_WIDTHS:
+            spans.append((offset, offset + TYPE_WIDTHS[field_type]))
+    if len(names) != len(set(names)):
+        errors.append("contract: frame.data field names must be unique")
+    if len(spans) == len(fields):
+        expected_start = 0
+        contiguous = True
+        for start, end in spans:
+            if start != expected_start:
+                contiguous = False
+            expected_start = end
+        if not contiguous:
+            errors.append(
+                "contract: frame.data field spans must be ordered, contiguous, and non-overlapping"
+            )
+        if data_length is not None and expected_start != data_length:
             errors.append("contract: frame.data.byte_length must end at the final field")
-        channel_keys = {f"CH{index}" for index in range(1, len(fields) + 1)}
+    return {f"CH{index}" for index in range(1, len(fields) + 1)}
+
+
+def _validate_config(frame: dict[str, Any], errors: list[str]) -> None:
     config = _mapping(frame.get("config"), "frame.config", errors)
     config_length = _integer(
         config.get("byte_length"), "frame.config.byte_length", errors, positive=True
     )
-    _string_list(config.get("access"), "frame.config.access", errors)
-    _required_string(config, "encoding", "frame.config", errors)
-    config_type = _required_string(config, "type", "frame.config", errors)
+    _validate_access(config.get("access"), "frame.config.access", CONFIG_ACCESS, errors)
+    _required_choice(config, "encoding", "frame.config", {WIRE_ENCODING}, errors)
+    config_type = _required_choice(config, "type", "frame.config", set(TYPE_WIDTHS), errors)
     config_width = TYPE_WIDTHS.get(config_type)
-    if config_type and config_width is None:
-        errors.append("contract: frame.config.type is not supported")
     if config_length is not None and config_width is not None and config_length != config_width:
         errors.append("contract: frame.config.byte_length must match its scalar type")
     selection = _mapping(config.get("selection"), "frame.config.selection", errors)
-    _required_string(selection, "rounding", "frame.config.selection", errors)
+    _required_choice(selection, "rounding", "frame.config.selection", {"nearest_integer"}, errors)
     minimum = _number(selection.get("minimum"), "frame.config.selection.minimum", errors)
     maximum = _number(
         selection.get("maximum_exclusive"),
         "frame.config.selection.maximum_exclusive",
         errors,
     )
-    _required_string(selection, "invalid_behavior", "frame.config.selection", errors)
+    _required_choice(
+        selection,
+        "invalid_behavior",
+        "frame.config.selection",
+        {"keep_active_mode"},
+        errors,
+    )
     if minimum is not None and maximum is not None and minimum >= maximum:
         errors.append("contract: frame.config selection range must be increasing")
+
+
+def _validate_frame(contract: dict[str, Any], errors: list[str]) -> set[str]:
+    frame = _mapping(contract.get("frame"), "frame", errors)
+    _integer(frame.get("sample_period_ms"), "frame.sample_period_ms", errors, positive=True)
+    data = _mapping(frame.get("data"), "frame.data", errors)
+    data_length = _integer(data.get("byte_length"), "frame.data.byte_length", errors, positive=True)
+    _validate_access(data.get("access"), "frame.data.access", DATA_ACCESS, errors)
+    _required_choice(data, "encoding", "frame.data", {WIRE_ENCODING}, errors)
+    fields = data.get("fields")
+    channel_keys = _validate_data_fields(fields, data_length, errors)
+    _validate_config(frame, errors)
     return channel_keys
+
+
+def _validate_mode_record(
+    mode: object, index: int, channel_keys: set[str], errors: list[str]
+) -> tuple[int | None, str, str]:
+    location = f"modes.active[{index}]"
+    if not isinstance(mode, dict):
+        errors.append(f"contract: {location} must be an object")
+        return None, "", ""
+    mode_id = _integer(mode.get("id"), f"{location}.id", errors, positive=True)
+    name = _required_string(mode, "name", location, errors)
+    if name and not MODE_NAME_RE.fullmatch(name):
+        errors.append(f"contract: {location}.name must be a lowercase identifier")
+    experiment = _required_string(mode, "experiment", location, errors)
+    if experiment and (
+        not experiment.endswith(".phyphox")
+        or "/" in experiment
+        or "\\" in experiment
+        or experiment in {".phyphox", "..phyphox"}
+    ):
+        errors.append(f"contract: {location}.experiment must be a .phyphox filename")
+    channels = mode.get("channels")
+    if not isinstance(channels, dict) or set(channels) != channel_keys:
+        errors.append(f"contract: {location}.channels must match frame data fields")
+    elif any(not isinstance(value, str) or not value for value in channels.values()):
+        errors.append(f"contract: {location}.channels must describe each channel")
+    return mode_id, name, experiment
+
+
+def _reserved_mode_ids(modes: dict[str, Any], errors: list[str]) -> list[int]:
+    reserved = modes.get("reserved")
+    if not isinstance(reserved, list):
+        errors.append("contract: modes.reserved must be a list")
+        return []
+    reserved_ids = [
+        reserved_id
+        for index, value in enumerate(reserved)
+        if (reserved_id := _integer(value, f"modes.reserved[{index}]", errors, positive=True))
+        is not None
+    ]
+    if len(reserved_ids) != len(set(reserved_ids)):
+        errors.append("contract: reserved mode IDs must be unique integers")
+    return reserved_ids
+
+
+def _selection_range(contract: dict[str, Any]) -> tuple[object, object]:
+    frame = contract.get("frame", {})
+    config = frame.get("config", {}) if isinstance(frame, dict) else {}
+    selection = config.get("selection", {}) if isinstance(config, dict) else {}
+    if not isinstance(selection, dict):
+        return None, None
+    return selection.get("minimum"), selection.get("maximum_exclusive")
 
 
 def _validate_modes(contract: dict[str, Any], channel_keys: set[str], errors: list[str]) -> None:
     modes = _mapping(contract.get("modes"), "modes", errors)
-    default = _integer(modes.get("default"), "modes.default", errors)
+    default = _integer(modes.get("default"), "modes.default", errors, positive=True)
     active = modes.get("active")
-    if not isinstance(active, list):
-        errors.append("contract: modes.active must be a list")
+    if not isinstance(active, list) or not active:
+        errors.append("contract: modes.active must be a non-empty list")
         active = []
-    ids: list[int] = []
-    names: list[str] = []
-    experiments: list[str] = []
-    for index, mode in enumerate(active):
-        if not isinstance(mode, dict):
-            errors.append(f"contract: modes.active[{index}] must be an object")
-            continue
-        mode_id = _integer(mode.get("id"), f"modes.active[{index}].id", errors)
-        if mode_id is not None:
-            ids.append(mode_id)
-        name = _required_string(mode, "name", f"modes.active[{index}]", errors)
-        if name:
-            names.append(name)
-        experiment = _required_string(mode, "experiment", f"modes.active[{index}]", errors)
-        if experiment:
-            experiments.append(experiment)
-            if not experiment.endswith(".phyphox"):
-                errors.append(f"contract: modes.active[{index}].experiment must end in .phyphox")
-        channels = mode.get("channels")
-        if not isinstance(channels, dict) or set(channels) != channel_keys:
-            errors.append(f"contract: modes.active[{index}].channels must match frame data fields")
-        elif any(not isinstance(value, str) or not value for value in channels.values()):
-            errors.append(f"contract: modes.active[{index}].channels must describe each channel")
+    records = [
+        _validate_mode_record(mode, index, channel_keys, errors)
+        for index, mode in enumerate(active)
+    ]
+    ids = [mode_id for mode_id, _, _ in records if mode_id is not None]
+    names = [name for _, name, _ in records if name]
+    experiments = [experiment for _, _, experiment in records if experiment]
     if len(ids) != len(set(ids)):
         errors.append("contract: active mode IDs must be unique integers")
     if len(names) != len(set(names)):
         errors.append("contract: active mode names must be unique")
     if len(set(experiments)) != len(experiments):
         errors.append("contract: active mode experiment filenames must be unique")
-    reserved = modes.get("reserved")
-    reserved_ids: list[int] = []
-    if not isinstance(reserved, list):
-        errors.append("contract: modes.reserved must be a list")
-    else:
-        for index, value in enumerate(reserved):
-            reserved_id = _integer(value, f"modes.reserved[{index}]", errors)
-            if reserved_id is not None:
-                reserved_ids.append(reserved_id)
-        if len(reserved_ids) != len(set(reserved_ids)):
-            errors.append("contract: reserved mode IDs must be unique integers")
+    reserved_ids = _reserved_mode_ids(modes, errors)
     if set(ids) & set(reserved_ids):
         errors.append("contract: active and reserved mode IDs must not overlap")
     if default is not None and default not in ids:
         errors.append("contract: modes.default must name an active mode")
+    minimum, maximum = _selection_range(contract)
+    if (
+        isinstance(minimum, (int, float))
+        and not isinstance(minimum, bool)
+        and isinstance(maximum, (int, float))
+        and not isinstance(maximum, bool)
+        and any(not minimum <= mode_id < maximum for mode_id in ids)
+    ):
+        errors.append("contract: active mode IDs must fit the config selection range")
 
 
 def validate_contract(contract: dict[str, Any] | None = None) -> list[str]:
@@ -222,7 +288,12 @@ def validate_contract(contract: dict[str, Any] | None = None) -> list[str]:
             return [str(error)]
     if not isinstance(contract, dict):
         return ["contract: root must be an object"]
-    if contract.get("schema_version") != 1:
+    schema_version = contract.get("schema_version")
+    if (
+        not isinstance(schema_version, int)
+        or isinstance(schema_version, bool)
+        or schema_version != 1
+    ):
         errors.append("contract: schema_version must be 1")
     device = _mapping(contract.get("device"), "device", errors)
     _required_string(device, "name", "device", errors)

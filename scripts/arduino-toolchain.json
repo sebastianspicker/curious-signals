@@ -1,0 +1,11 @@
+{
+  "fqbn": "arduino:mbed_nano:nano33ble",
+  "core": "arduino:mbed_nano@4.5.0",
+  "libraries": [
+    "ArduinoBLE@1.5.0",
+    "Arduino_LSM9DS1@1.1.1",
+    "Arduino_HTS221@1.0.0",
+    "Arduino_LPS22HB@1.0.2",
+    "Arduino_APDS9960@1.0.4"
+  ]
+}

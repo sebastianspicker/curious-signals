@@ -1,52 +1,78 @@
-# Continuous Integration
+# Continuous integration
 
-`.github/workflows/ci.yml` runs on pushes, pull requests, and manual dispatch.
-It has read-only repository permissions and cancels superseded runs on the same
-ref.
+`.github/workflows/ci.yml` runs on every push, pull request, and manual dispatch.
+It asks for read-only repository permissions and cancels superseded runs on the
+same ref, so a branch that is pushed twice only tests once.
 
 ## XML and Python
 
-The first job installs Python 3.11, the package's `test` extra, `xmllint`, and
-`ripgrep`, then runs:
+The first job installs Python 3.11, Node.js 22, a C++17 compiler, the `test` and
+`browser` extras, Chromium, `xmllint`, and `ripgrep`, then runs:
 
 ```sh
 make lint
 make test
+make test-browser
 make validate
 make check-generated
 ```
 
-Validation covers the protocol catalog, firmware/source conformance, core XML,
-expanded core experiments, committed generated artifacts, and astronomy XML and
-locales. The parity check rebuilds in a temporary directory. CI never runs
-`make build` and never rewrites tracked artifacts.
+Validation covers the protocol catalog, firmware and source conformance, core
+XML, the expanded core experiments, the committed generated artifacts, and the
+astronomy XML and locales. The host tests run the actual sketch against
+controlled sensor, BLE, and clock doubles, while scalar scientific fixtures pin
+down conversions and nominal time axes. The browser checks walk every preview
+mode and cover playback, keyboard use, reduced motion, contrast, and the
+forbidden runtime APIs at desktop and mobile viewport sizes.
+
+`make check-generated` rebuilds in a temporary directory and compares bytes. CI
+never runs `make build`, so a job can fail on drift but can never rewrite a
+tracked artifact.
 
 ## Firmware
 
-The Arduino job downloads Arduino CLI 1.4.1 and verifies the pinned Linux
-archive SHA-256 before extraction. It restores the Arduino package cache and
-runs `make compile`, which installs the pinned Nano core and sensor libraries
-before compiling for `arduino:mbed_nano:nano33ble`.
+The Arduino job downloads Arduino CLI 1.4.1 and verifies the SHA-256 of the
+pinned Linux archive before unpacking it. It restores the Arduino package cache,
+runs `make provision` to install the Nano core and the sensor libraries pinned
+in `scripts/arduino-toolchain.json`, then runs `make compile` to verify the
+installed versions and build for `arduino:mbed_nano:nano33ble` without
+refreshing indexes or installing anything new.
 
-This job does not upload or run firmware on a physical board. Package-index,
-core, and library downloads remain separate network trust boundaries from the
-verified CLI archive.
+This job never uploads firmware or runs it on a physical board, and the
+package-index, core, and library downloads remain a separate trust boundary from
+the checksum-verified CLI archive.
 
 ## Security
 
 The security job installs `ripgrep` and ShellCheck, then runs `make security`.
-That gate checks tracked and untracked files for a narrow set of credential
-patterns, dependency and Arduino pin sanity, shell syntax, ShellCheck, and
-Python syntax.
+That gate searches tracked and untracked files for a narrow set of credential
+patterns in bounded batches and also checks dependency and Arduino pin sanity,
+shell syntax, ShellCheck, and Python syntax. A scanner that cannot run fails the
+gate; when it does find something, the report carries filenames and line numbers
+but never the matched credential contents.
 
-These checks are repository guardrails, not a substitute for supply-chain,
-firmware, hardware, electrical, licensing, or content-provenance review.
+These are repository guardrails. They do not replace supply-chain review,
+firmware review, hardware or electrical testing, or content-provenance review.
 
-## Local equivalent
+## Preview deployment
+
+`.github/workflows/pages.yml` publishes the static preview in `demo/` to GitHub
+Pages. It triggers on pushes to `main` that touch `demo/` or the workflow
+itself, and it can also be started by hand.
+
+This workflow needs a one-time repository setup: under **Settings → Pages**, set
+**Source** to **GitHub Actions**. Once that is done, the preview is served at
+`https://<owner>.github.io/curious-signals/`. The job uploads the `demo/`
+directory as a Pages artifact, so the published site contains only the preview
+and nothing else from the repository.
+
+## Running the same checks locally
 
 ```sh
 make ci
 ```
 
-The full local target does not rewrite the checkout, but it includes the same
-network-backed firmware compile and may update user-level Arduino CLI state.
+The full local target does not rewrite your checkout, but it does include the
+network-backed provisioning step and may update user-level Arduino CLI state. If
+you already have the pinned packages installed and just want a build, use
+`make compile` instead.

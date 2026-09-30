@@ -37,10 +37,14 @@ constexpr Mode kSupportedModes[] = {
 // Payload = 5× float32; BLE default MTU is often 20–23, so this fits one packet.
 constexpr int kPayloadSizeBytes = 20;
 constexpr unsigned long kSendPeriodMs = 50;
+constexpr int kConfigWireSizeBytes = 4;
+// ArduinoBLE truncates oversized writes to capacity. Keep one reject sentinel
+// byte so an oversized write cannot masquerade as a valid four-byte mode.
+constexpr int kConfigStorageSizeBytes = kConfigWireSizeBytes + 1;
 
 BLEService phyphoxService(kPhyphoxServiceUuid);
 BLECharacteristic dataCharacteristic(kDataCharUuid, BLENotify, kPayloadSizeBytes);
-BLECharacteristic configCharacteristic(kConfigCharUuid, BLERead | BLEWrite, 4);
+BLECharacteristic configCharacteristic(kConfigCharUuid, BLERead | BLEWrite, kConfigStorageSizeBytes);
 
 // Sensor init success; readChannels only uses a sensor when its flag is true.
 bool imuOk = false;
@@ -48,8 +52,8 @@ bool htsOk = false;
 bool baroOk = false;
 bool apdsOk = false;
 
-unsigned long startMs = 0;
-unsigned long lastSendMs = 0;
+uint32_t startMs = 0;
+uint32_t lastSendMs = 0;
 
 Mode mode = Mode::kAcceleration;
 
@@ -100,7 +104,7 @@ void setModeFromConfig(float configValue) {
 }
 
 void writeActiveModeToConfigCharacteristic() {
-  uint8_t configValue[4] = {0};
+  uint8_t configValue[kConfigWireSizeBytes] = {0};
   writeFloat32LE(configValue, sizeof(configValue), 0, (float)(int)mode);
   configCharacteristic.writeValue(configValue, sizeof(configValue));
 }
@@ -205,7 +209,7 @@ void readChannels(float& ch2, float& ch3, float& ch4, float& ch5) {
 
 void sendSample() {
   // Unsigned wrap-around is well-defined; t is correct for ~49 days, then wraps.
-  const unsigned long elapsedMs = (unsigned long)(millis() - startMs);
+  const uint32_t elapsedMs = static_cast<uint32_t>(millis() - startMs);
   float t = (float)elapsedMs / 1000.0f;
   float ch2 = 0, ch3 = 0, ch4 = 0, ch5 = 0;
   readChannels(ch2, ch3, ch4, ch5);
@@ -252,10 +256,12 @@ void pollConfigCharacteristic() {
   if (!configCharacteristic.written()) {
     return;
   }
-  uint8_t buf[4] = {0};
-  const int bytesRead = configCharacteristic.readValue(buf, sizeof(buf));
-  if (bytesRead == static_cast<int>(sizeof(buf))) {
-    setModeFromConfig(readFloat32LE(buf, sizeof(buf)));
+  uint8_t buf[kConfigWireSizeBytes] = {0};
+  if (configCharacteristic.valueLength() == static_cast<int>(sizeof(buf))) {
+    const int bytesRead = configCharacteristic.readValue(buf, sizeof(buf));
+    if (bytesRead == static_cast<int>(sizeof(buf))) {
+      setModeFromConfig(readFloat32LE(buf, sizeof(buf)));
+    }
   }
   writeActiveModeToConfigCharacteristic();
 }
@@ -273,10 +279,14 @@ void loop() {
     BLE.poll();
     pollConfigCharacteristic();
 
-    const unsigned long now = millis();
-    if (now - lastSendMs >= kSendPeriodMs) {
+    const uint32_t now = static_cast<uint32_t>(millis());
+    if (static_cast<uint32_t>(now - lastSendMs) >= kSendPeriodMs) {
       lastSendMs = now;
-      sendSample();
+      // Keep polling/configuration and the cadence even without a subscriber.
+      // ArduinoBLE would discard the notification; avoid the sensor reads too.
+      if (dataCharacteristic.subscribed()) {
+        sendSample();
+      }
     }
   }
 }

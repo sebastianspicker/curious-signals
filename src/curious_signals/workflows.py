@@ -17,7 +17,7 @@ from .layout import astronomy_dir, core_include_dir, core_source_dir, experiment
 from .postprocess import postprocess
 from .repository_contracts import validate_repository_contract
 from .xinclude import validate_xinclude_paths
-from .xml_contracts import validate_phyphox
+from .xml_contracts import contract_expectations, validate_phyphox
 
 
 class ToolError(RuntimeError):
@@ -72,30 +72,38 @@ def _validate_source_inventory(sources: list[Path], contract: dict[str, object])
     return []
 
 
-def _render_core_sources() -> list[tuple[str, str]]:
-    """Validate every core input and render all outputs before any destination write."""
+def _xml_safety_errors(paths: Iterable[Path], include_root: Path) -> list[str]:
+    return [
+        error
+        for path in paths
+        for error in validate_xinclude_paths(path, allowed_root=include_root)
+    ]
 
-    try:
-        contract = load_contract()
-    except ValueError as error:
-        raise ToolError(str(error)) from error
+
+def _core_preflight(
+    contract: dict[str, object],
+    sources: list[Path],
+    safety_paths: Iterable[Path],
+    include_root: Path,
+) -> list[str]:
+    """Run the shared fail-closed checks required before xmllint is invoked."""
+
     errors = validate_contract(contract)
-    sources = _core_sources()
-    errors.extend(_validate_source_inventory(sources, contract))
+    if not errors:
+        errors.extend(_validate_source_inventory(sources, contract))
     if not errors:
         errors.extend(validate_repository_contract(contract))
-    include_errors = [
-        error for path in [*sources, *_core_includes()] for error in validate_xinclude_paths(path)
-    ]
-    errors.extend(include_errors)
-    if errors:
-        raise ToolError("\n".join(errors))
-    xmllint = _require_xmllint()
+    errors.extend(_xml_safety_errors(safety_paths, include_root))
+    return errors
+
+
+def _render_sources(
+    sources: list[Path], contract: dict[str, object], xmllint: str
+) -> list[tuple[str, str]]:
     rendered = [
         (source.name.removesuffix(".xml"), _expanded_xml(source, xmllint)) for source in sources
     ]
-    bluetooth = contract["bluetooth"]
-    frame = contract["frame"]
+    errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="curious-signals-prewrite-") as temporary:
         temporary_dir = Path(temporary)
         for name, content in rendered:
@@ -104,17 +112,29 @@ def _render_core_sources() -> list[tuple[str, str]]:
             errors.extend(
                 error.message
                 for error in validate_phyphox(
-                    candidate,
-                    bluetooth["data_char_uuid"],
-                    bluetooth["config_char_uuid"],
-                    {field["offset"] for field in frame["data"]["fields"]},
-                    frame["data"]["encoding"],
-                    frame["config"]["encoding"],
+                    candidate, **contract_expectations(contract, candidate)
                 )
             )
     if errors:
         raise ToolError("\n".join(errors))
     return rendered
+
+
+def _render_core_sources() -> list[tuple[str, str]]:
+    """Validate every core input and render all outputs before any destination write."""
+
+    try:
+        contract = load_contract()
+    except ValueError as error:
+        raise ToolError(str(error)) from error
+    sources = _core_sources()
+    includes = _core_includes()
+    include_root = includes[0].parent if includes else core_include_dir()
+    errors = _core_preflight(contract, sources, [*sources, *includes], include_root)
+    if errors:
+        raise ToolError("\n".join(errors))
+    xmllint = _require_xmllint()
+    return _render_sources(sources, contract, xmllint)
 
 
 def build(output_dir: Path | None = None) -> list[Path]:
@@ -194,55 +214,42 @@ def validate() -> list[str]:
         contract = load_contract()
     except ValueError as error:
         return [str(error)]
-    errors.extend(validate_contract(contract))
+    sources = _core_sources()
+    includes = _core_includes()
+    generated = _generated_files()
+    astronomy = _astronomy_files()
+    errors.extend(
+        _core_preflight(
+            contract,
+            sources,
+            [*sources, *includes, *generated, *astronomy],
+            includes[0].parent if includes else core_include_dir(),
+        )
+    )
+    if errors:
+        return errors
+    if not generated:
+        errors.append(f"No generated experiments found at {experiments_dir()}/*.phyphox.")
+    expected_names = {mode["experiment"] for mode in active_modes(contract)}
+    if {path.name for path in generated} != expected_names:
+        errors.append(f"{experiments_dir()}: generated filenames do not match protocol contract")
+    for path in generated:
+        errors.extend(
+            error.message
+            for error in validate_phyphox(path, **contract_expectations(contract, path))
+        )
+    errors.extend(validate_astronomy(astronomy))
     if errors:
         return errors
     try:
         xmllint = _require_xmllint()
     except ToolError as error:
         return [str(error)]
-    sources = _core_sources()
-    includes = _core_includes()
-    generated = _generated_files()
-    astronomy = _astronomy_files()
-    errors.extend(_validate_source_inventory(sources, contract))
-    if not generated:
-        errors.append(f"No generated experiments found at {experiments_dir()}/*.phyphox.")
-    expected_names = {mode["experiment"] for mode in active_modes(contract)}
-    if {path.name for path in generated} != expected_names:
-        errors.append(f"{experiments_dir()}: generated filenames do not match protocol contract")
     errors.extend(_syntax_errors([*includes, *sources, *generated, *astronomy], xmllint))
-    for source in sources:
-        errors.extend(validate_xinclude_paths(source))
-        try:
-            _run_xmllint([xmllint, "--xinclude", "--noout", str(source)])
-        except ToolError as error:
-            errors.append(str(error))
-    errors.extend(validate_repository_contract(contract))
-    bluetooth = contract["bluetooth"]
-    for path in generated:
-        errors.extend(
-            error.message
-            for error in validate_phyphox(
-                path, bluetooth["data_char_uuid"], bluetooth["config_char_uuid"]
-            )
-        )
-    with tempfile.TemporaryDirectory(prefix="curious-signals-validate-") as temporary:
-        temporary_dir = Path(temporary)
-        for source in sources:
-            expanded = temporary_dir / source.name.removesuffix(".xml")
-            try:
-                expanded.write_text(_expanded_xml(source, xmllint), encoding="utf-8")
-            except ToolError as error:
-                errors.append(str(error))
-                continue
-            errors.extend(
-                error.message
-                for error in validate_phyphox(
-                    expanded, bluetooth["data_char_uuid"], bluetooth["config_char_uuid"]
-                )
-            )
-    errors.extend(validate_astronomy(astronomy))
+    try:
+        _render_sources(sources, contract, xmllint)
+    except ToolError as error:
+        errors.append(str(error))
     return errors
 
 

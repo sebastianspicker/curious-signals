@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from curious_signals import contract as contract_module
 from curious_signals import workflows
 from curious_signals.postprocess import postprocess
 from tests.conftest import CORE_ARTIFACT_DIR, CORE_SOURCE_DIR, REPO_ROOT
@@ -69,3 +70,60 @@ def test_build_rejects_bad_source_inventory_or_content_before_writing(
         workflows.build(destination)
 
     assert not destination.exists()
+
+
+def test_build_and_validate_reject_unsafe_xml_before_invoking_xmllint(
+    tmp_path, monkeypatch
+) -> None:
+    source_dir = tmp_path / "sources"
+    shutil.copytree(CORE_SOURCE_DIR, source_dir)
+    sources = sorted(source_dir.glob("*.phyphox.xml"))
+    sources[0].write_text(
+        sources[0]
+        .read_text(encoding="utf-8")
+        .replace("<phyphox", '<phyphox xml:base="https://example.invalid/"', 1),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(workflows, "_core_sources", lambda: sources)
+    monkeypatch.setattr(
+        workflows, "_core_includes", lambda: sorted((source_dir / "includes").glob("*.xml"))
+    )
+    monkeypatch.setattr(workflows, "core_include_dir", lambda: source_dir / "includes")
+
+    def unexpected_xmllint(arguments: list[str]) -> subprocess.CompletedProcess[str]:
+        raise AssertionError(f"xmllint invoked before preflight completed: {arguments}")
+
+    monkeypatch.setattr(workflows, "_run_xmllint", unexpected_xmllint)
+
+    with pytest.raises(workflows.ToolError, match="xml:base"):
+        workflows.build(tmp_path / "output")
+    assert "xml:base" in "\n".join(workflows.validate())
+
+
+def test_validate_expands_each_source_once_and_loads_contract_once(monkeypatch) -> None:
+    expansion_calls: list[list[str]] = []
+    load_calls = 0
+    original_load = contract_module.load_contract
+
+    def counted_load():
+        nonlocal load_calls
+        load_calls += 1
+        return original_load()
+
+    def fake_xmllint(arguments: list[str]) -> subprocess.CompletedProcess[str]:
+        stdout = ""
+        if "--xinclude" in arguments:
+            expansion_calls.append(arguments)
+            source = Path(arguments[-1])
+            artifact = CORE_ARTIFACT_DIR / source.name.removesuffix(".xml")
+            stdout = artifact.read_text(encoding="utf-8")
+        return subprocess.CompletedProcess(arguments, 0, stdout=stdout, stderr="")
+
+    monkeypatch.setattr(workflows, "load_contract", counted_load)
+    monkeypatch.setattr(contract_module, "load_contract", counted_load)
+    monkeypatch.setattr(workflows, "_require_xmllint", lambda: "xmllint")
+    monkeypatch.setattr(workflows, "_run_xmllint", fake_xmllint)
+
+    assert workflows.validate() == []
+    assert len(expansion_calls) == len(list(CORE_SOURCE_DIR.glob("*.phyphox.xml"))) == 7
+    assert load_calls == 1

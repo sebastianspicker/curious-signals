@@ -6,7 +6,8 @@
   --text: #eef7f8;
   --muted: #9eb0b5;
   --border: #385057;
-  --teal: #009297;
+  --teal: #00777b;
+  --teal-hover: #008084;
   --teal-bright: #13b7bc;
   --green: #73c72b;
   --blue: #4e9fff;
@@ -123,7 +124,7 @@ footer nav a:focus-visible {
   font: 650 .9rem/1 inherit;
   cursor: pointer;
 }
-.simulation-controls button:hover, .simulation-controls button:focus-visible { background: var(--teal-bright); border-color: var(--teal-bright); outline: 2px solid white; outline-offset: 2px; }
+.simulation-controls button:hover, .simulation-controls button:focus-visible { background: var(--teal-hover); border-color: var(--teal-hover); outline: 2px solid white; outline-offset: 2px; }
 .simulation-controls button.secondary { background: transparent; color: #e2ecee; }
 .simulation-controls svg { width: 18px; height: 18px; fill: currentColor; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .simulation-controls p { flex-basis: 100%; margin: 0; color: var(--muted); font-size: .8rem; }

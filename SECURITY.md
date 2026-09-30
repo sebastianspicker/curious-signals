@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-No public release has been published.
+Nothing has been released publicly yet, so there is no supported release line.
 
 | Ref | Security fixes |
 | --- | --- |
@@ -11,42 +11,48 @@ No public release has been published.
 
 ## Reporting a vulnerability
 
-Do not open a public issue containing exploit details, credentials, private
-device identifiers, or other sensitive material.
+Please do not open a public issue with exploit details, credentials, private
+device identifiers, or anything else sensitive.
 
-GitHub private vulnerability reporting is enabled for this repository. Use the
-repository's Security tab and select **Report a vulnerability**. Do not open a
-public issue as a substitute for the private report.
+Use GitHub's private vulnerability reporting: open the repository's **Security**
+tab and choose **Report a vulnerability**. No alternative private reporting
+address is committed to this repository, and a public issue is not a substitute
+for a private report. If that button is unavailable, the maintainer needs to
+enable private reporting before a report can be filed.
 
-Include the affected component, reproduction conditions, impact, and the
-smallest safe proof needed to understand the issue.
+A useful report covers the affected component, the conditions that reproduce the
+issue, the impact you expect, and the smallest safe proof that makes it
+understandable.
 
-Maintainers should keep private-report notifications enabled and review new
-reports through the repository's private vulnerability reporting queue.
+Maintainers: keep private reporting enabled, keep its notifications on, and work
+new reports through that queue rather than in public issues.
 
-## Security boundary
+## What this repository is
 
-This repository builds local XML files and Arduino firmware. It does not deploy
-a service and does not require repository secrets at runtime.
+Curious Signals builds local XML files and Arduino firmware. It does not deploy
+a service and needs no secrets at runtime, so there is no server, database, or
+credential store to attack.
 
-Core source experiments may use XInclude only for repository-owned fragments
-below `src/phyphox/includes/`. The validator in `src/curious_signals/` rejects
-URLs, absolute paths, parent traversal, queries, fragments, missing targets,
-and resolved paths outside that directory before XInclude expansion.
+The one input-parsing boundary worth knowing about is XInclude. Core experiment
+sources may include repository-owned fragments below `src/phyphox/includes/`,
+and nothing else. Before `xmllint` runs, the validator in
+`src/curious_signals/` rejects URLs, absolute paths, parent traversal, queries,
+fragments, missing targets, and any resolved path that escapes that directory.
 
-Run the local security checks with:
+Run the local checks with:
 
 ```sh
 make security
 ```
 
-This target runs the repository secret-pattern scan, dependency and pin sanity
-checks, shell syntax checks, ShellCheck when installed, and non-writing Python
-syntax compilation. These checks do not replace dependency advisory review,
-firmware review, hardware testing, or electrical safety review.
+That target scans for credential patterns, sanity-checks dependencies and
+Arduino pins, checks shell syntax (including ShellCheck when installed), and
+compiles Python without writing bytecode. It is a guardrail, not a replacement
+for dependency advisory review, firmware review, hardware testing, or electrical
+safety review.
 
-## Hardware reports
+## Reports about hardware
 
-For firmware or BLE reports, include the exact board revision, Arduino core,
-library versions, phyphox version, and whether an external circuit was
+For firmware or BLE issues, include the exact board revision, Arduino core
+version, library versions, phyphox version, and whether an external circuit was
 connected. The current firmware supports only the original Nano 33 BLE Sense.

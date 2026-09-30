@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from defusedxml import ElementTree as ET
 from defusedxml.common import DefusedXmlException
@@ -13,6 +15,31 @@ from defusedxml.common import DefusedXmlException
 @dataclass(frozen=True)
 class ValidationError:
     message: str
+
+
+def contract_expectations(
+    contract: dict[str, Any], path: str | Path | None = None
+) -> dict[str, object]:
+    """Return explicit XML validator expectations from one loaded contract."""
+
+    bluetooth = contract["bluetooth"]
+    frame = contract["frame"]
+    fields = frame["data"]["fields"]
+    active = contract["modes"]["active"]
+    filename = Path(path).name.removesuffix(".xml") if path is not None else None
+    mode_by_file = {mode["experiment"]: mode["id"] for mode in active}
+    return {
+        "expected_data_uuid": bluetooth["data_char_uuid"],
+        "expected_config_uuid": bluetooth["config_char_uuid"],
+        "expected_offsets": {field["offset"] for field in fields},
+        "expected_data_conversion": frame["data"]["encoding"],
+        "expected_config_conversion": frame["config"]["encoding"],
+        "expected_mapping": {
+            field["offset"]: f"CH{index}" for index, field in enumerate(fields, start=1)
+        },
+        "expected_mode": mode_by_file.get(filename),
+        "valid_modes": {mode["id"] for mode in active},
+    }
 
 
 def _local_name(tag: str) -> str:
@@ -97,6 +124,9 @@ def _bluetooth_errors(
     expected_offsets: set[int] | None,
     expected_data_conversion: str | None,
     expected_config_conversion: str | None,
+    expected_mapping: dict[int, str] | None,
+    expected_mode: int | None,
+    valid_modes: set[int] | None,
 ) -> list[ValidationError]:
     input_element = _child(root, "input")
     if input_element is None:
@@ -125,6 +155,7 @@ def _bluetooth_errors(
                 expected_data_uuid,
                 expected_offsets,
                 expected_data_conversion,
+                expected_mapping,
             )
         )
     errors.extend(
@@ -134,6 +165,8 @@ def _bluetooth_errors(
             bluetooth_id,
             expected_config_uuid,
             expected_config_conversion,
+            expected_mode,
+            valid_modes,
         )
     )
     return errors
@@ -145,22 +178,51 @@ def _bluetooth_input_errors(
     expected_data_uuid: str | None,
     expected_offsets: set[int] | None,
     expected_conversion: str | None,
+    expected_mapping: dict[int, str] | None,
 ) -> list[ValidationError]:
-    data_chars: set[str] = set()
-    offsets: list[int] = []
-    has_time = False
     errors: list[ValidationError] = []
-    for output in outputs:
-        if output.attrib.get("extra") == "time":
-            has_time = True
-            continue
-        if char := output.attrib.get("char"):
-            data_chars.add(char)
+    time_outputs = [output for output in outputs if output.attrib.get("extra") == "time"]
+    if len(time_outputs) != 1:
+        errors.append(
+            ValidationError(
+                f'{path}: expected exactly one bluetooth <output extra="time"> mapping to CH0'
+            )
+        )
+    else:
+        time_output = time_outputs[0]
+        if _text(time_output) != "CH0":
+            errors.append(ValidationError(f"{path}: app-managed time output must map to CH0"))
+        if expected_data_uuid and time_output.attrib.get("char") != expected_data_uuid:
+            errors.append(
+                ValidationError(
+                    f"{path}: bluetooth time output char UUID must be {expected_data_uuid}"
+                )
+            )
+        if "offset" in time_output.attrib:
+            errors.append(
+                ValidationError(f"{path}: app-managed time output must not have an offset")
+            )
+
+    data_outputs = [output for output in outputs if output.attrib.get("extra") != "time"]
+    offsets: list[int] = []
+    channels: list[str] = []
+    actual_mapping: dict[int, str] = {}
+    for output in data_outputs:
+        channel = _text(output)
+        if channel:
+            channels.append(channel)
+        if expected_data_uuid and output.attrib.get("char") != expected_data_uuid:
+            errors.append(
+                ValidationError(
+                    f"{path}: bluetooth input char UUID for {channel or '<unnamed>'} "
+                    f"must be {expected_data_uuid}"
+                )
+            )
         if expected_conversion and output.attrib.get("conversion") != expected_conversion:
             errors.append(
                 ValidationError(
-                    f"{path}: expected data conversion {expected_conversion} "
-                    f"(got {output.attrib.get('conversion')!r})"
+                    f"{path}: expected data conversion {expected_conversion} for "
+                    f"{channel or '<unnamed>'} (got {output.attrib.get('conversion')!r})"
                 )
             )
         offset = output.attrib.get("offset")
@@ -173,27 +235,32 @@ def _bluetooth_input_errors(
             )
             continue
         try:
-            offsets.append(int(offset))
+            parsed_offset = int(offset)
+            offsets.append(parsed_offset)
+            if channel and parsed_offset not in actual_mapping:
+                actual_mapping[parsed_offset] = channel
         except ValueError:
             errors.append(ValidationError(f"{path}: invalid bluetooth output offset: {offset!r}"))
-    if not has_time:
-        errors.append(ValidationError(f'{path}: missing bluetooth <output extra="time"> mapping'))
-    if len(data_chars) != 1:
-        errors.append(
-            ValidationError(f"{path}: expected exactly one data characteristic UUID in inputs")
-        )
-    if expected_data_uuid and data_chars and data_chars != {expected_data_uuid}:
-        errors.append(
-            ValidationError(f"{path}: bluetooth input char UUID must be {expected_data_uuid}")
-        )
     duplicates = sorted({offset for offset in offsets if offsets.count(offset) > 1})
     if duplicates:
         errors.append(ValidationError(f"{path}: duplicate bluetooth output offsets: {duplicates}"))
+    duplicate_channels = sorted({channel for channel in channels if channels.count(channel) > 1})
+    if duplicate_channels:
+        errors.append(
+            ValidationError(f"{path}: duplicate bluetooth output channels: {duplicate_channels}")
+        )
     if expected_offsets is not None and offsets and set(offsets) != expected_offsets:
         errors.append(
             ValidationError(
                 f"{path}: expected data offsets {sorted(expected_offsets)} "
                 f"(got {sorted(set(offsets))})"
+            )
+        )
+    if expected_mapping is not None and actual_mapping != expected_mapping:
+        errors.append(
+            ValidationError(
+                f"{path}: bluetooth offset-to-channel mapping must be "
+                f"{sorted(expected_mapping.items())} (got {sorted(actual_mapping.items())})"
             )
         )
     return errors
@@ -205,6 +272,8 @@ def _bluetooth_output_errors(
     bluetooth_id: str | None,
     expected_config_uuid: str | None,
     expected_conversion: str | None,
+    expected_mode: int | None,
+    valid_modes: set[int] | None,
 ) -> list[ValidationError]:
     output = _child(root, "output")
     if output is None:
@@ -240,14 +309,27 @@ def _bluetooth_output_errors(
         errors.append(ValidationError(f"{path}: <config> missing required attribute char"))
     elif expected_config_uuid and char != expected_config_uuid:
         errors.append(ValidationError(f"{path}: config char UUID must be {expected_config_uuid}"))
-    value = _text(config)
-    if value is None:
+    raw_value = _text(config)
+    if raw_value is None:
         errors.append(ValidationError(f"{path}: <config> must have a numeric value"))
     else:
         try:
-            float(value)
+            value = float(raw_value)
         except ValueError:
-            errors.append(ValidationError(f"{path}: <config> value is not numeric: {value!r}"))
+            errors.append(ValidationError(f"{path}: <config> value is not numeric: {raw_value!r}"))
+        else:
+            if not math.isfinite(value):
+                errors.append(ValidationError(f"{path}: <config> value must be finite"))
+            elif valid_modes is not None and (
+                not value.is_integer() or int(value) not in valid_modes
+            ):
+                errors.append(ValidationError(f"{path}: <config> value must be an active mode ID"))
+            elif expected_mode is not None and int(value) != expected_mode:
+                errors.append(
+                    ValidationError(
+                        f"{path}: <config> value must match filename mode {expected_mode}"
+                    )
+                )
     return errors
 
 
@@ -258,6 +340,9 @@ def validate_phyphox(
     expected_offsets: set[int] | None = None,
     expected_data_conversion: str | None = None,
     expected_config_conversion: str | None = None,
+    expected_mapping: dict[int, str] | None = None,
+    expected_mode: int | None = None,
+    valid_modes: set[int] | None = None,
 ) -> list[ValidationError]:
     """Validate the core Arduino phyphox XML contract using defusedxml."""
 
@@ -274,20 +359,29 @@ def validate_phyphox(
         try:
             from .contract import load_contract
 
-            contract = load_contract()
-            bluetooth = contract["bluetooth"]
-            frame = contract["frame"]
-            expected_data_uuid = expected_data_uuid or bluetooth["data_char_uuid"]
-            expected_config_uuid = expected_config_uuid or bluetooth["config_char_uuid"]
-            expected_offsets = expected_offsets or {
-                field["offset"] for field in frame["data"]["fields"]
-            }
-            expected_data_conversion = expected_data_conversion or frame["data"]["encoding"]
-            expected_config_conversion = expected_config_conversion or frame["config"]["encoding"]
+            expectations = contract_expectations(load_contract(), path)
+            expected_data_uuid = expected_data_uuid or expectations["expected_data_uuid"]
+            expected_config_uuid = expected_config_uuid or expectations["expected_config_uuid"]
+            expected_offsets = expected_offsets or expectations["expected_offsets"]
+            expected_data_conversion = (
+                expected_data_conversion or expectations["expected_data_conversion"]
+            )
+            expected_config_conversion = (
+                expected_config_conversion or expectations["expected_config_conversion"]
+            )
+            expected_mapping = expected_mapping or expectations["expected_mapping"]
+            expected_mode = (
+                expected_mode if expected_mode is not None else expectations["expected_mode"]
+            )
+            valid_modes = valid_modes or expectations["valid_modes"]
         except (KeyError, TypeError, ValueError):
             # Preserve the useful structural checks when an isolated caller has
             # no checkout contract available.
             pass
+    if expected_mapping is None and expected_offsets is not None:
+        expected_mapping = {
+            offset: f"CH{index}" for index, offset in enumerate(sorted(expected_offsets), start=1)
+        }
     source = str(path)
     try:
         root = ET.parse(path).getroot()
@@ -316,6 +410,9 @@ def validate_phyphox(
             expected_offsets,
             expected_data_conversion,
             expected_config_conversion,
+            expected_mapping,
+            expected_mode,
+            valid_modes,
         )
     )
     return errors

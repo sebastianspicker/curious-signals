@@ -1,19 +1,19 @@
-# phyphox BLE Sense Firmware
+# phyphox BLE Sense firmware
 
-The sketch in this directory provides the BLE peripheral used by the seven
-generated core experiments in `experiments/`.
+`phyphox_ble_sense.ino` turns an original Arduino Nano 33 BLE Sense into the
+Bluetooth peripheral that the seven generated experiments in `experiments/`
+expect. Flash it once, and the board advertises as `phyphox-sense`.
 
-## Hardware target
+## Hardware
 
-The firmware supports the original Arduino Nano 33 BLE Sense with these
-sensors:
+The sketch targets the original Nano 33 BLE Sense and its onboard sensors:
 
-- LSM9DS1 inertial and magnetic sensor
-- HTS221 temperature and humidity sensor
-- LPS22HB pressure sensor
-- APDS9960 light and color sensor
+- LSM9DS1 — acceleration, angular velocity, and magnetic field
+- HTS221 — temperature and humidity
+- LPS22HB — pressure
+- APDS9960 — light and color
 
-Nano 33 BLE Sense Rev2 uses different sensor libraries and is not supported.
+The Rev2 board uses different sensor libraries and is not supported.
 
 ## BLE service
 
@@ -24,17 +24,16 @@ Nano 33 BLE Sense Rev2 uses different sensor libraries and is not supported.
 | Data characteristic | `cddf1002-30f7-4671-8b43-5e40ba53514a` |
 | Config characteristic | `cddf1003-30f7-4671-8b43-5e40ba53514a` |
 
-The data characteristic is notify-only with a 20-byte value. The config
-characteristic is readable and writable with a four-byte value.
+The data characteristic is notify-only and its value is 20 bytes. The config
+characteristic is readable and writable and its value is four bytes.
 
-The supported topology is one powered board within discovery range at a time.
-Multi-board discovery is not supported: all boards use the same name and UUIDs,
-and the protocol does not expose a unique device identifier for selecting among
-nearby boards.
+One powered board within discovery range at a time is the supported setup.
+Multi-board discovery does not work: every board uses the same name and UUIDs,
+and the protocol exposes no unique identifier for choosing between them.
 
 ## Data packet
 
-Each notification contains five little-endian `float32` values:
+Each notification carries five little-endian `float32` values:
 
 | Offset | phyphox channel | Value |
 | --- | --- | --- |
@@ -44,7 +43,7 @@ Each notification contains five little-endian `float32` values:
 | 12 | CH4 | third mode value |
 | 16 | CH5 | fourth mode value |
 
-CH0 is phyphox-managed packet time configured by the experiment's
+CH0 is the packet time that phyphox manages through the experiment's
 `extra="time"` mapping. It is not part of the notification.
 
 ## Modes
@@ -63,38 +62,40 @@ values from 0.5 inclusive to 9.5 exclusive are rounded to the nearest integer.
 | 7, 8 | reserved and ignored |
 | 9 | raw A0, A1, A2 ADC readings, followed by `NaN` |
 
-Invalid, non-finite, reserved, or incorrectly sized writes leave the active
-mode unchanged. After a write attempt, the characteristic contains the
-normalized active integer mode. The initial mode is 1.
+Writes that are invalid, non-finite, reserved, or the wrong size leave the
+active mode alone. After any write attempt the characteristic holds the
+normalized active integer mode. The board starts in mode 1.
 
 ## Runtime behavior
 
-The loop polls BLE continuously. While a central is connected, it sends a
-notification no more frequently than every 50 ms and reads only the active
-mode's inputs.
+The loop polls BLE continuously. While a central is connected it notifies no
+more often than every 50 ms, and it reads only the inputs for the active mode.
 
-Sensor initialization results are stored during setup. If a required sensor did
-not initialize or has no fresh sample, its output channels remain `NaN`.
-Analog mode reads A0, A1, and A2 for every sample.
+Sensor initialization results are captured during `setup()`. If a required
+sensor did not initialize, or has no fresh sample, its output channels stay
+`NaN`. Analog mode reads A0, A1, and A2 for every sample.
 
-Device time is derived from unsigned `millis()` subtraction. The transmitted
-float time restarts after the approximately 49-day `millis()` wrap.
+Device time comes from unsigned `millis()` subtraction, so the transmitted time
+restarts after the roughly 49-day `millis()` wrap.
 
-If `BLE.begin()` fails, the sketch enters an infinite delay loop without a
-serial message or LED code.
+If `BLE.begin()` fails, the sketch drops into an infinite delay loop with no
+serial message and no LED code to tell you why.
 
 ## Compile and upload
 
 From the repository root:
 
 ```sh
+make provision
 make compile
 ```
 
-The compile script installs the pinned board core and libraries, then compiles
-the sketch. It does not upload or test a connected board.
+Provisioning installs the core and libraries pinned in
+`scripts/arduino-toolchain.json`. The compile script verifies the installed
+versions without installing anything, then builds the sketch. It does not
+upload it or test a connected board.
 
-To upload:
+To flash a board:
 
 ```sh
 arduino-cli board list
@@ -103,5 +104,4 @@ arduino-cli upload -p <serial-port> \
   arduino/phyphox_ble_sense
 ```
 
-The upload path requires physical hardware and is not covered by automated
-tests.
+Uploading needs physical hardware and is not covered by automated tests.

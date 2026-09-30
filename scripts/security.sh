@@ -36,12 +36,31 @@ files="$(mktemp)"
 trap 'rm -f "$matches" "$files"' EXIT
 
 git ls-files -z --cached --others --exclude-standard -- . >"$files"
+scan_arguments=(--null --line-number --with-filename)
 for pattern in "${secret_patterns[@]}"; do
-  while IFS= read -r -d '' file; do
-    [[ -f "$file" ]] || continue
-    rg --null --line-number --with-filename --regexp "$pattern" -- "$file" >>"$matches" || true
-  done <"$files"
+  scan_arguments+=(--regexp "$pattern")
 done
+scan_batch() {
+  local status=0
+  rg "${scan_arguments[@]}" -- "$@" >>"$matches" || status=$?
+  if ((status > 1)); then
+    echo "Secret scanner failed (exit ${status}); scan is incomplete." >&2
+    exit 2
+  fi
+}
+
+batch=()
+while IFS= read -r -d '' file; do
+  [[ -f "$file" ]] || continue
+  batch+=("$file")
+  if ((${#batch[@]} >= 128)); then
+    scan_batch "${batch[@]}"
+    batch=()
+  fi
+done <"$files"
+if ((${#batch[@]})); then
+  scan_batch "${batch[@]}"
+fi
 
 if [[ -s "$matches" ]]; then
   while IFS= read -r -d '' file && IFS= read -r line; do
@@ -56,7 +75,7 @@ python3 - <<'PY'
 from __future__ import annotations
 
 import sys
-import re
+import json
 import tomllib
 from pathlib import Path
 
@@ -76,22 +95,13 @@ for package in ("pytest", "ruff"):
     if not any(isinstance(item, str) and item.startswith(package) and any(op in item for op in ("<", ">", "=", "~", "!")) for item in extras):
         errors.append(f"pyproject.toml: test extra must contain a version-constrained {package} dependency")
 
-compile_script = Path("scripts/compile-arduino.sh").read_text(encoding="utf-8")
-core_pins = re.findall(r"^arduino-cli core install (\S+)$", compile_script, flags=re.MULTILINE)
-if not core_pins or any("@" not in item for item in core_pins):
-    errors.append("scripts/compile-arduino.sh: every Arduino core install must be version-pinned")
-
-library_match = re.search(
-    r"^arduino-cli lib install \\\n+(.*?)(?<!\\\\)$",
-    compile_script,
-    flags=re.MULTILINE | re.DOTALL,
-)
-if library_match is None:
-    errors.append("scripts/compile-arduino.sh: missing Arduino library install block")
-else:
-    libraries = [line.strip().removesuffix("\\\\").strip() for line in library_match.group(1).splitlines()]
-    if not libraries or any("@" not in library for library in libraries):
-        errors.append("scripts/compile-arduino.sh: every Arduino library install must be version-pinned")
+toolchain = json.loads(Path("scripts/arduino-toolchain.json").read_text(encoding="utf-8"))
+pins = [toolchain["core"], *toolchain["libraries"]]
+if len(pins) != 6 or any(
+    not isinstance(pin, str) or len(pin.split("@")) != 2 or not all(pin.split("@"))
+    for pin in pins
+):
+    errors.append("scripts/arduino-toolchain.json: core and five libraries must be version-pinned")
 
 if errors:
     print("\n".join(errors), file=sys.stderr)
@@ -109,7 +119,7 @@ if command -v shellcheck >/dev/null 2>&1; then
 fi
 
 echo "== Python compile =="
-find src tests -type f -name '*.py' -print0 | xargs -0 python3 -c '
+find src tests scripts -type f -name '*.py' -print0 | xargs -0 python3 -c '
 from pathlib import Path
 import sys
 for filename in sys.argv[1:]:

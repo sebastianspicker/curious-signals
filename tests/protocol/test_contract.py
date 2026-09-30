@@ -51,7 +51,7 @@ def test_contract_conforms_to_firmware_sources_artifacts_and_preview() -> None:
     firmware = (REPO_ROOT / "arduino" / "phyphox_ble_sense" / "phyphox_ble_sense.ino").read_text(
         encoding="utf-8"
     )
-    preview = (REPO_ROOT / "demo" / "demo.js").read_text(encoding="utf-8")
+    preview = (REPO_ROOT / "demo" / "fixtures.js").read_text(encoding="utf-8")
     artifacts = {path.name for path in CORE_ARTIFACT_DIR.glob("*.phyphox")}
     sources = {path.name.removesuffix(".xml") for path in CORE_SOURCE_DIR.glob("*.phyphox.xml")}
 
@@ -104,6 +104,48 @@ def test_malformed_contract_types_return_diagnostics_without_crashing(
 
 
 @pytest.mark.parametrize(
+    ("path", "invalid", "expected"),
+    [
+        (("schema_version",), True, "schema_version"),
+        (("frame", "data", "encoding"), "float32BigEndian", "encoding"),
+        (("frame", "data", "access"), ["read"], "access"),
+        (("frame", "config", "access"), ["write"], "access"),
+        (("frame", "config", "selection", "rounding"), "floor", "rounding"),
+        (
+            ("frame", "config", "selection", "invalid_behavior"),
+            "select_default",
+            "invalid_behavior",
+        ),
+        (("modes", "active", 0, "id"), 0, "positive"),
+        (("modes", "active", 0, "id"), 10, "selection range"),
+        (("modes", "active", 0, "name"), "Bad Name", "identifier"),
+        (("modes", "active", 0, "experiment"), "../bad.phyphox", "filename"),
+    ],
+)
+def test_contract_rejects_unsupported_schema_values(
+    path: tuple[object, ...], invalid: object, expected: str
+) -> None:
+    contract = deepcopy(load_contract())
+    target: object = contract
+    for key in path[:-1]:
+        target = target[key]  # type: ignore[index]
+    target[path[-1]] = invalid  # type: ignore[index]
+
+    assert expected in "\n".join(validate_contract(contract))
+
+
+@pytest.mark.parametrize("offset", [2, 8])
+def test_contract_rejects_overlapping_or_gapped_field_spans(offset: int) -> None:
+    contract = deepcopy(load_contract())
+    contract["frame"]["data"]["fields"][1]["offset"] = offset
+
+    errors = "\n".join(validate_contract(contract))
+
+    assert "contiguous" in errors
+    assert "non-overlapping" in errors
+
+
+@pytest.mark.parametrize(
     "mutation",
     [
         lambda text: text.replace('BLE.setLocalName("phyphox-sense");', "", 1),
@@ -113,6 +155,16 @@ def test_malformed_contract_types_return_diagnostics_without_crashing(
             1,
         ),
         lambda text: text.replace("buf[offset + 3] =", "buf[offset + 2] =", 1),
+        lambda text: text.replace(
+            "kConfigStorageSizeBytes = kConfigWireSizeBytes + 1",
+            "kConfigStorageSizeBytes = kConfigWireSizeBytes + 2",
+            1,
+        ),
+        lambda text: text.replace(
+            "configCharacteristic.valueLength() == static_cast<int>(sizeof(buf))",
+            "configCharacteristic.valueLength() != static_cast<int>(sizeof(buf))",
+            1,
+        ),
     ],
 )
 def test_firmware_conformance_rejects_name_payload_and_codec_drift(

@@ -1,33 +1,14 @@
 const SERIES_COLORS = ["#4e9fff", "#73c72b", "#f2cb45", "#e9f0f1"];
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
-const modes = [
-  { id: 1, name: "Acceleration", description: "Preview deterministic x, y, z, and magnitude values shaped like the acceleration experiment.", unit: "m/s²", series: ["x", "y", "z", "magnitude"], base: [0.2, -0.1, 9.72, 9.81], amp: [0.7, 0.45, 0.3, 0.25] },
-  { id: 2, name: "Gyroscope", description: "Preview deterministic angular velocity values shaped like the gyroscope experiment.", unit: "rad/s", series: ["x", "y", "z", "magnitude"], base: [0.01, -0.02, 0.04, 0.08], amp: [0.12, 0.08, 0.14, 0.09] },
-  { id: 3, name: "Magnetic field", description: "Preview deterministic local-field values shaped like the magnetometer experiment.", unit: "µT", series: ["x", "y", "z", "magnitude"], base: [21.4, -8.2, 42.6, 48.4], amp: [4.2, 3.3, 5.1, 2.7] },
-  { id: 4, name: "Pressure", description: "Preview a deterministic fixture shaped like the real mode 4 pressure channel.", unit: "hPa", series: ["pressure"], base: [1013.2], amp: [0.8] },
-  { id: 5, name: "Temperature & humidity", description: "Explore a deterministic fixture shaped like the real mode 5 data contract.", units: ["°C", "%"], series: ["temperature", "humidity"], base: [22.6, 46.8], amp: [0.55, 2.4] },
-  { id: 6, name: "Light & RGB", description: "Preview deterministic ambient, red, green, and blue counts shaped like the light experiment.", unit: "a.u.", series: ["ambient", "red", "green", "blue"], base: [640, 225, 310, 180], amp: [85, 42, 58, 36] },
-  { id: 9, name: "Analog input", description: "Preview deterministic A0, A1, and A2 values shaped like the analog input experiment.", unit: "ADC", series: ["A0", "A1", "A2"], base: [386, 612, 228], amp: [74, 46, 62] },
-];
-
 const state = { modeId: 5, visiblePoints: 121, running: false, timer: null };
-const pointCount = 121;
 const modeList = document.querySelector("#mode-list");
 const readouts = document.querySelector("#readouts");
 const toggleButton = document.querySelector("#toggle-stream");
 const resetButton = document.querySelector("#reset-fixture");
 
-function fixtureValue(mode, seriesIndex, pointIndex) {
-  const phase = seriesIndex * 0.87 + mode.id * 0.19;
-  const wave = Math.sin(pointIndex * (0.09 + seriesIndex * 0.013) + phase);
-  const detail = Math.sin(pointIndex * 0.31 + phase * 1.7) * 0.2;
-  const drift = Math.cos(pointIndex * 0.035 + mode.id) * 0.28;
-  return mode.base.at(seriesIndex) + mode.amp.at(seriesIndex) * (wave * 0.52 + detail + drift);
-}
-
-function modeUnit(mode, index) { return mode.units ? mode.units.at(index) : mode.unit; }
-function precisionFor(mode) { return mode.id === 6 || mode.id === 9 ? 0 : mode.id === 4 ? 1 : 2; }
+const streamStatus = document.querySelector("#stream-status");
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 function createElement(tagName, attributes = {}, content) {
   const element = document.createElement(tagName);
@@ -64,13 +45,13 @@ function renderModes() {
 function renderReadouts(mode) {
   const index = Math.max(0, state.visiblePoints - 1);
   const items = mode.series.map((series, seriesIndex) => {
-    const value = fixtureValue(mode, seriesIndex, index).toFixed(precisionFor(mode));
+    const value = fixtures.get(mode.id).series.at(seriesIndex).at(index).toFixed(precisionFor(mode));
     const readout = createElement("div", { class: "readout" });
     setSeriesColor(readout, SERIES_COLORS.at(seriesIndex));
     const valueRow = createElement("div", { class: "readout-value" });
     valueRow.append(
-      createElement("output", {}, `${value} ${modeUnit(mode, seriesIndex)}`),
-      createElement("span", {}, series),
+      createElement("output", { "aria-live": "off", "aria-labelledby": `readout-label-${seriesIndex}` }, `${value} ${modeUnit(mode, seriesIndex)}`),
+      createElement("span", { id: `readout-label-${seriesIndex}` }, series),
     );
     readout.append(valueRow, createElement("small", {}, "Simulated fixture value"));
     return readout;
@@ -78,23 +59,8 @@ function renderReadouts(mode) {
   readouts.replaceChildren(...items);
 }
 
-function chartRange(mode) {
-  const values = mode.series.flatMap((_, seriesIndex) =>
-    Array.from({ length: pointCount }, (_, pointIndex) => fixtureValue(mode, seriesIndex, pointIndex))
-  );
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const padding = Math.max((max - min) * 0.18, 0.1);
-  return [min - padding, max + padding];
-}
-
 function chartSeriesRange(mode, seriesIndex) {
-  if (mode.id !== 5) return chartRange(mode);
-  const values = Array.from({ length: pointCount }, (_, pointIndex) => fixtureValue(mode, seriesIndex, pointIndex));
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const padding = Math.max((max - min) * 0.18, 0.1);
-  return [min - padding, max + padding];
+  return fixtures.get(mode.id).ranges.at(seriesIndex);
 }
 
 function renderChart(mode) {
@@ -138,7 +104,7 @@ function renderChart(mode) {
     const [seriesMin, seriesMax] = chartSeriesRange(mode, seriesIndex);
     const points = Array.from({ length: state.visiblePoints }, (__, pointIndex) => {
       const x = margin.left + (plotWidth * pointIndex) / (pointCount - 1);
-      const value = fixtureValue(mode, seriesIndex, pointIndex);
+      const value = fixtures.get(mode.id).series.at(seriesIndex).at(pointIndex);
       const y = margin.top + plotHeight - ((value - seriesMin) / (seriesMax - seriesMin)) * plotHeight;
       return `${x.toFixed(2)},${y.toFixed(2)}`;
     }).join(" ");
@@ -170,15 +136,18 @@ function renderWorkspace() {
   const mode = modes.find((item) => item.id === state.modeId);
   document.querySelector("#experiment-title").textContent = mode.name;
   document.querySelector("#experiment-description").textContent = mode.description;
-  renderModes();
+  for (const button of modeList.querySelectorAll("button")) {
+    button.setAttribute("aria-pressed", Number(button.dataset.mode) === state.modeId);
+  }
   renderReadouts(mode);
   renderChart(mode);
 }
 
-function stopStream() {
+function stopStream(message) {
   window.clearInterval(state.timer);
   state.timer = null;
   state.running = false;
+  if (message) streamStatus.textContent = message;
   renderToggleButton("m8 5 11 7-11 7V5Z", "Start simulated stream");
 }
 
@@ -190,12 +159,20 @@ function renderToggleButton(path, label) {
 
 function startStream() {
   if (state.visiblePoints >= pointCount) state.visiblePoints = 1;
+  if (reducedMotion.matches) {
+    state.visiblePoints = pointCount;
+    renderWorkspace();
+    streamStatus.textContent = "Simulated stream complete. Full fixture shown with reduced motion.";
+    return;
+  }
   state.running = true;
+  streamStatus.textContent = "Simulated stream started.";
+  renderWorkspace();
   renderToggleButton("M7 5h4v14H7zM13 5h4v14h-4z", "Pause simulated stream");
   state.timer = window.setInterval(() => {
     state.visiblePoints += 1;
     renderWorkspace();
-    if (state.visiblePoints >= pointCount) stopStream();
+    if (state.visiblePoints >= pointCount) stopStream("Simulated stream complete. Full fixture shown.");
   }, 90);
 }
 
@@ -206,9 +183,19 @@ modeList.addEventListener("click", (event) => {
   state.modeId = Number(button.dataset.mode);
   state.visiblePoints = pointCount;
   renderWorkspace();
+  streamStatus.textContent = `${modes.find((mode) => mode.id === state.modeId).name} fixture ready.`;
 });
 
-toggleButton.addEventListener("click", () => state.running ? stopStream() : startStream());
-resetButton.addEventListener("click", () => { stopStream(); state.visiblePoints = pointCount; renderWorkspace(); });
+toggleButton.addEventListener("click", () => state.running ? stopStream("Simulated stream paused.") : startStream());
+resetButton.addEventListener("click", () => { stopStream("Simulated fixture reset. Full fixture shown."); state.visiblePoints = pointCount; renderWorkspace(); });
 
+reducedMotion.addEventListener("change", () => {
+  if (reducedMotion.matches && state.running) {
+    stopStream("Simulated stream complete. Full fixture shown with reduced motion.");
+    state.visiblePoints = pointCount;
+    renderWorkspace();
+  }
+});
+
+renderModes();
 renderWorkspace();

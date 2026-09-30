@@ -21,7 +21,8 @@ SKETCH_UUID_RE = re.compile(
 SKETCH_MODE_RE = re.compile(r"^\s*k([A-Za-z0-9]+)\s*=\s*(\d+),?$")
 ADVERTISED_NAME_RE = re.compile(r'BLE\.set(Device|Local)Name\("([^"]+)"\);')
 PAYLOAD_SIZE_RE = re.compile(r"constexpr int kPayloadSizeBytes = (\d+);")
-SEND_PERIOD_RE = re.compile(r"constexpr unsigned long kSendPeriodMs = (\d+);")
+SEND_PERIOD_RE = re.compile(r"constexpr (?:unsigned long|uint32_t) kSendPeriodMs = (\d+);")
+CONFIG_WIRE_SIZE_RE = re.compile(r"constexpr int kConfigWireSizeBytes = (\d+);")
 PAYLOAD_WRITE_RE = re.compile(
     r"writeFloat32LE\(payload, sizeof\(payload\), (\d+), ([A-Za-z0-9_]+)\);"
 )
@@ -57,11 +58,8 @@ def _read(path: Path, label: str, errors: list[str]) -> str | None:
         return None
 
 
-def _firmware_values(sketch: Path, contract: dict[str, Any]) -> list[str]:
+def _firmware_identity_errors(sketch: Path, text: str, contract: dict[str, Any]) -> list[str]:
     errors: list[str] = []
-    text = _read(sketch, "firmware", errors)
-    if text is None:
-        return errors
     device = contract.get("device", {})
     expected_name = device.get("name") if isinstance(device, dict) else None
     advertised_names = {kind: value for kind, value in ADVERTISED_NAME_RE.findall(text)}
@@ -78,6 +76,11 @@ def _firmware_values(sketch: Path, contract: dict[str, Any]) -> list[str]:
             errors.append(f"{sketch}: missing required {key}")
         elif found_uuids[key] != expected_uuids.get(key):
             errors.append(f"{sketch}: {key} does not match protocol contract")
+    return errors
+
+
+def _firmware_frame_errors(sketch: Path, text: str, contract: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
     frame = contract.get("frame", {})
     data = frame.get("data", {}) if isinstance(frame, dict) else {}
     config = frame.get("config", {}) if isinstance(frame, dict) else {}
@@ -87,19 +90,40 @@ def _firmware_values(sketch: Path, contract: dict[str, Any]) -> list[str]:
     period_match = SEND_PERIOD_RE.search(text)
     if period_match is None or int(period_match.group(1)) != frame.get("sample_period_ms"):
         errors.append(f"{sketch}: sample period does not match protocol contract")
+    wire_size_match = CONFIG_WIRE_SIZE_RE.search(text)
+    if wire_size_match is None or int(wire_size_match.group(1)) != config.get("byte_length"):
+        errors.append(f"{sketch}: config wire size does not match protocol contract")
     config_access = " | ".join(BLE_ACCESS.get(value, "") for value in config.get("access", []))
     config_characteristic = (
         f"BLECharacteristic configCharacteristic(kConfigCharUuid, {config_access}, "
-        f"{config.get('byte_length')});"
+        "kConfigStorageSizeBytes);"
     )
-    if config_characteristic not in text:
-        errors.append(f"{sketch}: config frame size does not match protocol contract")
+    config_safety_snippets = (
+        "constexpr int kConfigStorageSizeBytes = kConfigWireSizeBytes + 1;",
+        config_characteristic,
+        "uint8_t configValue[kConfigWireSizeBytes] = {0};",
+        "uint8_t buf[kConfigWireSizeBytes] = {0};",
+        "configCharacteristic.valueLength() == static_cast<int>(sizeof(buf))",
+    )
+    if any(snippet not in text for snippet in config_safety_snippets):
+        errors.append(f"{sketch}: config storage or length guard does not match protocol contract")
+    guard_position = text.find(config_safety_snippets[-1])
+    read_position = text.find("configCharacteristic.readValue(buf, sizeof(buf))")
+    if guard_position < 0 or read_position < 0 or guard_position > read_position:
+        errors.append(f"{sketch}: config length guard must run before config decoding")
     data_access = " | ".join(BLE_ACCESS.get(value, "") for value in data.get("access", []))
     data_characteristic = (
         f"BLECharacteristic dataCharacteristic(kDataCharUuid, {data_access}, kPayloadSizeBytes);"
     )
     if data_characteristic not in text:
         errors.append(f"{sketch}: data characteristic access does not match protocol contract")
+    return errors
+
+
+def _firmware_selection_errors(sketch: Path, text: str, contract: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    frame = contract.get("frame", {})
+    config = frame.get("config", {}) if isinstance(frame, dict) else {}
     default_name = next(
         (
             name
@@ -125,6 +149,13 @@ def _firmware_values(sketch: Path, contract: dict[str, Any]) -> list[str]:
         errors.append(f"{sketch}: config selection range does not match protocol contract")
     if selection.get("rounding") == "nearest_integer" and "roundf(configValue)" not in text:
         errors.append(f"{sketch}: config selection rounding does not match protocol contract")
+    return errors
+
+
+def _firmware_payload_errors(sketch: Path, text: str, contract: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    frame = contract.get("frame", {})
+    data = frame.get("data", {}) if isinstance(frame, dict) else {}
     expected_writes = [
         (field["offset"], FIRMWARE_FIELD_VALUES.get(field["name"]))
         for field in data.get("fields", [])
@@ -140,8 +171,21 @@ def _firmware_values(sketch: Path, contract: dict[str, Any]) -> list[str]:
     )
     if any(snippet not in text for snippet in codec_snippets):
         errors.append(f"{sketch}: little-endian float codec use does not match protocol contract")
-    errors.extend(_firmware_mode_errors(sketch, text, contract))
     return errors
+
+
+def _firmware_values(sketch: Path, contract: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    text = _read(sketch, "firmware", errors)
+    if text is None:
+        return errors
+    return [
+        *_firmware_identity_errors(sketch, text, contract),
+        *_firmware_frame_errors(sketch, text, contract),
+        *_firmware_selection_errors(sketch, text, contract),
+        *_firmware_payload_errors(sketch, text, contract),
+        *_firmware_mode_errors(sketch, text, contract),
+    ]
 
 
 def _firmware_mode_errors(sketch: Path, text: str, contract: dict[str, Any]) -> list[str]:

@@ -7,6 +7,7 @@
     <title>Curious Signals · Static classroom preview</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23009297'/%3E%3Cpath d='M15 36h9l5-15 8 27 5-17h7' fill='none' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="styles.css">
+    <script src="fixtures.js" defer></script>
     <script src="demo.js" defer></script>
   </head>
   <body>
@@ -35,7 +36,7 @@
             <p class="simulation-status" aria-label="Simulation status">Simulated · no Bluetooth</p>
           </div>
 
-          <div class="readouts" id="readouts" aria-live="polite"></div>
+          <div class="readouts" id="readouts"></div>
 
           <figure class="chart-shell">
             <figcaption>
@@ -61,7 +62,8 @@
               <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v6h-6"/></svg>
               Reset simulated fixture
             </button>
-            <p>These controls only animate fixture data in this page.</p>
+            <p>These controls only animate fixture data in this page. Reduced motion shows the full fixture immediately.</p>
+            <p id="stream-status" role="status" aria-live="polite" aria-atomic="true">Simulated fixture ready.</p>
           </div>
         </div>
       </section>

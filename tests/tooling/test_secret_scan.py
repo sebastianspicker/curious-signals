@@ -13,16 +13,13 @@ from tests.conftest import REPO_ROOT
 @pytest.fixture()
 def security_checkout(tmp_path: Path) -> Path:
     shutil.copytree(REPO_ROOT / "scripts", tmp_path / "scripts")
-    shutil.copy2(REPO_ROOT / "pyproject.toml", tmp_path / "pyproject.toml")
-    (tmp_path / "src").mkdir()
-    (tmp_path / "tests").mkdir()
     subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
     return tmp_path
 
 
 def run_gate(root: Path, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        ["bash", "scripts/security.sh"],
+        ["bash", "scripts/secret-scan.sh"],
         cwd=root,
         env=env,
         capture_output=True,

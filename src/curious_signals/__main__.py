@@ -66,6 +66,7 @@ def _run(command: str, args: argparse.Namespace, checkout: Checkout) -> int:
     from .arduino import compile_sketch
 
     compile_sketch(checkout.arduino_toolchain, checkout.sketch_dir)
+    print("OK")
     return 0
 
 

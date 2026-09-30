@@ -10,9 +10,12 @@ import pytest
 
 from tests.conftest import REPO_ROOT
 
+TOOLCHAIN = REPO_ROOT / "arduino/toolchain.json"
+SKETCH = REPO_ROOT / "arduino/phyphox_ble_sense"
+
 
 def test_toolchain_manifest_preserves_supported_target_and_pins() -> None:
-    toolchain = json.loads((REPO_ROOT / "scripts/arduino-toolchain.json").read_text())
+    toolchain = json.loads(TOOLCHAIN.read_text())
     assert toolchain == {
         "fqbn": "arduino:mbed_nano:nano33ble",
         "core": "arduino:mbed_nano@4.5.0",
@@ -28,7 +31,7 @@ def test_toolchain_manifest_preserves_supported_target_and_pins() -> None:
 
 @pytest.fixture()
 def arduino_stub(tmp_path: Path) -> tuple[dict[str, str], Path]:
-    toolchain = json.loads((REPO_ROOT / "scripts/arduino-toolchain.json").read_text())
+    toolchain = json.loads(TOOLCHAIN.read_text())
     core_name, core_version = toolchain["core"].split("@")
     (tmp_path / "core.json").write_text(
         json.dumps({"platforms": [{"id": core_name, "installed_version": core_version}]})
@@ -54,12 +57,17 @@ def arduino_stub(tmp_path: Path) -> tuple[dict[str, str], Path]:
         "if sys.argv[1:3] == ['lib', 'list']: print((root / 'libraries.json').read_text())\n"
     )
     stub.chmod(0o755)
-    return dict(os.environ, PATH=f"{tmp_path}{os.pathsep}{os.environ['PATH']}"), tmp_path
+    env = dict(
+        os.environ,
+        PATH=f"{tmp_path}{os.pathsep}{os.environ['PATH']}",
+        PYTHONPATH=str(REPO_ROOT / "src"),
+    )
+    return env, tmp_path
 
 
-def compile_sketch(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
+def run_tool(env: dict[str, str], command: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        ["bash", "scripts/compile-arduino.sh"],
+        [sys.executable, "-m", "curious_signals", command],
         cwd=REPO_ROOT,
         env=env,
         capture_output=True,
@@ -68,20 +76,44 @@ def compile_sketch(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
     )
 
 
+def read_calls(root: Path) -> list[list[str]]:
+    return [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+
+
 def test_compile_only_checks_installed_versions_then_compiles(arduino_stub) -> None:
     env, root = arduino_stub
 
-    result = compile_sketch(env)
+    result = run_tool(env, "compile")
 
     assert result.returncode == 0, result.stderr
-    calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+    assert result.stdout.rstrip().endswith("OK")
+    calls = read_calls(root)
     assert [call[:2] for call in calls[:2]] == [["core", "list"], ["lib", "list"]]
-    assert calls[2] == [
-        "compile",
-        "--fqbn",
-        "arduino:mbed_nano:nano33ble",
-        "arduino/phyphox_ble_sense",
-    ]
+    assert calls[2][:3] == ["compile", "--fqbn", "arduino:mbed_nano:nano33ble"]
+    assert len(calls[2]) == 4
+    assert Path(calls[2][3]).resolve() == SKETCH.resolve()
+
+
+def test_compile_does_not_need_xml_dependencies(arduino_stub) -> None:
+    env, root = arduino_stub
+    script = (
+        "import runpy, sys\n"
+        "sys.modules['defusedxml'] = None\n"
+        "sys.argv = ['curious_signals', 'compile']\n"
+        "runpy.run_module('curious_signals', run_name='__main__', alter_sys=True)\n"
+    )
+
+    result = subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=REPO_ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert read_calls(root)[2][0] == "compile"
 
 
 @pytest.mark.parametrize("fault", ["core", "library", "duplicate", "invalid_json", "invalid_shape"])
@@ -102,30 +134,23 @@ def test_compile_rejects_wrong_or_ambiguous_installations(arduino_stub, fault: s
             data["installed_libraries"].append(data["installed_libraries"][0])
         path.write_text(json.dumps(data))
 
-    result = compile_sketch(env)
+    result = run_tool(env, "compile")
 
     assert result.returncode != 0
     assert "Traceback" not in result.stderr
-    calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+    calls = read_calls(root)
     assert not any(call[0] == "compile" for call in calls)
     assert not any("install" in call or "update-index" in call for call in calls)
 
 
 def test_provision_installs_manifest_pins_and_verifies(arduino_stub) -> None:
     env, root = arduino_stub
-    toolchain = json.loads((REPO_ROOT / "scripts/arduino-toolchain.json").read_text())
+    toolchain = json.loads(TOOLCHAIN.read_text())
 
-    result = subprocess.run(
-        [sys.executable, "scripts/arduino_toolchain.py", "provision"],
-        cwd=REPO_ROOT,
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    result = run_tool(env, "provision")
 
     assert result.returncode == 0, result.stderr
-    calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+    calls = read_calls(root)
     assert calls[:3] == [
         ["core", "update-index"],
         ["core", "install", toolchain["core"]],

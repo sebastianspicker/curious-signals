@@ -8,7 +8,7 @@ RUFF = $(PYTHON) -m ruff
 
 help:
 	@echo "Targets:"
-	@echo "  lint     - Ruff lint + format check"
+	@echo "  lint     - Ruff lint + format check, shellcheck"
 	@echo "  test     - Python test suite"
 	@echo "  test-browser - Preview interaction and accessibility checks (Chromium)"
 	@echo "  validate - Validate XML and phyphox files"
@@ -16,13 +16,14 @@ help:
 	@echo "  build    - Rebuild experiments/*.phyphox from src/phyphox/*.phyphox.xml"
 	@echo "  provision - Install pinned Arduino core and libraries (network)"
 	@echo "  compile  - Verify installed pins and compile Arduino sketch (no installs/upload)"
-	@echo "  security - Secret scan plus dependency, shell, and Python sanity checks"
+	@echo "  security - Credential scan of tracked and untracked files"
 	@echo "  ci       - Run the full checkout-non-mutating local gate"
 	@echo "  bundle   - Build and zip the seven core sensor experiments"
 
 lint:
 	$(RUFF) check .
 	$(RUFF) format --check .
+	shellcheck scripts/*.sh
 
 test:
 	$(PYTEST)
@@ -40,13 +41,13 @@ build:
 	$(TOOL) build
 
 compile:
-	./scripts/compile-arduino.sh
+	$(TOOL) compile
 
 provision:
-	$(PYTHON) scripts/arduino_toolchain.py provision
+	$(TOOL) provision
 
 security:
-	bash scripts/security.sh
+	bash scripts/secret-scan.sh
 
 ci:
 	+$(MAKE) --no-print-directory lint

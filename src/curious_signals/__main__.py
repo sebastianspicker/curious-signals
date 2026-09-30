@@ -6,7 +6,8 @@ import argparse
 import sys
 from pathlib import Path
 
-from .workflows import ToolError, build, bundle, check_generated, validate
+from . import ToolError
+from .checkout import Checkout
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -15,47 +16,63 @@ def _parser() -> argparse.ArgumentParser:
     build_parser = commands.add_parser(
         "build", help="expand core source XML into phyphox artifacts"
     )
-    build_parser.add_argument("directory", nargs="?", type=Path, help="output directory")
     build_parser.add_argument("--output", type=Path, help="output directory")
-    commands.add_parser(
-        "validate", help="validate protocol, XML, firmware, and astronomy contracts"
-    )
+    commands.add_parser("validate", help="validate protocol, XML, and astronomy contracts")
     commands.add_parser("check-generated", help="compare generated artifacts without writing")
     bundle_parser = commands.add_parser(
         "bundle", help="build core artifacts and create a deterministic ZIP"
     )
-    bundle_parser.add_argument("archive", nargs="?", type=Path, help="archive path")
-    bundle_parser.add_argument("--output", type=Path, help="archive path")
+    bundle_parser.add_argument(
+        "--output", type=Path, default=Path("phyphox-experiments.zip"), help="archive path"
+    )
+    commands.add_parser("provision", help="install pinned Arduino core and libraries")
+    commands.add_parser("compile", help="verify installed pins and compile the Arduino sketch")
     return parser
+
+
+def _report(errors: list[str]) -> int:
+    if errors:
+        print("\n".join(errors), file=sys.stderr)
+        return 1
+    print("OK")
+    return 0
+
+
+def _run(command: str, args: argparse.Namespace, checkout: Checkout) -> int:
+    if command == "build":
+        from .generation import build
+
+        files = build(checkout, args.output)
+        print(f"Built {len(files)} phyphox files.")
+        return 0
+    if command == "check-generated":
+        from .generation import check_generated
+
+        return _report(check_generated(checkout))
+    if command == "validate":
+        from .validation import validate
+
+        return _report(validate(checkout))
+    if command == "bundle":
+        from .generation import bundle
+
+        print(f"Created {bundle(checkout, args.output)}")
+        return 0
+    if command == "provision":
+        from .arduino import provision
+
+        provision(checkout.arduino_toolchain)
+        return 0
+    from .arduino import compile_sketch
+
+    compile_sketch(checkout.arduino_toolchain, checkout.sketch_dir)
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
-        if args.command == "build":
-            if args.directory and args.output:
-                raise ToolError("build accepts either DIRECTORY or --output, not both")
-            files = build(args.output or args.directory)
-            print(f"Built {len(files)} phyphox files.")
-            return 0
-        if args.command == "check-generated":
-            errors = check_generated()
-            if errors:
-                print("\n".join(errors), file=sys.stderr)
-                return 1
-            print("OK")
-            return 0
-        if args.command == "validate":
-            errors = validate()
-            if errors:
-                print("\n".join(errors), file=sys.stderr)
-                return 1
-            print("OK")
-            return 0
-        if args.archive and args.output:
-            raise ToolError("bundle accepts either ARCHIVE or --output, not both")
-        print(f"Created {bundle(args.output or args.archive)}")
-        return 0
+        return _run(args.command, args, Checkout.default())
     except ToolError as error:
         print(error, file=sys.stderr)
         return 2

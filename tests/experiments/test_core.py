@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from defusedxml import ElementTree as ET
 
-from curious_signals.xml_contracts import validate_phyphox
-from tests.conftest import CORE_ARTIFACT_DIR
+from curious_signals.phyphox_xml import check_core_experiment
+from curious_signals.protocol import load_protocol
+from tests.conftest import CONTRACT_PATH, CORE_ARTIFACT_DIR
 
 EXPECTED_MODES = {
     "accelerometer_plot_v1-2.phyphox": ("1.0", "m/s²"),
@@ -27,6 +28,7 @@ EXPECTED_EXPORTED_CHANNELS = {
 
 
 def test_core_inventory_validates_and_declares_mode_config_and_classroom_units() -> None:
+    protocol = load_protocol(CONTRACT_PATH)
     paths = sorted(CORE_ARTIFACT_DIR.glob("*.phyphox"))
 
     assert {path.name for path in paths} == set(EXPECTED_MODES)
@@ -40,7 +42,9 @@ def test_core_inventory_validates_and_declares_mode_config_and_classroom_units()
             value.attrib.get("unit") == EXPECTED_MODES[path.name][1]
             for value in root.findall(".//value")
         )
-        assert validate_phyphox(path) == []
+        mode = protocol.mode_for_experiment(path.name)
+        assert mode is not None
+        assert check_core_experiment(path, protocol, expected_mode=mode.id) == []
 
 
 def test_core_exports_keep_device_time_and_measurement_channels() -> None:

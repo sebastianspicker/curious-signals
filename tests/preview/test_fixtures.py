@@ -7,8 +7,8 @@ import subprocess
 
 import pytest
 
-from curious_signals.contract import load_contract
-from tests.conftest import REPO_ROOT
+from curious_signals.protocol import read_contract
+from tests.conftest import CONTRACT_PATH, REPO_ROOT
 
 
 @pytest.fixture(scope="module")
@@ -30,7 +30,7 @@ def preview_modes():
 
 
 def test_evaluated_preview_modes_match_contract_channel_shapes(preview_modes) -> None:
-    active = load_contract()["modes"]["active"]
+    active = read_contract(CONTRACT_PATH)["modes"]["active"]
     assert [mode["id"] for mode in preview_modes] == [mode["id"] for mode in active]
     for preview, mode in zip(preview_modes, active, strict=True):
         channel_count = sum(

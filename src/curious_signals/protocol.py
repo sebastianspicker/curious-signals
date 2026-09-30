@@ -1,14 +1,15 @@
-"""Loading and structural validation for the repository BLE contract."""
+"""Loading, structural validation, and the typed model of the BLE protocol contract."""
 
 from __future__ import annotations
 
 import json
 import math
 import re
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from .layout import contract_path
+from . import ToolError
 
 UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 MODE_NAME_RE = re.compile(r"^[a-z][a-z0-9_]*$")
@@ -18,21 +19,49 @@ DATA_ACCESS = {"notify"}
 CONFIG_ACCESS = {"read", "write"}
 
 
-def load_contract(path: Path | None = None) -> dict[str, Any]:
-    """Load the canonical JSON contract, raising ValueError for invalid JSON."""
+@dataclass(frozen=True)
+class Mode:
+    id: int
+    name: str
+    experiment: str
+    channels: tuple[tuple[str, str], ...]
 
-    target = path or contract_path()
+
+@dataclass(frozen=True)
+class Protocol:
+    device_name: str
+    service_uuid: str
+    data_char_uuid: str
+    config_char_uuid: str
+    sample_period_ms: int
+    data_encoding: str
+    data_offsets: tuple[int, ...]
+    config_encoding: str
+    default_mode: int
+    modes: tuple[Mode, ...]
+    reserved_modes: tuple[int, ...]
+
+    @property
+    def experiments(self) -> tuple[str, ...]:
+        return tuple(mode.experiment for mode in self.modes)
+
+    def mode_for_experiment(self, filename: str) -> Mode | None:
+        """Return the active mode whose generated experiment has this filename."""
+
+        return next((mode for mode in self.modes if mode.experiment == filename), None)
+
+
+def read_contract(path: Path) -> object:
+    """Read the raw JSON contract, raising ToolError when it cannot be read or parsed."""
+
     try:
-        content = target.read_text(encoding="utf-8")
+        content = path.read_text(encoding="utf-8")
     except OSError as error:
-        raise ValueError(f"{target}: cannot read contract: {error}") from error
+        raise ToolError(f"{path}: cannot read contract: {error}") from error
     try:
-        loaded = json.loads(content)
+        return json.loads(content)
     except json.JSONDecodeError as error:
-        raise ValueError(f"{target}: invalid JSON: {error}") from error
-    if not isinstance(loaded, dict):
-        raise ValueError(f"{target}: contract root must be an object")
-    return loaded
+        raise ToolError(f"{path}: invalid JSON: {error}") from error
 
 
 def _mapping(value: object, location: str, errors: list[str]) -> dict[str, Any]:
@@ -277,35 +306,63 @@ def _validate_modes(contract: dict[str, Any], channel_keys: set[str], errors: li
         errors.append("contract: active mode IDs must fit the config selection range")
 
 
-def validate_contract(contract: dict[str, Any] | None = None) -> list[str]:
-    """Return schema errors without mutating the supplied contract."""
+def contract_errors(raw: object) -> list[str]:
+    """Return schema errors for a raw contract without mutating it."""
 
-    errors: list[str] = []
-    if contract is None:
-        try:
-            contract = load_contract()
-        except ValueError as error:
-            return [str(error)]
-    if not isinstance(contract, dict):
+    if not isinstance(raw, dict):
         return ["contract: root must be an object"]
-    schema_version = contract.get("schema_version")
+    errors: list[str] = []
+    schema_version = raw.get("schema_version")
     if (
         not isinstance(schema_version, int)
         or isinstance(schema_version, bool)
         or schema_version != 1
     ):
         errors.append("contract: schema_version must be 1")
-    device = _mapping(contract.get("device"), "device", errors)
+    device = _mapping(raw.get("device"), "device", errors)
     _required_string(device, "name", "device", errors)
-    _validate_bluetooth(contract, errors)
-    channel_keys = _validate_frame(contract, errors)
-    _validate_modes(contract, channel_keys, errors)
+    _validate_bluetooth(raw, errors)
+    channel_keys = _validate_frame(raw, errors)
+    _validate_modes(raw, channel_keys, errors)
     return errors
 
 
-def active_modes(contract: dict[str, Any]) -> list[dict[str, Any]]:
-    """Return active mode records after callers have validated the contract."""
+def parse_protocol(raw: object) -> Protocol:
+    """Build the typed model from a raw contract that has no ``contract_errors``."""
 
-    modes = contract.get("modes", {})
-    active = modes.get("active", []) if isinstance(modes, dict) else []
-    return [mode for mode in active if isinstance(mode, dict)]
+    if not isinstance(raw, dict):
+        raise TypeError("contract root must be an object")
+    bluetooth = raw["bluetooth"]
+    frame = raw["frame"]
+    modes = raw["modes"]
+    return Protocol(
+        device_name=raw["device"]["name"],
+        service_uuid=bluetooth["service_uuid"],
+        data_char_uuid=bluetooth["data_char_uuid"],
+        config_char_uuid=bluetooth["config_char_uuid"],
+        sample_period_ms=frame["sample_period_ms"],
+        data_encoding=frame["data"]["encoding"],
+        data_offsets=tuple(field["offset"] for field in frame["data"]["fields"]),
+        config_encoding=frame["config"]["encoding"],
+        default_mode=modes["default"],
+        modes=tuple(
+            Mode(
+                id=mode["id"],
+                name=mode["name"],
+                experiment=mode["experiment"],
+                channels=tuple(mode["channels"].items()),
+            )
+            for mode in modes["active"]
+        ),
+        reserved_modes=tuple(modes["reserved"]),
+    )
+
+
+def load_protocol(path: Path) -> Protocol:
+    """Read, validate, and parse the contract, raising ToolError on any problem."""
+
+    raw = read_contract(path)
+    errors = contract_errors(raw)
+    if errors:
+        raise ToolError("\n".join(errors))
+    return parse_protocol(raw)

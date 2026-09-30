@@ -8,7 +8,8 @@ from hashlib import sha256
 
 import pytest
 
-from tests.conftest import REPO_ROOT
+from curious_signals.protocol import load_protocol
+from tests.conftest import CONTRACT_PATH, REPO_ROOT
 
 
 def run_cli(*arguments: str) -> subprocess.CompletedProcess[str]:
@@ -33,6 +34,18 @@ def test_cli_rejects_unknown_command_without_traceback() -> None:
 
     assert result.returncode != 0
     assert "traceback" not in result.stderr.lower()
+
+
+@pytest.mark.skipif(shutil.which("xmllint") is None, reason="xmllint is unavailable")
+def test_build_cli_reports_unwritable_output_without_traceback(tmp_path) -> None:
+    blocker = tmp_path / "not-a-directory"
+    blocker.write_text("", encoding="utf-8")
+
+    result = run_cli("build", "--output", str(blocker / "built"))
+
+    assert result.returncode == 2, result.stderr
+    assert "traceback" not in result.stderr.lower()
+    assert str(blocker / "built") in result.stderr
 
 
 def test_make_help_advertises_only_current_entry_points() -> None:
@@ -64,6 +77,8 @@ def test_build_and_bundle_cli_create_requested_outputs(tmp_path) -> None:
     with zipfile.ZipFile(first_archive) as archive:
         expected = sorted(path.name for path in (REPO_ROOT / "experiments").glob("*.phyphox"))
         assert archive.namelist() == expected
+        assert archive.namelist() == sorted(load_protocol(CONTRACT_PATH).experiments)
+        assert len(archive.namelist()) == 7
         for info in archive.infolist():
             assert info.date_time == (1980, 1, 1, 0, 0, 0)
             assert (

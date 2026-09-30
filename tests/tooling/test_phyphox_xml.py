@@ -1,12 +1,22 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 import pytest
 
-from curious_signals.contract import load_contract
-from curious_signals.xml_contracts import validate_phyphox
-from tests.conftest import error_text
+from curious_signals.phyphox_xml import check_core_experiment
+from curious_signals.protocol import load_protocol
+from tests.conftest import CONTRACT_PATH, error_text
+
+PROTOCOL = load_protocol(CONTRACT_PATH)
+
+
+def validate_phyphox(path: Path) -> list[str]:
+    mode = PROTOCOL.mode_for_experiment(path.name)
+    return check_core_experiment(
+        path, PROTOCOL, expected_mode=mode.id if mode is not None else None
+    )
 
 
 @pytest.mark.parametrize(
@@ -77,9 +87,8 @@ def test_validator_reports_container_bluetooth_offset_and_config_errors(
 
 
 def _with_contract_uuids(xml: str) -> str:
-    bluetooth = load_contract()["bluetooth"]
-    return xml.replace('char="data"', f'char="{bluetooth["data_char_uuid"]}"').replace(
-        'char="config"', f'char="{bluetooth["config_char_uuid"]}"'
+    return xml.replace('char="data"', f'char="{PROTOCOL.data_char_uuid}"').replace(
+        'char="config"', f'char="{PROTOCOL.config_char_uuid}"'
     )
 
 

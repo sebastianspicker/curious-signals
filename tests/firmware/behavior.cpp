@@ -1,6 +1,8 @@
 #include <cassert>
+#include <cmath>
+#include <string>
 #include <limits>
-#include "../../arduino/phyphox_ble_sense/phyphox_ble_sense.ino"
+#include SKETCH_SOURCE
 
 void reset() {
   imuOk = htsOk = baroOk = apdsOk = true;
@@ -16,12 +18,48 @@ void reset() {
   configCharacteristic.pending = false;
 }
 
+// Runs first: reset() would otherwise hide the sketch's own defaults.
+void checkSetup() {
+  setup();
+  assert(BLE.deviceName == expectedDeviceName);
+  assert(BLE.localName == expectedDeviceName);
+  assert(BLE.services.size() == 1 && BLE.services[0] == &phyphoxService);
+  assert(phyphoxService.uuid == expectedServiceUuid);
+  assert(BLE.advertiseCalls == 1);
+  assert(phyphoxService.characteristics.size() == 2);
+  assert(phyphoxService.characteristics[0] == &dataCharacteristic);
+  assert(phyphoxService.characteristics[1] == &configCharacteristic);
+  assert(dataCharacteristic.addedToService && configCharacteristic.addedToService);
+  assert(dataCharacteristic.uuid == expectedDataUuid);
+  assert(dataCharacteristic.properties == expectedDataProperties);
+  assert(dataCharacteristic.storageSize == expectedDataSize);
+  assert(configCharacteristic.uuid == expectedConfigUuid);
+  assert(configCharacteristic.properties == expectedConfigProperties);
+  // Config storage is wire size + 1: the oversized-write reject sentinel.
+  assert(configCharacteristic.storageSize == expectedConfigSize + 1);
+  assert(static_cast<int>(mode) == expectedDefaultMode);
+  assert(configCharacteristic.writes.size() == 1);
+  uint8_t encoded[4] = {};
+  writeFloat32LE(encoded, sizeof(encoded), 0, static_cast<float>(expectedDefaultMode));
+  assert(configCharacteristic.writes.back().size() == static_cast<size_t>(expectedConfigSize));
+  assert(configCharacteristic.writes.back() == std::vector<uint8_t>(encoded, encoded + 4));
+  assert(kSendPeriodMs == static_cast<unsigned long>(expectedSendPeriodMs));
+}
+
 void checkModes() {
-  for (int raw : {1, 2, 3, 4, 5, 6, 9}) {
+  for (int raw : expectedActiveModes) {
     setModeFromConfig(static_cast<float>(raw));
     assert(static_cast<int>(mode) == raw);
   }
+  for (int raw : expectedReservedModes) {
+    mode = Mode::kPressure;
+    setModeFromConfig(static_cast<float>(raw));
+    assert(mode == Mode::kPressure);
+  }
   for (float value : {0.0f, -1.0f, 0.499f, 6.5f, 7.0f, 8.0f, 9.5f,
+                      std::nextafterf(expectedSelectionMinimum, 0.0f),
+                      expectedSelectionMaximumExclusive,
+                      std::nextafterf(expectedSelectionMaximumExclusive, 100.0f),
                       std::numeric_limits<float>::infinity(),
                       -std::numeric_limits<float>::infinity(),
                       std::numeric_limits<float>::quiet_NaN()}) {
@@ -29,6 +67,12 @@ void checkModes() {
     setModeFromConfig(value);
     assert(mode == Mode::kPressure);
   }
+  mode = Mode::kPressure;
+  setModeFromConfig(expectedSelectionMinimum);
+  assert(static_cast<int>(mode) == expectedActiveModes[0]);
+  mode = Mode::kPressure;
+  setModeFromConfig(std::nextafterf(expectedSelectionMaximumExclusive, 0.0f));
+  assert(static_cast<int>(mode) == expectedActiveModes[std::size(expectedActiveModes) - 1]);
   for (auto example : {std::pair<float, int>{0.5f, 1}, {1.499f, 1}, {1.5f, 2},
                        {8.5f, 9}, {9.499f, 9}}) {
     setModeFromConfig(example.first);
@@ -58,7 +102,7 @@ void checkSensors() {
     {-12.5f, 45, NAN, NAN}, {44, 11, 22, 33}, {100, 200, 300, NAN}
   };
   int index = 0;
-  for (int raw : {1, 2, 3, 4, 5, 6, 9}) {
+  for (int raw : expectedActiveModes) {
     reset();
     mode = static_cast<Mode>(raw);
     float channels[4] = {};
@@ -138,10 +182,14 @@ void checkTimingAndSubscription() {
   tick(50); assert(dataCharacteristic.writes.size() == 1);
   tick(99); assert(dataCharacteristic.writes.size() == 1);
   tick(100); assert(dataCharacteristic.writes.size() == 2);
-  assert(dataCharacteristic.writes.back().size() == 20);
+  assert(dataCharacteristic.writes.back().size() == static_cast<size_t>(expectedDataSize));
   const auto& packet = dataCharacteristic.writes.back();
   const float expected[] = {0.1f, 3, 4, 0, 5};
-  for (int i = 0; i < 5; ++i) { assert(readFloat32LE(packet.data() + i * 4, 4) == expected[i]); }
+  assert(std::size(expected) == std::size(expectedDataOffsets));
+  assert(packet.size() == static_cast<size_t>(expectedDataSize));
+  for (size_t i = 0; i < std::size(expected); ++i) {
+    assert(readFloat32LE(packet.data() + expectedDataOffsets[i], 4) == expected[i]);
+  }
 
   reset();
   dataCharacteristic.subscription = false;
@@ -169,6 +217,6 @@ void checkTimingAndSubscription() {
 }
 
 int main() {
-  reset(); checkModes(); checkCodec(); checkSensors(); checkConfigWrites();
+  checkSetup(); reset(); checkModes(); checkCodec(); checkSensors(); checkConfigWrites();
   checkTimingAndSubscription();
 }

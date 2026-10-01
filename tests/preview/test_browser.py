@@ -5,6 +5,7 @@ from __future__ import annotations
 import functools
 import http.server
 import os
+import struct
 import threading
 from pathlib import Path
 
@@ -167,7 +168,15 @@ def test_preview_modes_keyboard_playback_and_runtime_boundaries(browser, preview
     assert not errors
     assert page.evaluate("window.forbiddenCalls") == []
     assert set(requests) == {
-        preview_url + suffix for suffix in ("", "styles.css", "fixtures.js", "demo.js")
+        preview_url + suffix
+        for suffix in (
+            "",
+            "styles.css",
+            "fixtures.js",
+            "demo.js",
+            "fonts/atkinson-hyperlegible-next.woff2",
+            "fonts/atkinson-hyperlegible-mono.woff2",
+        )
     }
     context.close()
 
@@ -186,4 +195,41 @@ def test_reduced_motion_shows_full_fixture_without_playback(browser, preview_url
     page.emulate_media(reduced_motion="reduce")
     expect(page.locator("#stream-status")).to_contain_text("Full fixture shown with reduced motion")
     assert page.evaluate("state.visiblePoints === 121 && state.timer === null && !state.running")
+    page.close()
+
+
+@pytest.mark.parametrize("width", [1440, 390])
+def test_frame_panel_encodes_the_current_sample_and_keys_keep_their_names(
+    browser, preview_url, width
+):
+    from playwright.sync_api import expect
+
+    page = browser.new_page(viewport={"width": width, "height": 900})
+    page.goto(preview_url)
+    for mode_id, name in [(1, "Acceleration"), (5, "Temperature & humidity"), (9, "Analog input")]:
+        expect(page.get_by_role("button", name=f"{mode_id} {name}")).to_have_attribute(
+            "data-mode", str(mode_id)
+        )
+    for mode_id, wire_scale, file in [
+        (4, 10, "pressure_plot_v1-2.phyphox"),
+        (5, 1, "temperature_plot_v1-2.phyphox"),
+    ]:
+        page.locator(f'[data-mode="{mode_id}"]').click()
+        values = page.evaluate(f"fixtures.get({mode_id}).series.map(s => s[120])")
+        channels = [24.0] + [value / wire_scale for value in values]
+        channels += [float("nan")] * (5 - len(channels))
+        expected = [struct.pack("<f", value).hex(" ") for value in channels]
+        shown = [
+            " ".join(field.locator(".frame-bytes span").all_text_contents())
+            for field in page.locator("#frame-fields li").all()
+        ]
+        assert shown == expected
+        assert shown[-1] == "00 00 c0 7f"
+        link = page.locator("#experiment-link")
+        expect(link).to_have_text(file)
+        assert link.get_attribute("href").endswith(f"/experiments/{file}")
+    page.locator("#toggle-stream").click()
+    expect(page.locator("#chart-pens .playhead")).to_have_count(1)
+    page.locator("#reset-fixture").click()
+    expect(page.locator("#chart-pens .playhead")).to_have_count(0)
     page.close()

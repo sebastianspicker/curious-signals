@@ -3,16 +3,24 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="A static, simulated preview of the Curious Signals Arduino and phyphox classroom workflow.">
+    <meta name="description" content="See what the Curious Signals board sends before you plug it in: an offline, simulated preview of the Arduino Nano 33 BLE Sense and phyphox classroom kit.">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f5f3ec" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#131416" media="(prefers-color-scheme: dark)">
     <title>Curious Signals · Static classroom preview</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23009297'/%3E%3Cpath d='M15 36h9l5-15 8 27 5-17h7' fill='none' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='6' fill='%231a1c1f'/%3E%3Cpath d='M10 38h10l6-16 9 24 6-14h8' fill='none' stroke='%23f5f3ec' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='51' cy='32' r='5' fill='%23ec8f5a'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="styles.css">
     <script src="fixtures.js" defer></script>
     <script src="demo.js" defer></script>
   </head>
   <body>
-    <header class="site-header">
-      <a class="wordmark" href="#top" aria-label="Curious Signals home">Curious Signals</a>
+    <a class="skip-link" href="#recorder">Skip to the preview</a>
+
+    <header class="masthead wrap">
+      <a class="wordmark" href="#top" aria-label="Curious Signals home">
+        <svg aria-hidden="true" viewBox="0 0 28 20"><path class="mark-trace" d="M1.5 12h4l3-8 4.5 12 3-7h3.5"/><circle class="mark-pen" cx="23.5" cy="9" r="2.6"/></svg>
+        Curious Signals
+      </a>
       <nav aria-label="Primary navigation">
         <a href="#how-it-works">How it works</a>
         <a href="https://github.com/sebastianspicker/curious-signals/tree/main/experiments">Experiment files</a>
@@ -20,37 +28,52 @@
       </nav>
     </header>
 
-    <main id="top">
-      <section class="lab" aria-labelledby="experiment-title">
-        <aside class="mode-rail" aria-label="Core experiment modes">
-          <h2>Modes</h2>
+    <main id="top" class="wrap">
+      <section class="statement" aria-labelledby="statement-title">
+        <div>
+          <h1 id="statement-title">See what the board sends before you plug it in.</h1>
+          <p class="statement-lede">An original Arduino Nano 33 BLE Sense streams its sensors to phyphox on a phone. Pick a mode to see the channels, units, and trace shape your class will get. Every trace here comes from a stored fixture, not from a board.</p>
+        </div>
+        <dl class="spec">
+          <div><dt>Device name</dt><dd>phyphox-sense</dd></div>
+          <div><dt>Frame</dt><dd>20 bytes · 5 × float32</dd></div>
+          <div><dt>Interval</dt><dd>≥ 50 ms</dd></div>
+          <div><dt>Modes</dt><dd>1–6, 9</dd></div>
+        </dl>
+      </section>
+
+      <section id="recorder" class="recorder" aria-labelledby="experiment-title" tabindex="-1">
+        <aside class="mode-index" aria-label="Core experiment modes">
+          <h2 class="label">Sensor mode</h2>
           <div id="mode-list" class="mode-list"></div>
         </aside>
 
-        <div class="workspace">
-          <div class="workspace-heading">
-            <div>
-              <h1 id="experiment-title">Temperature &amp; humidity</h1>
-              <p id="experiment-description">Explore a deterministic fixture shaped like the real mode 5 data contract.</p>
-            </div>
-            <p class="simulation-status" aria-label="Simulation status">Simulated · no Bluetooth</p>
+        <div class="sheet">
+          <header class="sheet-head">
+            <p class="kicker label"><span id="mode-kicker">Mode 5</span><span class="sep" aria-hidden="true">/</span><span id="mode-sensor">HTS221</span></p>
+            <h2 id="experiment-title">Temperature &amp; humidity</h2>
+            <p id="experiment-description">Temperature and relative humidity, each on its own axis. Breathe on the sensor and humidity climbs within seconds.</p>
+            <p class="simulation-status">Simulated<br>no board connected</p>
+          </header>
+
+          <div class="readout-strip">
+            <span class="label" id="readout-time">At the pen · t = 24.0 s</span>
+            <div class="readouts" id="readouts"></div>
           </div>
 
-          <div class="readouts" id="readouts"></div>
-
           <figure class="chart-shell">
-            <figcaption>
-              <span id="chart-label">Temperature &amp; humidity</span>
-              <span id="chart-progress">24.0 s fixture</span>
-            </figcaption>
-            <svg id="chart" viewBox="0 0 920 360" role="img" aria-labelledby="chart-title chart-description">
+            <svg id="chart" viewBox="0 0 920 340" role="img" aria-labelledby="chart-title chart-description">
               <title id="chart-title">Simulated temperature and humidity traces</title>
               <desc id="chart-description">A deterministic line chart that previews the structure of mode 5 measurements. It is not recorded sensor data.</desc>
               <g id="chart-grid"></g>
               <g id="chart-lines"></g>
+              <g id="chart-pens"></g>
               <g id="chart-labels"></g>
             </svg>
-            <div id="legend" class="legend" aria-label="Chart legend"></div>
+            <figcaption>
+              <span class="caption-title"><strong id="chart-label">Temperature &amp; humidity</strong> · simulated trace · <span id="chart-progress">24.0 s fixture</span></span>
+              <span id="legend" class="legend"></span>
+            </figcaption>
           </figure>
 
           <div class="simulation-controls">
@@ -62,61 +85,86 @@
               <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v6h-6"/></svg>
               Reset simulated fixture
             </button>
-            <p>These controls only animate fixture data in this page. Reduced motion shows the full fixture immediately.</p>
-            <p id="stream-status" role="status" aria-live="polite" aria-atomic="true">Simulated fixture ready.</p>
+            <p id="stream-status" role="status" aria-live="polite" aria-atomic="true" data-state="idle">Simulated fixture ready.</p>
+            <p class="controls-note">Playback redraws the stored fixture point by point; it never touches Bluetooth. With reduced motion, the whole trace appears at once.</p>
           </div>
+
+          <section class="frame" aria-labelledby="frame-title">
+            <div class="frame-head">
+              <h3 id="frame-title">The frame behind this sample</h3>
+              <span class="label" id="frame-summary">Sample 121 of 121 · little-endian float32</span>
+            </div>
+            <ol class="frame-fields" id="frame-fields"></ol>
+            <p class="frame-note"><span id="frame-note">phyphox shows these values unchanged.</span> Encoded in this page from the fixture with the repository’s frame layout. The board sends a frame at most every 50 ms; the fixture holds one sample per 200 ms. Channels a mode can’t fill are sent as <code>NaN</code>.</p>
+          </section>
         </div>
       </section>
 
-      <section id="how-it-works" class="workflow" aria-labelledby="workflow-title">
-        <h2 id="workflow-title" class="sr-only">How the real classroom kit works</h2>
-        <article>
-          <div class="step-heading"><span>1</span><h3>Flash firmware</h3></div>
-          <p>Compile and upload the canonical sketch to an original Arduino Nano 33 BLE Sense.</p>
-          <code>make compile</code>
-          <strong>Not run here</strong>
-        </article>
-        <article>
-          <div class="step-heading"><span>2</span><h3>Import experiment</h3></div>
-          <p>Transfer one generated <code>.phyphox</code> file to a phone or tablet and open it in phyphox.</p>
-          <a href="https://github.com/sebastianspicker/curious-signals/tree/main/experiments">Browse real files</a>
-          <strong>Not run here</strong>
-        </article>
-        <article>
-          <div class="step-heading"><span>3</span><h3>Measure in phyphox</h3></div>
-          <p>The app connects to <code>phyphox-sense</code>, selects a mode, and plots BLE notifications.</p>
-          <code>20 bytes · every 50 ms</code>
-          <strong>Not run here</strong>
-        </article>
+      <section id="how-it-works" class="section" aria-labelledby="workflow-title">
+        <div class="section-head">
+          <span class="label">How it works</span>
+          <h2 id="workflow-title">From board to phone in three steps</h2>
+        </div>
+        <ol class="signal-path">
+          <li class="station">
+            <span class="label">01 · Board</span>
+            <h3>Flash the sketch once</h3>
+            <p>Use the original Arduino Nano 33 BLE Sense. The Rev2 board has different sensors and won’t work. Upload the sketch from the Arduino IDE; <code>make compile</code> checks that it builds.</p>
+            <code class="station-fact">arduino/<wbr>phyphox_ble_sense/<wbr>phyphox_ble_sense.ino</code>
+          </li>
+          <li class="station">
+            <span class="label">02 · Air</span>
+            <h3>It advertises itself</h3>
+            <p>The board appears as <code>phyphox-sense</code> and sends one 20-byte frame at most every 50 ms. Keep one powered board in range: every board uses the same name.</p>
+            <code class="station-fact">phyphox-sense · 20 bytes · ≥ 50 ms</code>
+          </li>
+          <li class="station">
+            <span class="label">03 · Phone</span>
+            <h3>Open the file in phyphox</h3>
+            <p>Copy the experiment file for your mode to the phone or tablet, open it in phyphox, and press play. The app selects the mode for you.</p>
+            <span class="station-fact">For mode <span id="experiment-mode">5</span>: <a id="experiment-link" href="https://github.com/sebastianspicker/curious-signals/blob/main/experiments/temperature_plot_v1-2.phyphox">temperature_plot_v1-2.phyphox</a></span>
+          </li>
+        </ol>
       </section>
 
-      <section class="scope" aria-labelledby="scope-title">
-        <h2 id="scope-title">What this preview represents</h2>
-        <div class="scope-columns">
-          <article>
-            <h3>Real repository contract</h3>
+      <section class="section" aria-labelledby="scope-title">
+        <div class="section-head">
+          <span class="label">Scope</span>
+          <h2 id="scope-title">What this page is, and what it isn’t</h2>
+        </div>
+        <div class="ledger">
+          <section class="ledger-real" aria-labelledby="ledger-real-title">
+            <h3 id="ledger-real-title">Taken from the repository</h3>
             <ul>
               <li>Device name <code>phyphox-sense</code></li>
-              <li>Five little-endian <code>float32</code> values per packet</li>
-              <li>Device time plus four mode-dependent channels</li>
-              <li>Seven generated core experiments using modes 1–6 and 9</li>
+              <li>Five little-endian <code>float32</code> values per frame, device time first</li>
+              <li>Channels, units, and wire conversions for modes 1–6 and 9</li>
+              <li>The seven experiment file names</li>
             </ul>
-          </article>
-          <article>
-            <h3>Preview limits</h3>
+          </section>
+          <section class="ledger-sim" aria-labelledby="ledger-sim-title">
+            <h3 id="ledger-sim-title">Simulated here</h3>
             <ul>
-              <li>Deterministic, synthetic fixture values</li>
-              <li>No Bluetooth, hardware, firmware upload, or phone app</li>
-              <li>No scientific recording, calibration, or device claim</li>
-              <li>Astronomy experiments remain a separate classroom subtree</li>
+              <li>Every trace value: a fixed fixture, identical on every visit</li>
+              <li>No Bluetooth, sensors, network, or storage used by this page</li>
+              <li>Not a measurement, calibration, or proof that a board works</li>
             </ul>
-          </article>
+          </section>
+          <section class="ledger-check" aria-labelledby="ledger-check-title">
+            <h3 id="ledger-check-title">Check before class</h3>
+            <ul>
+              <li>One powered board within range at a time</li>
+              <li>Original Nano 33 BLE Sense, not Rev2</li>
+              <li>Pair and run one experiment in the room you teach in</li>
+            </ul>
+          </section>
         </div>
+        <p class="aside-note">Looking for the astronomy activities? They run on phone sensors, TI SensorTags, or multimeters, not on this board. The <a href="https://github.com/sebastianspicker/curious-signals/blob/main/docs/ASTRONOMY_EXPERIMENTS_COMPANION.md">astronomy companion</a> explains each one.</p>
       </section>
     </main>
 
-    <footer>
-      <p>Static classroom preview. The repository remains the source of truth.</p>
+    <footer class="colophon wrap">
+      <p>Static classroom preview. The repository is the source of truth.</p>
       <nav aria-label="Footer navigation">
         <a href="https://github.com/sebastianspicker/curious-signals">Repository</a>
         <a href="https://github.com/sebastianspicker/curious-signals/blob/main/docs/ASTRONOMY_EXPERIMENTS_COMPANION.md">Classroom companion</a>

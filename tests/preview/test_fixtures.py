@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import json
 import math
+import re
 import shutil
 import subprocess
+import xml.etree.ElementTree as ET
 
 import pytest
 
 from curious_signals.protocol import read_contract
-from tests.conftest import CONTRACT_PATH, REPO_ROOT
+from tests.conftest import CONTRACT_PATH, CORE_SOURCE_DIR, REPO_ROOT
 
 
 @pytest.fixture(scope="module")
@@ -77,3 +79,52 @@ def test_every_mode_preserves_channel_labels_and_units(preview_modes) -> None:
     assert {mode["id"] for mode in preview_modes} == set(expected)
     for mode in preview_modes:
         assert (mode["series"], mode["units"]) == expected[mode["id"]]
+
+
+PHYPHOX_PENS = {
+    "green": "green",
+    "blue": "blue",
+    "yellow": "ochre",
+    "white": "ink",
+    "red": "red",
+    "orange": "orange",
+}
+FORMULA = re.compile(r"\[1_\]\*([\d.]+)(?:/([\d.]+))?")
+
+
+def _phyphox_channel(root, channel):
+    """Return (factor, shown unit, colour) that an experiment source applies to one channel."""
+    factor = 1.0
+    for formula in root.iter("formula"):
+        if [item.text for item in formula.iter("input")] == [channel]:
+            match = FORMULA.fullmatch(formula.get("formula"))
+            assert match, f"Unrecognised {channel} formula: {formula.get('formula')}"
+            factor = float(match[1]) / float(match[2] or 1)
+            break
+    value = next(
+        value
+        for value in root.iter("value")
+        if next(value.iter("input")).text in (channel, f"{channel}_norm")
+    )
+    return factor, value.get("unit"), value.get("color")
+
+
+def test_preview_experiment_files_pens_and_wire_scales_match_sources(preview_modes) -> None:
+    active = {mode["id"]: mode for mode in read_contract(CONTRACT_PATH)["modes"]["active"]}
+    for mode in preview_modes:
+        assert mode["experiment"] == active[mode["id"]]["experiment"]
+        root = ET.parse(CORE_SOURCE_DIR / f"{mode['experiment']}.xml").getroot()
+        scale = mode["wire"]["scale"]
+        assert len(mode["pens"]) == len(mode["series"])
+        for index, (pen, unit) in enumerate(zip(mode["pens"], mode["units"], strict=True)):
+            factor, shown_unit, colour = _phyphox_channel(root, f"CH{index + 2}")
+            assert pen == PHYPHOX_PENS[colour], (mode["id"], index, colour)
+            if shown_unit == unit:
+                # The preview shows phyphox's unit, so its wire value must undo phyphox's factor.
+                assert scale == pytest.approx(factor), (mode["id"], index)
+            else:
+                # The preview shows the raw unit; the note must still name phyphox's factor.
+                assert scale == 1
+                assert re.search(
+                    rf"(?<![\d.]){re.escape(f'{factor:g}')}(?![\d])", mode["wire"]["note"]
+                )

@@ -6,6 +6,7 @@ from curious_signals.xinclude import validate_xinclude_paths
 from tests.conftest import error_text
 
 XINCLUDE = "http://www.w3.org/2001/XInclude"
+LIBXML_ALTERNATE_XINCLUDE = "http://www.w3.org/2003/XInclude"
 
 
 def write_include_source(tmp_path, href: str) -> object:
@@ -58,6 +59,17 @@ def test_xinclude_rejects_entity_payload_before_resolution(tmp_path) -> None:
     assert "unsafe" in error_text(validate_xinclude_paths(source))
 
 
+def test_xinclude_rejects_libxml_alternate_namespace(tmp_path) -> None:
+    source = tmp_path / "alternate.phyphox.xml"
+    source.write_text(
+        f'<phyphox xmlns:xi="{LIBXML_ALTERNATE_XINCLUDE}">'
+        '<xi:include href="outside.xml"/></phyphox>',
+        encoding="utf-8",
+    )
+
+    assert "namespace" in error_text(validate_xinclude_paths(source))
+
+
 def test_xinclude_recursively_validates_nested_documents(tmp_path) -> None:
     source = write_include_source(tmp_path, "includes/allowed.xml")
     nested = source.parent / "includes" / "nested.xml"
@@ -104,6 +116,11 @@ def test_standalone_include_fragment_accepts_nested_sibling(tmp_path) -> None:
         ),
         ("<!DOCTYPE nodes><nodes/>", "unsafe"),
         ('<nodes xml:base="https://example.invalid/"/>', "xml:base"),
+        (
+            f'<nodes xmlns:xi="{LIBXML_ALTERNATE_XINCLUDE}">'
+            '<xi:include href="../outside.xml"/></nodes>',
+            "namespace",
+        ),
     ],
 )
 def test_xinclude_rejects_nested_boundary_and_parser_bypasses(

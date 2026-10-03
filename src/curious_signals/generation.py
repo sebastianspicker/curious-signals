@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import tempfile
 import zipfile
 from collections.abc import Iterable
@@ -64,14 +65,33 @@ def render_core_experiments(checkout: Checkout, protocol: Protocol) -> list[tupl
     return rendered
 
 
+def _atomic_write_text(output: Path, content: str) -> None:
+    descriptor, temporary_name = tempfile.mkstemp(
+        dir=output.parent, prefix=f".{output.name}.", suffix=".tmp"
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            stream.write(content)
+        temporary.chmod(0o644)
+        os.replace(temporary, output)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
 def _write(rendered: list[tuple[str, str]], destination: Path) -> list[Path]:
-    outputs: list[Path] = []
+    if destination.is_symlink():
+        raise ToolError(f"{destination}: generated experiment destination must not be a symlink")
     try:
         destination.mkdir(parents=True, exist_ok=True)
-        for name, content in rendered:
-            output = destination / name
-            output.write_text(content, encoding="utf-8")
-            outputs.append(output)
+    except OSError as error:
+        raise ToolError(f"{destination}: cannot write generated experiments: {error}") from error
+    outputs = [destination / name for name, _content in rendered]
+    if symlink := next((output for output in outputs if output.is_symlink()), None):
+        raise ToolError(f"{symlink}: generated experiment output must not be a symlink")
+    try:
+        for output, (_name, content) in zip(outputs, rendered, strict=True):
+            _atomic_write_text(output, content)
     except OSError as error:
         raise ToolError(f"{destination}: cannot write generated experiments: {error}") from error
     return outputs

@@ -87,6 +87,57 @@ def test_build_and_validate_reject_unsafe_xml_before_invoking_xmllint(
     assert not (tmp_path / "output").exists()
 
 
+def test_build_rejects_libxml_alternate_namespace_before_invoking_xmllint(
+    checkout_copy: Checkout, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = checkout_copy.core_sources()[0]
+    source.write_text(
+        source.read_text(encoding="utf-8").replace(
+            "http://www.w3.org/2001/XInclude",
+            "http://www.w3.org/2003/XInclude",
+        ),
+        encoding="utf-8",
+    )
+    calls = install_fake_xmllint(tmp_path / "bin", monkeypatch, delegate_to=None)
+
+    with pytest.raises(ToolError, match="namespace"):
+        build(checkout_copy, tmp_path / "output")
+
+    assert not calls.exists(), f"xmllint invoked before preflight completed: {calls.read_text()}"
+    assert not (tmp_path / "output").exists()
+
+
+@pytest.mark.usefixtures("xmllint_executable")
+def test_build_rejects_symlinked_output_without_writing_any_artifact(
+    checkout_copy: Checkout, tmp_path: Path
+) -> None:
+    destination = tmp_path / "output"
+    destination.mkdir()
+    outside = tmp_path / "outside.phyphox"
+    outside.write_text("unchanged", encoding="utf-8")
+    output_name = checkout_copy.core_sources()[0].name.removesuffix(".xml")
+    (destination / output_name).symlink_to(outside)
+
+    with pytest.raises(ToolError, match="output must not be a symlink"):
+        build(checkout_copy, destination)
+
+    assert outside.read_text(encoding="utf-8") == "unchanged"
+    assert list(destination.iterdir()) == [destination / output_name]
+
+
+@pytest.mark.usefixtures("xmllint_executable")
+def test_build_rejects_symlinked_destination(checkout_copy: Checkout, tmp_path: Path) -> None:
+    actual_destination = tmp_path / "actual-output"
+    actual_destination.mkdir()
+    destination = tmp_path / "output"
+    destination.symlink_to(actual_destination, target_is_directory=True)
+
+    with pytest.raises(ToolError, match="destination must not be a symlink"):
+        build(checkout_copy, destination)
+
+    assert list(actual_destination.iterdir()) == []
+
+
 @pytest.mark.usefixtures("xmllint_executable")
 def test_validate_expands_each_source_once(
     checkout_copy: Checkout,

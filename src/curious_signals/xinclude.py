@@ -10,6 +10,8 @@ from defusedxml.common import DefusedXmlException
 
 XINCLUDE_NS = "http://www.w3.org/2001/XInclude"
 XINCLUDE_TAG = f"{{{XINCLUDE_NS}}}include"
+LIBXML_ALTERNATE_XINCLUDE_NS = "http://www.w3.org/2003/XInclude"
+LIBXML_ALTERNATE_XINCLUDE_TAG = f"{{{LIBXML_ALTERNATE_XINCLUDE_NS}}}include"
 XML_BASE = "{http://www.w3.org/XML/1998/namespace}base"
 ALLOWED_INCLUDE_DIR = "includes"
 
@@ -120,6 +122,14 @@ def _parse(source: Path) -> tuple[ET.Element | None, str | None]:
         return None, f"{source}: cannot parse XML before XInclude expansion: {error}"
 
 
+def _unsupported_namespace_errors(source: Path, root: ET.Element) -> list[str]:
+    return [
+        f"{source}: unsupported XInclude namespace {LIBXML_ALTERNATE_XINCLUDE_NS!r}"
+        for element in root.iter()
+        if element.tag == LIBXML_ALTERNATE_XINCLUDE_TAG
+    ]
+
+
 def _validate_document(
     entry: Path,
     source: Path,
@@ -134,6 +144,8 @@ def _validate_document(
     root, error = _parse(source)
     if error or root is None:
         return [error] if error else []
+    if namespace_errors := _unsupported_namespace_errors(source, root):
+        return namespace_errors
     active.add(source)
     errors: list[str] = []
     for element in root.iter():
@@ -172,6 +184,8 @@ def validate_xinclude_paths(
         return [parse_error]
     if root is None:
         return []
+    if namespace_errors := _unsupported_namespace_errors(source, root):
+        return namespace_errors
     has_include = any(element.tag == XINCLUDE_TAG for element in root.iter())
     if not has_include:
         return [

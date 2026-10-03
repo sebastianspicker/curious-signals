@@ -4,6 +4,7 @@ import subprocess
 import sys
 import zipfile
 from hashlib import sha256
+from stat import S_IMODE
 
 import pytest
 
@@ -69,6 +70,9 @@ def test_build_and_bundle_cli_create_requested_outputs(tmp_path) -> None:
     assert bundle.returncode == 0, bundle.stderr
     assert repeated.returncode == 0, repeated.stderr
     assert len(list((tmp_path / "built").glob("*.phyphox"))) == 7
+    assert {S_IMODE(path.stat().st_mode) for path in (tmp_path / "built").glob("*.phyphox")} == {
+        0o644
+    }
     assert (
         sha256(first_archive.read_bytes()).digest() == sha256(second_archive.read_bytes()).digest()
     )

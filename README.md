@@ -1,7 +1,7 @@
 # Curious Signals
 
-[![ci](https://github.com/sebastianspicker/curious-signals/actions/workflows/ci.yml/badge.svg)](https://github.com/sebastianspicker/curious-signals/actions/workflows/ci.yml)
-[![pages](https://github.com/sebastianspicker/curious-signals/actions/workflows/pages.yml/badge.svg)](https://github.com/sebastianspicker/curious-signals/actions/workflows/pages.yml)
+[![ci](https://github.com/sebastianspicker/curious-signals-phyphox/actions/workflows/ci.yml/badge.svg)](https://github.com/sebastianspicker/curious-signals-phyphox/actions/workflows/ci.yml)
+[![pages](https://github.com/sebastianspicker/curious-signals-phyphox/actions/workflows/pages.yml/badge.svg)](https://github.com/sebastianspicker/curious-signals-phyphox/actions/workflows/pages.yml)
 
 Plug an original Arduino Nano 33 BLE Sense into a laptop, flash one sketch, and
 read its sensors live in the [phyphox](https://phyphox.org) app on a phone. No
@@ -12,7 +12,7 @@ ready-to-import experiments, a separate astronomy collection that uses phone and
 lab sensors on its own, and a static browser preview you can open without any
 hardware.
 
-**Live preview:** <https://sebastianspicker.github.io/curious-signals/>
+**Live preview:** <https://sebastianspicker.github.io/curious-signals-phyphox/>
 
 ## What is in the box
 

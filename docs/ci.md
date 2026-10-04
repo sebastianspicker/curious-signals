@@ -63,7 +63,7 @@ itself, and it can also be started by hand.
 
 This workflow needs a one-time repository setup: under **Settings → Pages**, set
 **Source** to **GitHub Actions**. Once that is done, the preview is served at
-`https://<owner>.github.io/curious-signals/`. The job uploads the `demo/`
+`https://<owner>.github.io/curious-signals-phyphox/`. The job uploads the `demo/`
 directory as a Pages artifact, so the published site contains only the preview
 and nothing else from the repository.
 

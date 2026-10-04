@@ -1,5 +1,5 @@
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
-const EXPERIMENT_BASE_URL = "https://github.com/sebastianspicker/curious-signals/blob/main/experiments/";
+const EXPERIMENT_BASE_URL = "https://github.com/sebastianspicker/curious-signals-phyphox/blob/main/experiments/";
 const FIXTURE_SECONDS_PER_POINT = 0.2;
 const FRAME_FIELDS = 5;
 

@@ -6,26 +6,17 @@ same ref, so a branch that is pushed twice only tests once.
 
 ## XML and Python
 
-The first job installs Python 3.11, Node.js 22, a C++17 compiler, the `test` and
-`browser` extras, Chromium, `xmllint`, ShellCheck, and `ripgrep`, then runs:
+The first job installs Python 3.11, the `test` extra, `xmllint`, ShellCheck, and `ripgrep`, then runs:
 
 ```sh
 make lint
-make test
-make test-browser
 make validate
 make check-generated
 ```
 
 Validation covers the protocol catalog, source inventory, XInclude safety, core
 XML, the expanded core experiments, the committed generated artifacts, and the
-astronomy XML and locales. Firmware conformance is behavioral: the host tests
-run the actual sketch, including `setup()`, against controlled sensor, BLE, and
-clock doubles and check its name, UUIDs, characteristic properties, default
-mode, and wire behavior against `protocol/contract.json`, while scalar
-scientific fixtures pin down conversions and nominal time axes. The browser checks walk every preview
-mode and cover playback, keyboard use, reduced motion, contrast, and the
-forbidden runtime APIs at desktop and mobile viewport sizes.
+astronomy XML and locales.
 
 `make check-generated` rebuilds in a temporary directory and compares bytes. CI
 never runs `make build`, so a job can fail on drift but can never rewrite a

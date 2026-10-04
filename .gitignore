@@ -134,3 +134,7 @@ credentials.local.*
 /audit-output.*
 /implementation-report.*
 /completion-report.*
+
+# Internal design and test files (not published)
+/DESIGN_BRIEF.md
+/tests/

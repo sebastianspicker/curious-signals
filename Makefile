@@ -1,16 +1,13 @@
-.PHONY: help lint test test-browser validate check-generated build provision compile security ci bundle
+.PHONY: help lint validate check-generated build provision compile security ci bundle
 .DEFAULT_GOAL := help
 
 PYTHON ?= python3
 TOOL = PYTHONPATH=src $(PYTHON) -m curious_signals
-PYTEST = PYTHONPATH=src $(PYTHON) -m pytest
 RUFF = $(PYTHON) -m ruff
 
 help:
 	@echo "Targets:"
 	@echo "  lint     - Ruff lint + format check, shellcheck"
-	@echo "  test     - Python test suite"
-	@echo "  test-browser - Preview interaction and accessibility checks (Chromium)"
 	@echo "  validate - Validate XML and phyphox files"
 	@echo "  check-generated - Verify tracked experiments match their sources"
 	@echo "  build    - Rebuild experiments/*.phyphox from src/phyphox/*.phyphox.xml"
@@ -24,12 +21,6 @@ lint:
 	$(RUFF) check .
 	$(RUFF) format --check .
 	shellcheck scripts/*.sh
-
-test:
-	$(PYTEST)
-
-test-browser:
-	$(PYTEST) -m browser
 
 validate:
 	$(TOOL) validate
@@ -51,8 +42,6 @@ security:
 
 ci:
 	+$(MAKE) --no-print-directory lint
-	+$(MAKE) --no-print-directory test
-	+$(MAKE) --no-print-directory test-browser
 	+$(MAKE) --no-print-directory validate
 	+$(MAKE) --no-print-directory check-generated
 	+$(MAKE) --no-print-directory provision

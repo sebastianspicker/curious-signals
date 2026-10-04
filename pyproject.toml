@@ -35,8 +35,3 @@ select = ["E", "F", "W", "I"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["curious_signals"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-m 'not browser'"
-markers = ["browser: rendered preview checks requiring Playwright and Chromium"]

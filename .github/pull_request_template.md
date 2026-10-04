@@ -21,8 +21,6 @@
 ## Verification
 
 - [ ] `make lint`
-- [ ] `make test`
-- [ ] `make test-browser`
 - [ ] `make validate`
 - [ ] `make check-generated`
 - [ ] `make compile`

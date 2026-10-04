@@ -86,6 +86,5 @@ When you change a file here, update its note above if the input path, the model,
 or the scope limit moved, then run:
 
 ```sh
-python3 -m pytest tests/experiments/test_astronomy.py
 make validate
 ```

@@ -13,8 +13,7 @@ preview, and the tooling are kept apart, and which of them may depend on which.
 ```sh
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -e '.[test,browser]'
-python -m playwright install chromium
+python -m pip install -e '.[test]'
 ```
 
 Run the narrower checks while you work and the full gate before you open a pull
@@ -22,8 +21,6 @@ request:
 
 ```sh
 make lint
-make test
-make test-browser
 make validate
 make check-generated
 make security
@@ -57,7 +54,6 @@ SensorTag, HID input, or Owon multimeter — and do not reroute it through
 Its name does not make it disposable build output.
 
 ```sh
-python3 -m pytest tests/experiments/test_astronomy.py
 make validate
 ```
 
@@ -70,12 +66,10 @@ in the same change.
 `protocol/contract.json` owns the shared device name, UUIDs, frame layout,
 timing, mode numbers, channel meanings, and filenames. When you change a fact
 there, update every concrete implementation that depends on it, including the
-preview fixtures. The sketch keeps its own literals so it stays a single file;
-`tests/firmware/` runs it on the host and fails if any of them disagree with the
-contract.
+preview fixtures. The sketch keeps its own literals so it stays a single file,
+so keep them consistent with the contract by hand.
 
 ```sh
-python3 -m pytest tests/protocol tests/firmware
 make validate
 make check-generated
 make compile
@@ -93,39 +87,16 @@ must never rewrite tracked artifacts.
 
 ```sh
 make lint
-make test
 make validate
 make check-generated
 make security
 ```
-
-`make test` compiles the real sketch against controlled BLE, clock, ADC, and
-sensor doubles, so it needs a C++17 compiler. The preview fixtures are evaluated
-by Node.js 22+. The scientific fixtures check scalar values for the XML formulas
-given known inputs; they do not emulate phyphox's buffer scheduling and they do
-not establish sensor calibration.
-
-`make test-browser` runs desktop and mobile Chromium checks for interaction,
-contrast, reduced motion, and the preview's network, storage, and sensor
-boundaries. It fails when Playwright or Chromium is missing, and it is separate
-from `make test` but included in `make ci`.
 
 `make provision` installs the versions recorded in
 `arduino/toolchain.json` and is the only step that needs the network.
 `make compile` verifies those installed versions and builds without refreshing
 indexes or installing packages. `make ci` provisions and therefore needs network
 access.
-
-## Refreshing the README screenshots
-
-The images in the README come from the preview, not from a phone. Regenerate
-them after a visual change:
-
-```sh
-PREVIEW_SCREENSHOT_DIR=docs/images make test-browser
-```
-
-That writes the desktop and mobile shots plus one chart image per mode.
 
 ## Pull requests
 

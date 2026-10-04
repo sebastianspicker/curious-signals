@@ -107,8 +107,6 @@ interface:
 
 ```sh
 make lint             # Ruff lint and format checks, ShellCheck
-make test             # behavior-focused pytest suite
-make test-browser     # Chromium preview interaction and accessibility checks
 make validate         # protocol, XML, core, and astronomy validation
 make check-generated  # non-mutating byte parity check
 make build            # rewrite the seven tracked generated files
@@ -119,22 +117,13 @@ make ci               # full checkout-non-mutating local gate
 make bundle           # deterministic core experiment ZIP
 ```
 
-Requirements: Make, Bash, Git, Python 3.11+, a C++17 compiler (`c++`, or set
-`CXX`) for the host firmware tests, Node.js 22+ for the preview fixtures,
-`xmllint`, ShellCheck for `make lint`, `arduino-cli` for firmware compilation,
+Requirements: Make, Bash, Git, Python 3.11+, `xmllint`, ShellCheck for `make lint`, `arduino-cli` for firmware compilation,
 and `ripgrep` for the security scan.
 
 ```sh
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -e '.[test,browser]'
-python -m playwright install chromium
-```
-
-To regenerate the screenshots in this README:
-
-```sh
-PREVIEW_SCREENSHOT_DIR=docs/images make test-browser
+python -m pip install -e '.[test]'
 ```
 
 To build into a temporary directory without touching tracked artifacts:
@@ -178,7 +167,6 @@ Know the limits before you build a lesson around it:
 | `experiments/astronomy/` | Hand-edited astronomy collection |
 | `demo/` | Deterministic static preview |
 | `src/curious_signals/` | Internal build and validation package |
-| `tests/` | Observable behavior and contract checks |
 | `scripts/` | Shell credential scan behind `make security` |
 
 Start with [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the dependency rules

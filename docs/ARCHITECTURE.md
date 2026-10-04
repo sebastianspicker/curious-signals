@@ -42,16 +42,12 @@ duplicates the few values it needs, and checks derived from the contract stop
 those copies from drifting apart:
 
 - **Firmware:** the sketch stays one self-contained `.ino` that teachers can
-  copy into the Arduino IDE. `tests/firmware/` compiles that exact file on the
-  host against BLE, sensor, and clock doubles, runs its own `setup()` and
-  `loop()`, and asserts the advertised name, UUIDs, characteristic properties
-  and sizes, default mode, mode selection, and packet layout against
-  expectations rendered from `protocol/contract.json`. Mutation cases prove the
-  test catches each kind of drift.
+  copy into the Arduino IDE; keep its literals in step with
+  `protocol/contract.json` by hand.
 - **Core experiments:** `make validate` checks sources and generated files
   against the parsed contract (UUIDs, offsets, conversions, mode per filename).
-- **Preview:** `tests/preview/` evaluates `demo/fixtures.js` and compares its
-  modes and channel shapes with the contract.
+- **Preview:** keep the modes and channel shapes in `demo/fixtures.js` in step
+  with the contract.
 
 ## Components and ownership
 
@@ -66,7 +62,6 @@ those copies from drifting apart:
 | `arduino/toolchain.json` | Pinned board core, sensor libraries, and FQBN | Firmware build reproducibility contract |
 | `src/curious_signals/` | Contract parsing, XML generation, validation, parity, bundling, and Arduino provisioning/compilation | Internal contributor tooling |
 | `scripts/secret-scan.sh` | Credential-pattern scan behind `make security` | Contributor and CI guardrail |
-| `tests/` | Observable contract, artifact, firmware, preview, and tooling behavior, grouped by component | Development and CI only |
 
 The astronomy collection may use phone sensors, TI SensorTags, Bluetooth HID, or
 supported Owon multimeters. It has no dependency on the Arduino protocol and

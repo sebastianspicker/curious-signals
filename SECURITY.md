@@ -47,8 +47,7 @@ make security
 
 That target runs `scripts/secret-scan.sh`, which searches tracked and
 untracked files for a narrow set of credential patterns and reports only file
-names and line numbers. Dependency version bounds and the Arduino pins are
-checked by `make test`, and shell scripts by ShellCheck in `make lint`. None of
+names and line numbers. Shell scripts are checked by ShellCheck in `make lint`. None of
 this replaces dependency advisory review, firmware review, hardware testing, or
 electrical safety review.
 
